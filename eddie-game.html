@@ -147,8 +147,7 @@
     const auth = firebase.auth();
 
     // --- DER GEFIXTE DATENBANK-PFAD (Isoliert von MG) ---
-    const eddieDbRef = db.collection('artifacts').doc('eddie-unaufhaltsam-v1').collection('public').doc('data').collection('leaderboard');
-
+    const eddieDbRef = db.collection('leaderboard');
     auth.signInAnonymously().catch(e => console.error("Firebase Auth Error:", e));
 
     const canvas = document.getElementById("gameCanvas");
