@@ -146,6 +146,9 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
+    // --- DER GEFIXTE DATENBANK-PFAD (Isoliert von MG) ---
+    const eddieDbRef = db.collection('artifacts').doc('eddie-unaufhaltsam-v1').collection('public').doc('data').collection('leaderboard');
+
     auth.signInAnonymously().catch(e => console.error("Firebase Auth Error:", e));
 
     const canvas = document.getElementById("gameCanvas");
@@ -192,7 +195,7 @@
 
       try {
         // 1. Prüfen, ob der Name schon von wem anders vergeben ist
-        const nameCheck = await db.collection("leaderboard").where("name", "==", name).get();
+        const nameCheck = await eddieDbRef.where("name", "==", name).get();
         let nameIsTaken = false;
         
         nameCheck.forEach(doc => {
@@ -205,7 +208,7 @@
         }
 
         // 2. Den eigenen Eintrag aktualisieren oder neu erstellen
-        const userRef = db.collection("leaderboard").doc(uid);
+        const userRef = eddieDbRef.doc(uid);
         const userDoc = await userRef.get();
 
         if (userDoc.exists) {
@@ -237,7 +240,7 @@
     }
 
     function renderLeaderboard() {
-      db.collection("leaderboard").orderBy("score", "desc").limit(10).onSnapshot(snap => {
+      eddieDbRef.orderBy("score", "desc").limit(10).onSnapshot(snap => {
         leaderboardList.innerHTML = "";
         snap.forEach(doc => {
           const d = doc.data();
