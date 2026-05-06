@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -19,13 +19,12 @@
       --shadow: rgba(0,0,0,.08);
       --success: #0f9d58;
       --danger: #d92d20;
-      --hud-bg: #fff;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
     body { background: var(--bg); color: var(--black); min-height: 100vh; overflow-x: hidden; transition: background 0.8s ease; }
     
-    /* Elite Hebel ab Score 20 */
+    /* Elite Trigger at Score 20 */
     body.elite-mode { background: #f2edf2; }
     body.elite-mode .stat { box-shadow: 0 0 15px rgba(176, 31, 165, 0.1); border-color: var(--brand-color); }
 
@@ -60,7 +59,7 @@
     .wrap { width: 100%; max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
     .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
     .hud { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-    .stat { border: 2px solid #000; border-radius: 18px; padding: 12px; background: var(--hud-bg); text-align: center; transition: all 0.5s ease; }
+    .stat { border: 2px solid #000; border-radius: 18px; padding: 12px; background: #fff; text-align: center; transition: all 0.5s ease; }
     .stat .label { font-size: 10px; opacity: .6; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
     .stat .value { font-size: clamp(18px, 4vw, 28px); font-weight: 900; line-height: 1; color: var(--brand-color); }
 
@@ -91,7 +90,7 @@
   <section id="landing-page">
     <div class="landing-container">
       <h1 class="hero-title">UNAUFHALTSAM</h1>
-      <p class="marke-sub">VERLIEREN IST SOFORT.</p>
+      <p class="marke-sub">LOSING IS INSTANT.</p>
 
       <div style="margin-bottom: 28px;">
           <p style="margin-bottom: 12px; font-weight: 900; text-transform: uppercase; font-size: 16px;">YOU WON'T LAST LONG.</p>
@@ -106,8 +105,8 @@
       </div>
 
       <div class="legal-links">
-        <a href="impressum.html">Impressum</a>
-        <a href="datenschutz.html">Datenschutz</a>
+        <a href="impressum.html">Imprint</a>
+        <a href="datenschutz.html">Privacy</a>
       </div>
     </div>
   </section>
@@ -119,7 +118,7 @@
         <button class="btn btn-secondary" onclick="location.reload()">HOME</button>
       </div>
       <section class="hud">
-        <div class="stat"><div class="label">Kisten</div><div class="value" id="boxValue">2</div></div>
+        <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
         <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
       </section>
       <section class="game-shell">
@@ -127,36 +126,36 @@
         <div class="overlay" id="startOverlay">
           <div class="card">
             <h2>FOCUS SYSTEM V1.0</h2>
-            <p>Halte die richtige Kiste. Verlieren ist sofort.</p>
-            <button class="btn btn-primary" id="startBtn" style="margin-top:20px; width:100%;">SYSTEM STARTEN</button>
+            <p>Focus the right box. Losing is instant.</p>
+            <button class="btn btn-primary" id="startBtn" style="margin-top:20px; width:100%;">START SYSTEM</button>
           </div>
         </div>
         <div class="overlay hidden" id="nameOverlay">
           <div class="card">
-            <h2>FOKUS BESTÄTIGT!</h2>
-            <p>Trage dich in das globale Ranking ein:</p>
+            <h2>FOCUS CONFIRMED!</h2>
+            <p>Enter your name for global ranking:</p>
             <input type="text" id="nameInput" placeholder="NAME" maxlength="12" />
-            <button class="btn btn-primary" id="saveScoreBtn">RANK SICHERN</button>
+            <button class="btn btn-primary" id="saveScoreBtn">SAVE RANK</button>
           </div>
         </div>
         <div class="overlay hidden" id="gameOverOverlay">
           <div class="card">
-            <h2>FOKUS VERLOREN</h2>
-            <div id="finalScore" style="font-size:48px; font-weight:900; color:var(--brand-color); margin:10px 0;">0 KISTEN</div>
-            <p id="bestLine" style="font-weight:800; opacity:0.6; margin-bottom:20px;">BEST: 0 KISTEN</p>
-            <button class="btn btn-secondary" id="restartBtn" style="width:100%; margin-bottom:12px;">NOCHMAL</button>
+            <h2>FOCUS LOST</h2>
+            <div id="finalScore" style="font-size:48px; font-weight:900; color:var(--brand-color); margin:10px 0;">0 BOXES</div>
+            <p id="bestLine" style="font-weight:800; opacity:0.6; margin-bottom:20px;">BEST: 0 BOXES</p>
+            <button class="btn btn-secondary" id="restartBtn" style="width:100%; margin-bottom:12px;">RETRY</button>
             <div id="eliteReward" style="display:none; margin-top:15px; padding:15px; background:var(--brand-color); color:#fff; border-radius:16px;">
-              <p style="font-size:12px; font-weight:800; margin-bottom:5px;">ELITE STATUS ERREICHT</p>
+              <p style="font-size:12px; font-weight:800; margin-bottom:5px;">ELITE STATUS ACHIEVED</p>
               <p style="font-size:18px; font-weight:900;">CODE: EDDIE30</p>
             </div>
           </div>
         </div>
       </section>
       <section class="leaderboard-container">
-        <div id="uiMythTitle" style="font-weight:900; margin-bottom:8px; color:var(--danger);">NIEMAND HAT DAS ENDE GESEHEN</div>
+        <div id="uiMythTitle" style="font-weight:900; margin-bottom:8px; color:var(--danger);">NOBODY HAS SEEN THE END</div>
         <div class="leaderboard-title">Global Focus Ranking</div>
         <ul id="leaderboardList"></ul>
-        <div id="lbNeeded" class="lb-needed">LADE RANKING...</div>
+        <div id="lbNeeded" class="lb-needed">LOADING RANKING...</div>
       </section>
     </main>
   </section>
@@ -193,7 +192,6 @@
     const imgEddieTongue = new Image(); imgEddieTongue.src = "eddie_tongue.png";
     const imgBrand = new Image(); imgBrand.src = "unaufhaltsam_brand.png";
 
-    // --- JS-CSS-FIX ---
     function getBrandColor() {
       return getComputedStyle(document.documentElement).getPropertyValue('--brand-color').trim();
     }
@@ -206,13 +204,13 @@
     }
 
     async function saveScore() {
-      const name = document.getElementById("nameInput").value.trim().toUpperCase() || "ANONYM";
+      const name = document.getElementById("nameInput").value.trim().toUpperCase() || "ANONYMOUS";
       const uid = auth.currentUser.uid;
       try {
         const nameCheck = await eddieDbRef.where("name", "==", name).get();
         let taken = false;
         nameCheck.forEach(doc => { if (doc.id !== uid) taken = true; });
-        if (taken && name !== "ANONYM") { alert("Name vergeben!"); return; }
+        if (taken && name !== "ANONYMOUS") { alert("Name taken!"); return; }
         const userRef = eddieDbRef.doc(uid);
         const userDoc = await userRef.get();
         if (userDoc.exists && state.score <= userDoc.data().score) {
@@ -222,22 +220,22 @@
         }
         document.getElementById("nameOverlay").classList.add("hidden");
         document.getElementById("gameOverOverlay").classList.remove("hidden");
-      } catch (e) { alert("Fehler!"); }
+      } catch (e) { alert("Error!"); }
     }
 
     function renderLeaderboard() {
       eddieDbRef.orderBy("score", "desc").limit(10).onSnapshot(snap => {
         const list = document.getElementById("leaderboardList");
         list.innerHTML = "";
-        let scores = [];
         let count = 1;
+        let lastScore = 0;
         snap.forEach(doc => {
           const d = doc.data();
           list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${d.name}</span><span>${d.score + 2}</span></li>`;
-          scores.push(d.score + 2);
+          lastScore = d.score + 2;
           count++;
         });
-        state.lowestTop10 = scores.length >= 10 ? scores[9] : 0;
+        state.lowestTop10 = lastScore;
         updateHud();
       });
     }
@@ -299,20 +297,16 @@
         if (s) s.lift = Math.min(s.h * 0.8, s.lift + 5);
         if (c && c.id !== state.selectedBoxId) c.lift = Math.min(c.h * 0.8, c.lift + 5);
         if (ts - state.phaseStartedAt > 1200) {
-          if (state.selectedBoxId === state.correctBoxId) { 
-            state.score++; eddie.happyFlash = 0.5; buildRound(); 
-          } else {
-            // NEAR WIN SCHMERZ
-            if(state.score >= 18) {
-              setPhase("realization");
-            } else {
-              gameOver();
-            }
+          if (state.selectedBoxId === state.correctBoxId) { state.score++; eddie.happyFlash = 0.5; buildRound(); } 
+          else {
+            if(state.score >= 18) { setPhase("realization"); } else { gameOver(); }
           }
         }
       } else if (state.phase === "realization") {
         const c = boxes.find(b => b.id === state.correctBoxId);
-        if (c) c.lift = Math.min(c.h * 0.8, c.lift + 5);
+        if (c) {
+           c.lift = Math.min(c.h * 0.8, c.lift + 5);
+        }
         if (ts - state.phaseStartedAt > 600) gameOver();
       }
       if (state.phase !== "reveal" && state.phase !== "realization") boxes.forEach(b => b.lift = Math.max(0, b.lift - 6));
@@ -322,8 +316,8 @@
     function gameOver() {
       state.running = false; setPhase("gameover");
       if (state.score > state.best) { state.best = state.score; localStorage.setItem(BEST_KEY, String(state.best)); }
-      document.getElementById("finalScore").textContent = state.boxCount + " KISTEN"; 
-      document.getElementById("bestLine").textContent = `BEST: ${state.best + 2} KISTEN`; 
+      document.getElementById("finalScore").textContent = state.boxCount + " BOXES"; 
+      document.getElementById("bestLine").textContent = `BEST: ${state.best + 2} BOXES`; 
       updateHud();
       if (state.score >= 29) document.getElementById("eliteReward").style.display = "block";
       if (state.score > 0) document.getElementById("nameOverlay").classList.remove("hidden"); else document.getElementById("gameOverOverlay").classList.remove("hidden");
@@ -333,20 +327,16 @@
       document.getElementById("boxValue").textContent = state.boxCount; 
       document.getElementById("bestValue").textContent = state.best + 2; 
 
-      // Elite Hebel
       if(state.score >= 20) document.body.classList.add('elite-mode');
       else document.body.classList.remove('elite-mode');
 
-      // Mythos Evolution
       const myth = document.getElementById("uiMythTitle");
-      if(state.score < 15) myth.textContent = "NIEMAND HAT DAS ENDE GESEHEN";
-      else if(state.score < 22) myth.textContent = "DAS SYSTEM HAT EIN LIMIT";
-      else myth.textContent = "30 KISTEN: NIEMAND";
+      if(state.score < 15) myth.textContent = "NOBODY HAS SEEN THE END";
+      else if(state.score < 22) myth.textContent = "THE SYSTEM HAS A LIMIT";
+      else myth.textContent = "30 BOXES: NOBODY";
 
-      // Leaderboard Druck
-      const lbN = document.getElementById("lbNeeded");
       const diff = (state.lowestTop10 - state.boxCount) + 1;
-      lbN.textContent = diff > 0 ? `DU BRAUCHST +${diff} FÜR TOP 10` : "SYSTEM ERKANNT.";
+      document.getElementById("lbNeeded").textContent = diff > 0 ? `YOU NEED +${diff} FOR TOP 10` : "SYSTEM RECOGNIZED.";
     }
 
     function setPhase(n) { state.phase = n; state.phaseStartedAt = performance.now(); }
@@ -368,7 +358,7 @@
         ctx.fillStyle = isHovered ? "#eee" : "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
         ctx.strokeRect(box.x, y, box.w, box.h); ctx.fillRect(box.x, y, box.w, box.h);
         
-        // Asset Management: Hide tongue in realization phase for correct box
+        // Hide tongue for correct box during realization to increase pain
         const hideTongue = (state.phase === "realization" && box.id === state.correctBoxId);
         if (imgEddieTongue.complete && !hideTongue) ctx.drawImage(imgEddieTongue, box.x + box.w*0.04, y + box.w*0.04, box.w*0.92, box.h*0.92);
 
@@ -390,7 +380,7 @@
       });
     }
 
-    // --- MOBILE BUG FIX (TOUCH SUPPORT) ---
+    // --- MOBILE TOUCH SUPPORT FIX ---
     function handleInteraction(e) {
       if (e.type === 'touchstart') e.preventDefault();
       const r = canvas.getBoundingClientRect();
