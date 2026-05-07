@@ -346,7 +346,9 @@
       document.getElementById("bestLine").textContent = `BEST: ${bestBoxes} BOXES`; 
       
       updateHud();
-      if (state.score >= CLIENT_CONFIG.easterEggScore || victory) {
+      
+      // ONLY SHOW REWARD AT TRUE 30 BOXES
+      if (finalBoxes >= 30) {
         document.getElementById("eliteReward").style.display = "block";
         document.getElementById("promoBox").style.display = "block";
       } else {
