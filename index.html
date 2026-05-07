@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>EDDIE’S WORLD | UNAUFHALTSAM</title>
 
+  <!-- FIREBASE SDKs (Version 9 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -83,10 +84,11 @@
 </head>
 <body>
 
+  <!-- LANDING PAGE -->
   <section id="landing-page">
     <div class="landing-container">
       <h1 class="hero-title">UNAUFHALTSAM</h1>
-      <p class="marke-sub">VERLIEREN IST SOFORT.</p>
+      <p class="marke-sub">LOSING IS INSTANT.</p>
 
       <div style="margin-bottom: 28px;">
           <p style="margin-bottom: 12px; font-weight: 900; text-transform: uppercase; font-size: 16px;">YOU WON'T LAST LONG.</p>
@@ -101,12 +103,13 @@
       </div>
 
       <div class="legal-links">
-        <a href="impressum.html">Impressum</a>
-        <a href="datenschutz.html">Datenschutz</a>
+        <a href="impressum.html">Imprint</a>
+        <a href="datenschutz.html">Privacy</a>
       </div>
     </div>
   </section>
 
+  <!-- GAME PAGE -->
   <section id="game-page" class="hidden">
     <main class="wrap">
       <div class="topbar">
@@ -114,7 +117,7 @@
         <button class="btn btn-secondary" onclick="location.reload()">HOME</button>
       </div>
       <section class="hud">
-        <div class="stat"><div class="label">Kisten</div><div class="value" id="boxValue">2</div></div>
+        <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
         <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
       </section>
       <section class="game-shell">
@@ -122,36 +125,40 @@
         <div class="overlay" id="startOverlay">
           <div class="card">
             <h2>FOCUS SYSTEM V1.0</h2>
-            <p>Halte die richtige Kiste. Verlieren ist sofort.</p>
-            <button class="btn btn-primary" id="startBtn" style="margin-top:20px; width:100%;">SYSTEM STARTEN</button>
+            <p>Focus the right box. Losing is instant.</p>
+            <button class="btn btn-primary" id="startBtn" style="margin-top:20px; width:100%;">START SYSTEM</button>
           </div>
         </div>
         <div class="overlay hidden" id="nameOverlay">
           <div class="card">
-            <h2>FOKUS BESTÄTIGT!</h2>
-            <p>Trage dich in das globale Ranking ein:</p>
+            <h2>FOCUS CONFIRMED!</h2>
+            <p>Enter your name into the global ranking:</p>
             <input type="text" id="nameInput" placeholder="NAME" maxlength="12" />
-            <button class="btn btn-primary" id="saveScoreBtn">RANK SICHERN</button>
+            <button class="btn btn-primary" id="saveScoreBtn">SAVE RANK</button>
           </div>
         </div>
         <div class="overlay hidden" id="gameOverOverlay">
           <div class="card">
-            <h2>FOKUS VERLOREN</h2>
-            <div id="finalScore" style="font-size:48px; font-weight:900; color:var(--brand-color); margin:10px 0;">0 KISTEN</div>
-            <p id="bestLine" style="font-weight:800; opacity:0.6; margin-bottom:20px;">BEST: 0 KISTEN</p>
-            <button class="btn btn-secondary" id="restartBtn" style="width:100%; margin-bottom:12px;">NOCHMAL</button>
+            <h2>FOCUS LOST</h2>
+            <div id="finalScore" style="font-size:48px; font-weight:900; color:var(--brand-color); margin:10px 0;">0 BOXES</div>
+            <p id="bestLine" style="font-weight:800; opacity:0.6; margin-bottom:20px;">BEST: 0 BOXES</p>
+            <button class="btn btn-secondary" id="restartBtn" style="width:100%; margin-bottom:12px;">TRY AGAIN</button>
+            <div style="margin-top:15px; padding:15px; background:rgba(0,0,0,0.03); border-radius:16px;">
+               <p style="font-size:13px; font-weight:800; margin-bottom:10px; line-height:1.4;">ABSOLUTE FOCUS REWARDED:<br>WIN 1 MONTH KO-FI MEMBERSHIP INCL. PRINT ENGINE.</p>
+               <a href="https://ko-fi.com/s/f84c7bff38" target="_blank" class="btn" style="background:var(--brand-color); width:100%;">TO SHOP & CODE</a>
+            </div>
             <div id="eliteReward" style="display:none; margin-top:15px; padding:15px; background:var(--brand-color); color:#fff; border-radius:16px;">
-              <p style="font-size:12px; font-weight:800; margin-bottom:5px;">ELITE STATUS ERREICHT</p>
+              <p style="font-size:12px; font-weight:800; margin-bottom:5px;">ELITE STATUS REACHED</p>
               <p style="font-size:18px; font-weight:900;">CODE: EDDIE30</p>
             </div>
           </div>
         </div>
       </section>
       <section class="leaderboard-container">
-        <div id="uiMythTitle" style="font-weight:900; margin-bottom:8px; color:var(--danger);">NIEMAND HAT DAS ENDE GESEHEN</div>
+        <div id="uiMythTitle" style="font-weight:900; margin-bottom:8px; color:var(--danger);">NOBODY HAS SEEN THE END</div>
         <div class="leaderboard-title">Global Focus Ranking</div>
         <ul id="leaderboardList"></ul>
-        <div id="lbNeeded" class="lb-needed">LADE RANKING...</div>
+        <div id="lbNeeded" class="lb-needed">LOADING RANKING...</div>
       </section>
     </main>
   </section>
@@ -161,7 +168,7 @@
     const CLIENT_CONFIG = {
         id: "eddie-v1",
         brandColor: "#b01fa5",
-        easterEggScore: 29 // Score 28 = 30 Kisten besiegt -> Score 29 = Sieg
+        easterEggScore: 29 // Score 28 = 30 Boxes defeated -> Score 29 = Victory
     };
 
     const firebaseConfig = {
@@ -208,15 +215,15 @@
     }
 
     async function saveScore() {
-      const name = document.getElementById("nameInput").value.trim().toUpperCase() || "ANONYM";
+      const name = document.getElementById("nameInput").value.trim().toUpperCase() || "ANONYMOUS";
       const uid = auth.currentUser.uid;
       try {
         const nameCheck = await eddieDbRef.where("name", "==", name).get();
         let taken = false;
         nameCheck.forEach(doc => { if (doc.id !== uid) taken = true; });
-        if (taken && name !== "ANONYM") { alert("Name vergeben!"); return; }
+        if (taken && name !== "ANONYMOUS") { alert("Name already taken!"); return; }
         
-        // Mathematik-Fix: Hard Cap bei Score 29 (Sieg über 30 Kisten)
+        // Math Fix: Hard Cap at Score 29 (Victory over 30 Boxes)
         const finalScoreValue = Math.min(29, state.score);
         
         const userRef = eddieDbRef.doc(uid);
@@ -228,7 +235,7 @@
         }
         document.getElementById("nameOverlay").classList.add("hidden");
         document.getElementById("gameOverOverlay").classList.remove("hidden");
-      } catch (e) { alert("Fehler!"); }
+      } catch (e) { alert("Error!"); }
     }
 
     function renderLeaderboard() {
@@ -239,10 +246,10 @@
         let lastScore = 0;
         snap.forEach(doc => {
           const d = doc.data();
-          // Display Hard Cap: Max 30 Kisten
-          const displayKisten = Math.min(30, d.score + 2);
-          list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${d.name}</span><span>${displayKisten}</span></li>`;
-          lastScore = displayKisten;
+          // Display Hard Cap: Max 30 Boxes
+          const displayBoxes = Math.min(30, d.score + 2);
+          list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${d.name}</span><span>${displayBoxes}</span></li>`;
+          lastScore = displayBoxes;
           count++;
         });
         state.lowestTop10 = lastScore;
@@ -251,7 +258,7 @@
     }
 
     function buildRound() {
-      // MATHEMATIK-FIX: Wer die 30 Kisten Runde (Score 28) gewinnt, erreicht Score 29 und hat das System bezwungen.
+      // VICTORY TRIGGER: Winning 30 Boxes round (Score 28) = Score 29 = System Beaten
       if (state.score >= 29) {
         gameOver(true);
         return;
@@ -274,7 +281,7 @@
       eddie.y = Math.max(65, startY - 95);
       state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
       
-      state.showBallTime = state.score >= 14 ? 1000 : 1400; // False Hope Zeit-Tuning
+      state.showBallTime = state.score >= 14 ? 1000 : 1400; // False Hope Timing
       
       setPhase("show");
       updateHud();
@@ -320,7 +327,7 @@
         if (ts - state.phaseStartedAt > 1200) {
           if (state.selectedBoxId === state.correctBoxId) { state.score++; eddie.happyFlash = 0.5; buildRound(); } 
           else {
-            if(state.score >= 18) setTimeout(() => gameOver(), 600); else gameOver(); // NEAR WIN PAIN
+            if(state.score >= 18) setTimeout(() => gameOver(), 600); else gameOver(); // Near Win Pain
           }
         }
       }
@@ -332,30 +339,29 @@
       state.running = false; setPhase("gameover");
       if (state.score > state.best) { state.best = state.score; localStorage.setItem(BEST_KEY, String(state.best)); }
       
-      const finalKisten = Math.min(30, state.boxCount);
-      const bestKisten = Math.min(30, state.best + 2);
+      const finalBoxes = Math.min(30, state.boxCount);
+      const bestBoxes = Math.min(30, state.best + 2);
 
-      document.getElementById("finalScore").textContent = finalKisten + " KISTEN"; 
-      document.getElementById("bestLine").textContent = `BEST: ${bestKisten} KISTEN`; 
+      document.getElementById("finalScore").textContent = finalBoxes + " BOXES"; 
+      document.getElementById("bestLine").textContent = `BEST: ${bestBoxes} BOXES`; 
       
       updateHud();
-      // Easter Egg Trigger (Sieg-Runde 30 Kisten gewonnen = Score 29)
       if (state.score >= CLIENT_CONFIG.easterEggScore || victory) document.getElementById("eliteReward").style.display = "block";
       if (state.score > 0) document.getElementById("nameOverlay").classList.remove("hidden"); else document.getElementById("gameOverOverlay").classList.remove("hidden");
     }
 
     function updateHud() { 
-      const currentKistenValue = Math.min(30, state.boxCount);
-      document.getElementById("boxValue").textContent = currentKistenValue; 
+      const currentBoxesValue = Math.min(30, state.boxCount);
+      document.getElementById("boxValue").textContent = currentBoxesValue; 
       document.getElementById("bestValue").textContent = Math.min(30, state.best + 2); 
 
       const myth = document.getElementById("uiMythTitle");
-      if(state.score < 15) myth.textContent = "NIEMAND HAT DAS ENDE GESEHEN";
-      else if(state.score < 22) myth.textContent = "DAS SYSTEM HAT EIN LIMIT";
-      else myth.textContent = "30 KISTEN: NIEMAND";
+      if(state.score < 15) myth.textContent = "NOBODY HAS SEEN THE END";
+      else if(state.score < 22) myth.textContent = "THE SYSTEM HAS A LIMIT";
+      else myth.textContent = "30 BOXES: NOBODY";
 
-      const diff = (state.lowestTop10 - currentKistenValue) + 1;
-      document.getElementById("lbNeeded").textContent = diff > 0 ? `DU BRAUCHST +${diff} FÜR TOP 10` : "DU BIST ELITE.";
+      const diff = (state.lowestTop10 - currentBoxesValue) + 1;
+      document.getElementById("lbNeeded").textContent = diff > 0 ? `YOU NEED +${diff} FOR TOP 10` : "YOU ARE ELITE.";
     }
 
     function setPhase(n) { state.phase = n; state.phaseStartedAt = performance.now(); }
