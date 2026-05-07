@@ -159,9 +159,9 @@
   <script>
     // --- SYSTEM MASTER CONFIG ---
     const CLIENT_CONFIG = {
-        id: "master-template",
+        id: "eddie-v1",
         brandColor: "#b01fa5",
-        easterEggScore: 29 // Score 29 = Das Ende (30 Kisten round gewonnen)
+        easterEggScore: 29 // Der Sieg über 30 Kisten entspricht Score 29
     };
 
     const firebaseConfig = {
@@ -176,11 +176,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    const eddieDbRef = db.collection('leaderboard');
+    const eddieDbRef = db.collection(`leaderboard_${CLIENT_CONFIG.id}`);
 
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const BEST_KEY = "focusBest_v1";
+    const BEST_KEY = "focusBest_" + CLIENT_CONFIG.id;
 
     let state = {
       running: false, score: 0, boxCount: 2,
@@ -216,8 +216,7 @@
         nameCheck.forEach(doc => { if (doc.id !== uid) taken = true; });
         if (taken && name !== "ANONYM") { alert("Name vergeben!"); return; }
         
-        // Hard Cap Sanity Check
-        const finalScore = Math.min(29, state.score);
+        const finalScore = Math.min(29, state.score); // Hard Cap bei 29
         
         const userRef = eddieDbRef.doc(uid);
         const userDoc = await userRef.get();
@@ -239,7 +238,6 @@
         let lastScore = 0;
         snap.forEach(doc => {
           const d = doc.data();
-          // Display Hard Cap: Max 30 Kisten
           const displayKisten = Math.min(30, d.score + 2);
           list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${d.name}</span><span>${displayKisten}</span></li>`;
           lastScore = displayKisten;
@@ -251,15 +249,14 @@
     }
 
     function buildRound() {
-      // Sieg-Bedingung: Wenn Score 29 erreicht wurde
+      // SIEC-TRIGGER: Wer 30 Kisten (Score 28) gewinnt, erreicht Score 29 und hat gesiegt.
       if (state.score >= 29) {
-        gameOver(true); // Spezieller Sieg-Call
+        gameOver(true);
         return;
       }
 
       boxes.length = 0; 
-      // Hard Cap: Maximal 30 Kisten physisch generieren
-      state.boxCount = Math.min(30, 2 + state.score); 
+      state.boxCount = Math.min(30, 2 + state.score); // Hard Cap 30 Kisten
       
       const count = state.boxCount;
       let cols = Math.ceil(Math.sqrt(count));
@@ -274,6 +271,9 @@
       state.correctBoxId = Math.floor(Math.random() * count);
       eddie.y = Math.max(65, startY - 95);
       state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
+      
+      state.showBallTime = state.score >= 14 ? 1000 : 1400; // False Hope Zeit-Tuning
+      
       setPhase("show");
       updateHud();
     }
@@ -293,7 +293,8 @@
       state.activeSwap = {
         aId: boxes[a].id, bId: boxes[b].id, aStartX: boxes[a].x, bStartX: boxes[b].x, aStartY: boxes[a].y, bStartY: boxes[b].y,
         aTargetX: boxes[b].x, bTargetX: boxes[a].x, aTargetY: boxes[b].y, bTargetY: boxes[a].y,
-        start: performance.now(), duration: Math.max(180, (2200 - state.score * 70) / 7.5)
+        start: performance.now(), 
+        duration: Math.max(140, (2200 - state.score * 90) / 7.5) // False Hope Speed
       };
       state.swapsRemaining--;
     }
@@ -317,7 +318,7 @@
         if (ts - state.phaseStartedAt > 1200) {
           if (state.selectedBoxId === state.correctBoxId) { state.score++; eddie.happyFlash = 0.5; buildRound(); } 
           else {
-            if(state.score >= 18) { setTimeout(() => gameOver(), 600); } else { gameOver(); }
+            if(state.score >= 18) setTimeout(() => gameOver(), 600); else gameOver(); // Near Win Pain
           }
         }
       }
@@ -325,11 +326,10 @@
       if (eddie.happyFlash > 0) eddie.happyFlash = Math.max(0, eddie.happyFlash - 0.03);
     }
 
-    function gameOver(isVictory = false) {
+    function gameOver(victory = false) {
       state.running = false; setPhase("gameover");
       if (state.score > state.best) { state.best = state.score; localStorage.setItem(BEST_KEY, String(state.best)); }
       
-      // Kisten-Limit Display
       const finalKisten = Math.min(30, state.boxCount);
       const bestKisten = Math.min(30, state.best + 2);
 
@@ -337,20 +337,13 @@
       document.getElementById("bestLine").textContent = `BEST: ${bestKisten} KISTEN`; 
       
       updateHud();
-      
-      // Elite Reward Trigger
-      if (state.score >= CLIENT_CONFIG.easterEggScore || isVictory) {
-        document.getElementById("eliteReward").style.display = "block";
-      } else {
-        document.getElementById("eliteReward").style.display = "none";
-      }
-
+      if (state.score >= CLIENT_CONFIG.easterEggScore || victory) document.getElementById("eliteReward").style.display = "block";
       if (state.score > 0) document.getElementById("nameOverlay").classList.remove("hidden"); else document.getElementById("gameOverOverlay").classList.remove("hidden");
     }
 
     function updateHud() { 
-      // Hard Cap Display im HUD
-      document.getElementById("boxValue").textContent = Math.min(30, state.boxCount); 
+      const currentKisten = Math.min(30, state.boxCount);
+      document.getElementById("boxValue").textContent = currentKisten; 
       document.getElementById("bestValue").textContent = Math.min(30, state.best + 2); 
 
       const myth = document.getElementById("uiMythTitle");
@@ -358,7 +351,7 @@
       else if(state.score < 22) myth.textContent = "DAS SYSTEM HAT EIN LIMIT";
       else myth.textContent = "30 KISTEN: NIEMAND";
 
-      const diff = (state.lowestTop10 - Math.min(30, state.boxCount)) + 1;
+      const diff = (state.lowestTop10 - currentKisten) + 1;
       document.getElementById("lbNeeded").textContent = diff > 0 ? `DU BRAUCHST +${diff} FÜR TOP 10` : "DU BIST ELITE.";
     }
 
@@ -368,7 +361,6 @@
 
     function drawBoxes() {
       boxes.forEach(box => {
-        const isHovered = state.phase === "pick" && state.hoverBoxId === box.id;
         const y = box.y - box.lift;
         const cx = box.x + box.w / 2; const cy = y + box.h / 2;
         ctx.save();
@@ -378,7 +370,7 @@
           if (box.id === state.activeSwap.bId) tilt = 0.06;
         }
         ctx.translate(cx, cy); ctx.rotate(tilt); ctx.translate(-cx, -cy);
-        ctx.fillStyle = isHovered ? "#eee" : "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
         ctx.strokeRect(box.x, y, box.w, box.h); ctx.fillRect(box.x, y, box.w, box.h);
         if (imgEddieTongue.complete) ctx.drawImage(imgEddieTongue, box.x + box.w*0.04, y + box.w*0.04, box.w*0.92, box.h*0.92);
         if (state.phase === "show" && box.id === state.correctBoxId) {
@@ -387,8 +379,8 @@
           ctx.fillStyle = "#000"; ctx.font = `900 ${Math.floor(box.w * 0.18)}px Arial`; ctx.textAlign = "center";
           ctx.fillText("FOCUS", cx, cy + (box.w * 0.06)); ctx.restore();
         }
-        if (isHovered || (state.phase === "reveal" && state.selectedBoxId === box.id)) {
-          ctx.strokeStyle = (state.phase === "reveal") ? (state.selectedBoxId === state.correctBoxId ? "#0f9d58" : "#d92d20") : getBrandColor();
+        if (state.phase === "reveal" && state.selectedBoxId === box.id) {
+          ctx.strokeStyle = (state.selectedBoxId === state.correctBoxId ? "#0f9d58" : "#d92d20");
           ctx.lineWidth = 5; ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
         }
         if (state.phase === "reveal" && box.id === state.correctBoxId && imgBrand.complete) {
@@ -399,14 +391,22 @@
       });
     }
 
-    canvas.onmousedown = e => {
-      const r = canvas.getBoundingClientRect();
-      const x = ((e.clientX - r.left) * (canvas.width / r.width));
-      const y = ((e.clientY - r.top) * (canvas.height / r.height));
+    function handleInteraction(x, y) {
       if (state.phase === "pick") {
         boxes.forEach(b => { if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) { state.selectedBoxId = b.id; setPhase("reveal"); } });
       }
+    }
+
+    canvas.onmousedown = e => {
+      const r = canvas.getBoundingClientRect();
+      handleInteraction(((e.clientX - r.left) * (canvas.width / r.width)), ((e.clientY - r.top) * (canvas.height / r.height)));
     };
+
+    canvas.addEventListener("touchstart", e => {
+      e.preventDefault();
+      const r = canvas.getBoundingClientRect();
+      handleInteraction(((e.touches[0].clientX - r.left) * (canvas.width / r.width)), ((e.touches[0].clientY - r.top) * (canvas.height / r.height)));
+    }, { passive: false });
 
     function loop(ts) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
