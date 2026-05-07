@@ -161,7 +161,7 @@
     const CLIENT_CONFIG = {
         id: "eddie-v1",
         brandColor: "#b01fa5",
-        easterEggScore: 29 // Der Sieg über 30 Kisten entspricht Score 29
+        easterEggScore: 28 // Score 28 = 30 Kisten = System besiegt
     };
 
     const firebaseConfig = {
@@ -216,14 +216,15 @@
         nameCheck.forEach(doc => { if (doc.id !== uid) taken = true; });
         if (taken && name !== "ANONYM") { alert("Name vergeben!"); return; }
         
-        const finalScore = Math.min(29, state.score); // Hard Cap bei 29
+        // Mathematik-Fix: Hard Cap bei Score 28
+        const finalScoreValue = Math.min(28, state.score);
         
         const userRef = eddieDbRef.doc(uid);
         const userDoc = await userRef.get();
-        if (userDoc.exists && finalScore <= userDoc.data().score) {
+        if (userDoc.exists && finalScoreValue <= userDoc.data().score) {
           await userRef.update({ name: name });
         } else {
-          await userRef.set({ name: name, score: finalScore, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+          await userRef.set({ name: name, score: finalScoreValue, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         }
         document.getElementById("nameOverlay").classList.add("hidden");
         document.getElementById("gameOverOverlay").classList.remove("hidden");
@@ -238,6 +239,7 @@
         let lastScore = 0;
         snap.forEach(doc => {
           const d = doc.data();
+          // Display Hard Cap: Max 30 Kisten
           const displayKisten = Math.min(30, d.score + 2);
           list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${d.name}</span><span>${displayKisten}</span></li>`;
           lastScore = displayKisten;
@@ -249,14 +251,14 @@
     }
 
     function buildRound() {
-      // SIEC-TRIGGER: Wer 30 Kisten (Score 28) gewinnt, erreicht Score 29 und hat gesiegt.
+      // MATHEMATIK-FIX: Wer die 30 Kisten Runde (Score 28) gewinnt, erreicht Score 29 und hat das System bezwungen.
       if (state.score >= 29) {
         gameOver(true);
         return;
       }
 
       boxes.length = 0; 
-      state.boxCount = Math.min(30, 2 + state.score); // Hard Cap 30 Kisten
+      state.boxCount = Math.min(30, 2 + state.score); 
       
       const count = state.boxCount;
       let cols = Math.ceil(Math.sqrt(count));
@@ -272,7 +274,8 @@
       eddie.y = Math.max(65, startY - 95);
       state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
       
-      state.showBallTime = state.score >= 14 ? 1000 : 1400; // False Hope Zeit-Tuning
+      // FALSE HOPE SCALING
+      state.showBallTime = state.score >= 14 ? 1000 : 1400;
       
       setPhase("show");
       updateHud();
@@ -294,7 +297,7 @@
         aId: boxes[a].id, bId: boxes[b].id, aStartX: boxes[a].x, bStartX: boxes[b].x, aStartY: boxes[a].y, bStartY: boxes[b].y,
         aTargetX: boxes[b].x, bTargetX: boxes[a].x, aTargetY: boxes[b].y, bTargetY: boxes[a].y,
         start: performance.now(), 
-        duration: Math.max(140, (2200 - state.score * 90) / 7.5) // False Hope Speed
+        duration: Math.max(140, (2200 - state.score * 90) / 7.5) // FALSE HOPE SPEED
       };
       state.swapsRemaining--;
     }
@@ -318,7 +321,7 @@
         if (ts - state.phaseStartedAt > 1200) {
           if (state.selectedBoxId === state.correctBoxId) { state.score++; eddie.happyFlash = 0.5; buildRound(); } 
           else {
-            if(state.score >= 18) setTimeout(() => gameOver(), 600); else gameOver(); // Near Win Pain
+            if(state.score >= 18) setTimeout(() => gameOver(), 600); else gameOver(); // NEAR WIN PAIN
           }
         }
       }
@@ -337,13 +340,14 @@
       document.getElementById("bestLine").textContent = `BEST: ${bestKisten} KISTEN`; 
       
       updateHud();
+      // Easter Egg Trigger (Sieg-Runde 30 Kisten gewonnen = Score 29)
       if (state.score >= CLIENT_CONFIG.easterEggScore || victory) document.getElementById("eliteReward").style.display = "block";
       if (state.score > 0) document.getElementById("nameOverlay").classList.remove("hidden"); else document.getElementById("gameOverOverlay").classList.remove("hidden");
     }
 
     function updateHud() { 
-      const currentKisten = Math.min(30, state.boxCount);
-      document.getElementById("boxValue").textContent = currentKisten; 
+      const currentKistenValue = Math.min(30, state.boxCount);
+      document.getElementById("boxValue").textContent = currentKistenValue; 
       document.getElementById("bestValue").textContent = Math.min(30, state.best + 2); 
 
       const myth = document.getElementById("uiMythTitle");
@@ -351,7 +355,7 @@
       else if(state.score < 22) myth.textContent = "DAS SYSTEM HAT EIN LIMIT";
       else myth.textContent = "30 KISTEN: NIEMAND";
 
-      const diff = (state.lowestTop10 - currentKisten) + 1;
+      const diff = (state.lowestTop10 - currentKistenValue) + 1;
       document.getElementById("lbNeeded").textContent = diff > 0 ? `DU BRAUCHST +${diff} FÜR TOP 10` : "DU BIST ELITE.";
     }
 
