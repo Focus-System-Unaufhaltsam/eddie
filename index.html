@@ -161,7 +161,7 @@
     const CLIENT_CONFIG = {
         id: "eddie-v1",
         brandColor: "#b01fa5",
-        easterEggScore: 28 // Score 28 = 30 Kisten = System besiegt
+        easterEggScore: 29 // Score 28 = 30 Kisten besiegt -> Score 29 = Sieg
     };
 
     const firebaseConfig = {
@@ -216,8 +216,8 @@
         nameCheck.forEach(doc => { if (doc.id !== uid) taken = true; });
         if (taken && name !== "ANONYM") { alert("Name vergeben!"); return; }
         
-        // Mathematik-Fix: Hard Cap bei Score 28
-        const finalScoreValue = Math.min(28, state.score);
+        // Mathematik-Fix: Hard Cap bei Score 29 (Sieg über 30 Kisten)
+        const finalScoreValue = Math.min(29, state.score);
         
         const userRef = eddieDbRef.doc(uid);
         const userDoc = await userRef.get();
@@ -274,8 +274,7 @@
       eddie.y = Math.max(65, startY - 95);
       state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
       
-      // FALSE HOPE SCALING
-      state.showBallTime = state.score >= 14 ? 1000 : 1400;
+      state.showBallTime = state.score >= 14 ? 1000 : 1400; // False Hope Zeit-Tuning
       
       setPhase("show");
       updateHud();
@@ -297,7 +296,7 @@
         aId: boxes[a].id, bId: boxes[b].id, aStartX: boxes[a].x, bStartX: boxes[b].x, aStartY: boxes[a].y, bStartY: boxes[b].y,
         aTargetX: boxes[b].x, bTargetX: boxes[a].x, aTargetY: boxes[b].y, bTargetY: boxes[a].y,
         start: performance.now(), 
-        duration: Math.max(140, (2200 - state.score * 90) / 7.5) // FALSE HOPE SPEED
+        duration: Math.max(140, (2200 - state.score * 90) / 7.5) // False Hope Speed
       };
       state.swapsRemaining--;
     }
