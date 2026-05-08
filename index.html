@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>EDDIE | FOCUS SYSTEM</title>
+  <title id="uiPageTitle">EDDIE | FOCUS SYSTEM</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -20,56 +20,70 @@
     }
 
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+
     body { background:var(--bg); color:var(--text-main); min-height:100vh; padding:20px 14px 40px; overflow-x:hidden; }
+
     .wrap { width:100%; max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
     .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
     .title h1 { font-size:clamp(24px, 5vw, 42px); line-height:1; font-weight:900; letter-spacing:-0.8px; text-transform: uppercase;}
+
     .btn { appearance:none; border:none; background:#343536; color:#fff; padding:16px 22px; border-radius:14px; font-weight: 900; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; transition:transform .12s ease; text-transform: uppercase; }
     .btn:active { transform:scale(.98); }
     .btn-brand { background: var(--brand-color); color: #fff; }
+
     .hud { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
     .stat { border:2px solid #000; border-radius:18px; padding:12px; background:#fff; text-align:center; }
     .stat .label { font-size:10px; opacity:.6; text-transform:uppercase; font-weight:800; margin-bottom:4px; }
     .stat .value { font-size:clamp(18px, 4vw, 28px); font-weight:900; line-height:1; color: var(--brand-color); }
-    .game-shell { position:relative; width:100%; background:#fff; border:2px solid #000; border-radius:24px; overflow:hidden; }
+
+    .game-shell { position:relative; width:100%; background:#fff; border:2px solid #000; border-radius:24px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08); }
     canvas { display:block; width:100%; height:auto; background: radial-gradient(circle, #fff 0%, #eee 100%); touch-action: none; }
+
     .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(52, 53, 54, 0.95); text-align:center; z-index:100; backdrop-filter: blur(5px); color: #fff; }
     .overlay.hidden { display:none; }
+
     .card { width:min(100%, 480px); background:#fff; border: 2px solid #000; border-top: 4px solid var(--brand-color); border-radius: 4px; padding:30px 20px; color: #000; }
     .card h2 { font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+
     .leaderboard-container { background:#fff; border:2px solid #000; border-radius:22px; padding:20px; margin-top:10px; color: #000; }
     .leaderboard-title { font-weight:900; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px; }
     .leaderboard-entry { display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-weight:700; list-style:none; font-size: 15px; }
     .leaderboard-entry .rank-name { display: flex; gap: 10px; align-items: center; }
     .leaderboard-entry .rank-number { font-weight: 900; color: var(--brand-color); min-width: 25px; }
+
     #nameInput { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; font-size: 15px; text-align: center; font-weight: bold; outline: none; text-transform: uppercase; }
     #errorMsg { color: var(--danger); font-size: 11px; font-weight: 900; margin-bottom: 10px; display: none; text-transform: uppercase; }
+
     @media (max-width:720px){ .btn { width:100%; } }
   </style>
 </head>
 <body>
   <main class="wrap">
     <div class="topbar">
-      <div class="title"><h1>EDDIE UNAUFHALTSAM</h1></div>
+      <div class="title"><h1 id="uiBrandTitle">EDDIE UNAUFHALTSAM</h1></div>
       <button class="btn" id="resetBtn">RESET</button>
     </div>
+
     <section class="hud">
       <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
       <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
     </section>
+
     <section class="game-shell">
       <canvas id="gameCanvas" width="960" height="540"></canvas>
+
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <h2>EDDIE'S WORLD</h2>
-          <p>The star is the dog. The focus is you. Reach Level 30.</p>
+          <h2 id="uiBrandSub">EDDIE'S WORLD</h2>
+          <p id="uiStartDesc">The star is the dog. The focus is you. Reach Level 30.</p>
           <button class="btn btn-brand" id="startBtn" style="margin-top:20px; width:100%;">START SYSTEM</button>
         </div>
       </div>
+
       <div class="overlay hidden" id="gameOverOverlay">
         <div class="card">
-          <h2 style="color:var(--danger)">SYSTEM FAILED</h2>
-          <p id="aiText" style="font-size:13px; font-weight:bold; font-style:italic; margin:15px 0; color:#555;"></p>
+          <h2 id="uiGameOverFail" style="color:var(--danger)">SYSTEM FAILED</h2>
+          <p id="aiText" style="font-size:13px; font-weight:bold; font-style:italic; margin:15px 0; min-height:40px; color:#555;"></p>
           <div id="finalScore" style="font-size:60px; font-weight:900; margin:10px 0; color: #000;">0 BOXES</div>
           <p id="finalTime" style="font-size:16px; font-weight:900; color:var(--brand-color); margin-bottom:20px;">TIME: 0.00s</p>
           
@@ -84,15 +98,40 @@
         </div>
       </div>
     </section>
+
     <section class="leaderboard-container">
-      <div style="font-weight:900; margin-bottom:8px; color:var(--danger);">30 BOXES: NOBODY</div>
+      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">30 BOXES: NOBODY</div>
       <div class="leaderboard-title">Eddie's Elite Ranking</div>
       <div id="leaderboardList"></div>
     </section>
   </main>
 
   <script>
-    const CONFIG = { id: "leaderboard_eddie", minScore: 1, maxScore: 29 };
+    // ======================================================
+    // 1. CONFIGURATION
+    // ======================================================
+    const CLIENT_CONFIG = {
+        id: "leaderboard_eddie", 
+        minScoreToSave: 1,      
+        easterEggScore: 29,     
+        brandColor: "#7C3AED",
+        logoFileName: "eddie", // Zieht automatisch eddie.png
+        
+        quotes: [
+            '"Eddie schaut weg. Du hast den Fokus verloren."',
+            '"Einstieg ist gemacht. Aber für Level 30 reicht das nicht."',
+            '"Du wirst wach. Jetzt zeig echten Macher-Instinkt."',
+            '"Gute Performance. Der Hund ist stolz auf dich."',
+            '"Stark. Mit dieser Präzision bist du fast am Ziel."',
+            '"Absolute Elite. Du hast das System dominiert. Respekt."'
+        ]
+    };
+
+    document.documentElement.style.setProperty('--brand-color', CLIENT_CONFIG.brandColor);
+
+    // ======================================================
+    // 2. FIREBASE ENGINE
+    // ======================================================
     const firebaseConfig = {
       apiKey: "AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A",
       authDomain: "mg-challenge.firebaseapp.com",
@@ -101,100 +140,292 @@
       messagingSenderId: "472289048663",
       appId: "1:472289048663:web:cc68ded6007e1e822c4b12"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    const dbRef = db.collection(CONFIG.id);
+    const dbRef = db.collection(CLIENT_CONFIG.id);
 
+    // ======================================================
+    // 3. GAME ENGINE LOGIC & IMAGE LOADER
+    // ======================================================
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const BEST_KEY = "best_" + CONFIG.id;
+    
+    // BILD LOGIK WIEDER HERGESTELLT
+    const imgLogo = new Image(); 
+    let fallbackIndex = 0;
+    let logoStatus = "LAEDT";
+    let logoError = false;
+    
+    const fallbacks = [
+        `${CLIENT_CONFIG.logoFileName}.png`,
+        `./${CLIENT_CONFIG.logoFileName}.png`,
+        "logo.png"
+    ];
 
-    let state = { running: false, score: 0, startTime: 0, totalTime: 0, phase: "idle", phaseStartedAt: 0, boxes: [], correctId: null, selectedId: null, swapsRemaining: 0, activeSwap: null };
+    function loadNextFallback() {
+        if (fallbackIndex < fallbacks.length) {
+            imgLogo.src = fallbacks[fallbackIndex];
+        } else {
+            logoStatus = "FEHLER";
+            logoError = true;
+        }
+    }
+
+    imgLogo.onload = () => { logoStatus = "OK"; logoError = false; };
+    imgLogo.onerror = () => { fallbackIndex++; loadNextFallback(); };
+    loadNextFallback();
+    
+    const BEST_KEY = "focusBest_" + CLIENT_CONFIG.id;
+
+    let state = {
+      running: false, score: 0, startTime: 0, totalTime: 0,
+      phase: "idle", phaseStartedAt: 0, boxes: [], 
+      correctId: null, selectedId: null, swapsRemaining: 0, activeSwap: null,
+      showBallTime: 1400, breatherMs: 300
+    };
+
+    function getAIQuote(score) {
+        if (score <= 5) return CLIENT_CONFIG.quotes[0];
+        if (score <= 10) return CLIENT_CONFIG.quotes[1];
+        if (score <= 15) return CLIENT_CONFIG.quotes[2];
+        if (score <= 20) return CLIENT_CONFIG.quotes[3];
+        if (score <= 25) return CLIENT_CONFIG.quotes[4];
+        return CLIENT_CONFIG.quotes[5];
+    }
 
     function buildRound() {
-      if (state.score >= CONFIG.maxScore) { finish(true); return; }
+      if (state.score >= CLIENT_CONFIG.easterEggScore) { finish(true); return; }
       state.boxes = []; state.selectedId = null; state.activeSwap = null;
       const count = Math.min(30, 2 + state.score);
       const cols = Math.ceil(Math.sqrt(count));
       const boxW = Math.max(45, Math.min(92, (canvas.width - 160) / cols - 24));
       const gridW = cols * boxW + (cols - 1) * 24;
-      const startX = (canvas.width - gridW) / 2;
+      const startX = (canvas.width - gridW) / 2; 
       const startY = 160 + ((canvas.height - 200) - (Math.ceil(count / cols) * boxW + (Math.ceil(count / cols) - 1) * 24)) / 2;
+
       for (let i = 0; i < count; i++) {
         state.boxes.push({ id: i, x: startX + (i % cols) * (boxW + 24), y: startY + Math.floor(i / cols) * (boxW + 24), w: boxW, h: boxW, lift: 0 });
       }
       state.correctId = Math.floor(Math.random() * count);
       state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
+      state.showBallTime = state.score >= 14 ? 1000 : 1400;
       setPhase("show");
       updateHud();
     }
 
     function startNextSwap() {
       if (state.swapsRemaining <= 0) { state.activeSwap = null; setPhase("wait"); return; }
-      let a = state.boxes.findIndex(b => b.id === state.correctId), b = Math.floor(Math.random() * state.boxes.length);
-      while (b === a) b = Math.floor(Math.random() * state.boxes.length);
-      state.activeSwap = { aId: state.boxes[a].id, bId: state.boxes[b].id, aStartX: state.boxes[a].x, bStartX: state.boxes[b].x, aStartY: state.boxes[a].y, bStartY: state.boxes[b].y, aTargetX: state.boxes[b].x, bTargetX: state.boxes[a].x, aTargetY: state.boxes[b].y, bTargetY: state.boxes[a].y, start: performance.now(), duration: Math.max(140, (2200 - state.score * 90) / 7.5) };
+      let a, b;
+      if (Math.random() < 0.6) {
+        a = state.boxes.findIndex(box => box.id === state.correctId);
+        b = Math.floor(Math.random() * state.boxes.length);
+        while (b === a) b = Math.floor(Math.random() * state.boxes.length);
+      } else {
+        a = Math.floor(Math.random() * state.boxes.length);
+        b = Math.floor(Math.random() * state.boxes.length);
+        while (b === a) b = Math.floor(Math.random() * state.boxes.length);
+      }
+      state.activeSwap = {
+        aId: state.boxes[a].id, bId: state.boxes[b].id, 
+        aStartX: state.boxes[a].x, bStartX: state.boxes[b].x, aStartY: state.boxes[a].y, bStartY: state.boxes[b].y,
+        aTargetX: state.boxes[b].x, bTargetX: state.boxes[a].x, aTargetY: state.boxes[b].y, bTargetY: state.boxes[a].y,
+        start: performance.now(), duration: Math.max(140, (2200 - state.score * 90) / 7.5)
+      };
       state.swapsRemaining--;
     }
 
     function update(ts) {
       if (!state.running) return;
-      if (state.phase === "show" && ts - state.phaseStartedAt > 1400) { setPhase("shuffle"); startNextSwap(); }
+      if (state.phase === "show" && ts - state.phaseStartedAt > state.showBallTime) { setPhase("shuffle"); startNextSwap(); }
       else if (state.phase === "shuffle") {
         if (!state.activeSwap) { startNextSwap(); return; }
         const s = state.activeSwap, p = Math.min(1, (ts - s.start) / s.duration), e = p < 0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
         const bA = state.boxes.find(b => b.id === s.aId), bB = state.boxes.find(b => b.id === s.bId);
-        if(bA && bB) { bA.x = s.aStartX + (s.aTargetX - s.aStartX) * e; bB.x = s.bStartX + (s.bTargetX - s.bStartX) * e; bA.y = s.aStartY + (s.aTargetY - s.aStartY) * e; bB.y = s.bStartY + (s.bTargetY - s.bStartY) * e; if (p >= 1) state.activeSwap = null; }
-      } else if (state.phase === "wait" && ts - state.phaseStartedAt > 300) setPhase("pick");
-      else if (state.phase === "reveal" && ts - state.phaseStartedAt > 1200) { if (state.selectedId === state.correctId) { state.score++; buildRound(); } else finish(false); }
+        if(bA && bB) {
+            bA.x = s.aStartX + (s.aTargetX - s.aStartX) * e; bB.x = s.bStartX + (s.bTargetX - s.bStartX) * e;
+            bA.y = s.aStartY + (s.aTargetY - s.aStartY) * e; bB.y = s.bStartY + (s.bTargetY - s.bStartY) * e;
+            if (p >= 1) { bA.x = s.aTargetX; bA.y = s.aTargetY; bB.x = s.bTargetX; bB.y = s.bTargetY; state.activeSwap = null; }
+        }
+      } else if (state.phase === "wait" && ts - state.phaseStartedAt > state.breatherMs) setPhase("pick");
+      else if (state.phase === "reveal") {
+        const sel = state.boxes.find(b => b.id === state.selectedId), cor = state.boxes.find(b => b.id === state.correctId);
+        if (sel) sel.lift = Math.min(sel.h * 0.8, sel.lift + 5);
+        if (cor && cor.id !== state.selectedId) cor.lift = Math.min(cor.h * 0.8, cor.lift + 5);
+        if (ts - state.phaseStartedAt > 1200) {
+            if (state.selectedId === state.correctId) { state.score++; buildRound(); }
+            else { if(state.score >= 18) setTimeout(() => finish(false), 600); else finish(false); }
+        }
+      }
+      if (state.phase !== "reveal") state.boxes.forEach(b => b.lift = Math.max(0, b.lift - 6));
     }
 
     function draw() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
       state.boxes.forEach(box => {
-        ctx.strokeStyle = "#000"; ctx.lineWidth = 3; ctx.strokeRect(box.x, box.y, box.w, box.h);
-        if (state.phase === "show" && box.id === state.correctId) { ctx.fillStyle = "#7C3AED"; ctx.fillRect(box.x, box.y, box.w, box.h); }
+        const y = box.y - box.lift;
+        ctx.save();
+        
+        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
+        ctx.strokeRect(box.x, y, box.w, box.h); ctx.fillRect(box.x, y, box.w, box.h);
+        
+        // --- BILD RENDER LOGIK WIEDER DRIN ---
+        if (logoStatus === "OK" && imgLogo.naturalWidth > 0) {
+            ctx.drawImage(imgLogo, box.x + box.w * 0.04, y + box.h * 0.04, box.w * 0.92, box.h * 0.92);
+        } else if (logoStatus === "FEHLER" || logoError) {
+            ctx.save();
+            ctx.fillStyle = CLIENT_CONFIG.brandColor;
+            ctx.font = `900 ${Math.floor(box.w * 0.3)}px Arial`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("EDDIE", box.x + box.w / 2, y + box.h / 2);
+            ctx.restore();
+        }
+
+        if (state.phase === "show" && box.id === state.correctId) {
+            ctx.save(); const pulse = Math.sin(performance.now() / 150) * 0.2 + 0.8; ctx.globalAlpha = pulse;
+            ctx.strokeStyle = CLIENT_CONFIG.brandColor; ctx.lineWidth = 6; ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; ctx.fillRect(box.x, y, box.w, box.h);
+            ctx.font = `900 ${Math.floor(box.w * 0.24)}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.strokeStyle = "#000"; ctx.lineWidth = 4; ctx.strokeText("FOCUS", box.x + box.w/2, y + box.h/2);
+            ctx.fillStyle = "#fff"; ctx.fillText("FOCUS", box.x + box.w/2, y + box.h/2); ctx.restore();
+        }
+
+        if (state.phase === "reveal" && box.id === state.correctId) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.fillRect(box.x, y, box.w, box.h);
+            ctx.fillStyle = CLIENT_CONFIG.brandColor; ctx.font = `${box.w * 0.5}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("👑", box.x + box.w/2, y + box.h/2);
+        }
+        if (state.phase === "reveal" && box.id === state.selectedId) {
+            ctx.strokeStyle = (state.selectedId === state.correctId ? "#0f9d58" : "#d92d20");
+            ctx.lineWidth = 6; ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
+        }
+        ctx.restore();
       });
     }
 
     function finish(victory) {
-      state.running = false; state.totalTime = (performance.now() - state.startTime) / 1000;
+      state.running = false;
+      state.totalTime = (performance.now() - state.startTime) / 1000;
       document.getElementById("gameOverOverlay").classList.remove("hidden");
-      document.getElementById("finalScore").textContent = (state.score + 2) + " BOXES";
+      const finalBoxes = Math.min(30, state.score + 2);
+      document.getElementById("finalScore").textContent = finalBoxes + " BOXES";
       document.getElementById("finalTime").textContent = `TIME: ${state.totalTime.toFixed(2)}s`;
-      if (state.score >= CONFIG.minScore) document.getElementById("leaderboardEntrySection").style.display = "block";
+      document.getElementById("aiText").textContent = getAIQuote(state.score);
+      
+      if (state.score >= CLIENT_CONFIG.minScoreToSave) document.getElementById("leaderboardEntrySection").style.display = "block";
     }
 
     function setPhase(p) { state.phase = p; state.phaseStartedAt = performance.now(); }
-    function updateHud() { 
-      const best = localStorage.getItem(BEST_KEY) || 0;
-      document.getElementById("boxValue").textContent = state.score + 2;
-      document.getElementById("bestValue").textContent = parseInt(best) + 2;
+    function updateHud() {
+        const best = Number(localStorage.getItem(BEST_KEY) || 0);
+        document.getElementById("boxValue").textContent = Math.min(30, state.score + 2);
+        document.getElementById("bestValue").textContent = Math.min(30, best + 2);
     }
 
     canvas.onmousedown = e => { const r = canvas.getBoundingClientRect(); handleInteraction((e.clientX - r.left)*(canvas.width/r.width), (e.clientY - r.top)*(canvas.height/r.height)); };
-    function handleInteraction(x, y) { if (state.phase === "pick") { state.boxes.forEach(b => { if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) { state.selectedId = b.id; setPhase("reveal"); } }); } }
+    canvas.ontouchstart = e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); handleInteraction((e.touches[0].clientX - r.left)*(canvas.width/r.width), (e.touches[0].clientY - r.top)*(canvas.height/r.height)); };
 
-    document.getElementById("startBtn").onclick = () => { state.running = true; state.startTime = performance.now(); document.getElementById("startOverlay").classList.add("hidden"); buildRound(); };
+    function handleInteraction(x, y) {
+      if (state.phase === "pick") {
+        state.boxes.forEach(b => { if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) { state.selectedId = b.id; setPhase("reveal"); } });
+      }
+    }
+
+    document.getElementById("startBtn").onclick = () => { state.running = true; state.score = 0; state.startTime = performance.now(); document.getElementById("startOverlay").classList.add("hidden"); buildRound(); };
     document.getElementById("restartBtn").onclick = () => location.reload();
-
+    document.getElementById("resetBtn").onclick = () => location.reload();
+    
+    // ======================================================
+    // ELITE LEADERBOARD SPEICHER LOGIK
+    // ======================================================
     document.getElementById("saveScoreBtn").onclick = async () => {
-      const name = document.getElementById("nameInput").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (!name) return;
-      await dbRef.doc(name).set({ name, score: state.score + 2, time: state.totalTime, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      if (state.score > (localStorage.getItem(BEST_KEY) || 0)) localStorage.setItem(BEST_KEY, state.score);
-      location.reload();
+        const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
+        const name = rawName.replace(/[^A-Z0-9]/g, ''); 
+        const errorEl = document.getElementById("errorMsg");
+
+        if (!name) { errorEl.textContent = "BITTE REALEN NAMEN WAEHLEN"; errorEl.style.display = "block"; return; }
+
+        const displayScore = state.score + 2;
+
+        if (state.score < CLIENT_CONFIG.minScoreToSave) {
+            errorEl.textContent = "ZU SCHWACH FUER DAS SYSTEM.";
+            errorEl.style.display = "block";
+            setTimeout(() => location.reload(), 2000);
+            return;
+        }
+
+        document.getElementById("saveScoreBtn").disabled = true;
+
+        try {
+            const userDocRef = dbRef.doc(name);
+            const docSnap = await userDocRef.get();
+
+            if (docSnap.exists) {
+                const existingData = docSnap.data();
+                if (displayScore <= existingData.score) {
+                    errorEl.textContent = "KEINE VERBESSERUNG. NUR DEIN BESTWERT ZAEHLT.";
+                    errorEl.style.display = "block";
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+            }
+
+            const finalScoreToSave = Math.min(CLIENT_CONFIG.easterEggScore + 2, displayScore);
+            await userDocRef.set({
+                name: name,
+                score: finalScoreToSave,
+                time: state.totalTime,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            if (state.score > (Number(localStorage.getItem(BEST_KEY)) || 0)) {
+                localStorage.setItem(BEST_KEY, state.score);
+            }
+            location.reload();
+        } catch (e) {
+            console.error(e);
+            errorEl.textContent = "NETZWERKFEHLER. VERSUCHE ES ERNEUT.";
+            errorEl.style.display = "block";
+            document.getElementById("saveScoreBtn").disabled = false;
+        }
     };
 
-    auth.onAuthStateChanged(user => { if (user) { dbRef.onSnapshot(snap => {
-      let entries = []; snap.forEach(d => entries.push(d.data()));
-      entries.sort((a, b) => b.score - a.score || a.time - b.time);
-      const list = document.getElementById("leaderboardList"); list.innerHTML = "";
-      entries.slice(0, 10).forEach((data, i) => {
-        list.innerHTML += `<li class="leaderboard-entry"><div class="rank-name"><span class="rank-number">#${i+1}</span><span>${data.name}</span></div><span>${data.score} BOXES</span></li>`;
-      });
-    }); } });
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        dbRef.onSnapshot(snap => {
+          let allEntries = [];
+          snap.forEach(d => allEntries.push(d.data()));
+          
+          allEntries.sort((a, b) => {
+             if (b.score !== a.score) return b.score - a.score;
+             const timeA = typeof a.time === 'number' ? a.time : 999;
+             const timeB = typeof b.time === 'number' ? b.time : 999;
+             return timeA - timeB;
+          });
+
+          const top10 = allEntries.slice(0, 10);
+          const list = document.getElementById("leaderboardList"); 
+          list.innerHTML = "";
+          let rank = 1;
+          top10.forEach(data => {
+            const tm = typeof data.time === 'number' ? data.time.toFixed(1) + "s" : "N/A";
+            list.innerHTML += `
+              <li class="leaderboard-entry">
+                <div class="rank-name">
+                    <span class="rank-number">#${rank}</span>
+                    <span>${data.name}</span>
+                </div>
+                <span>${data.score} BOXES <span style="font-size:10px; opacity:0.5;">(${tm})</span></span>
+              </li>`;
+            rank++;
+          });
+        }, error => {
+           console.error("Leaderboard Fehler:", error);
+        });
+      }
+    });
     auth.signInAnonymously();
 
     function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
