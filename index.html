@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title id="uiPageTitle">EDDIE | FOCUS SYSTEM</title>
+  <title id="uiPageTitle">EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
@@ -74,8 +74,8 @@
 
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <h2 id="uiBrandSub">EDDIE'S WORLD</h2>
-          <p id="uiStartDesc">The star is the dog. The focus is you. Reach Level 30.</p>
+          <h2 id="uiBrandSub">UNAUFHALTSAM CHALLENGE</h2>
+          <p id="uiStartDesc">The star is the dog. The focus is you. Reach the Level 30 Wall.</p>
           <button class="btn btn-brand" id="startBtn" style="margin-top:20px; width:100%;">START SYSTEM</button>
         </div>
       </div>
@@ -101,29 +101,29 @@
 
     <section class="leaderboard-container">
       <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">30 BOXES: NOBODY</div>
-      <div class="leaderboard-title">Eddie's Elite Ranking</div>
+      <div class="leaderboard-title">Global Elite Ranking</div>
       <div id="leaderboardList"></div>
     </section>
   </main>
 
   <script>
     // ======================================================
-    // 1. CONFIGURATION
+    // 1. CONFIGURATION (GLOBAL ENGLISH + UNAUFHALTSAM BRAND)
     // ======================================================
     const CLIENT_CONFIG = {
         id: "leaderboard_eddie-v1", 
         minScoreToSave: 1,      
         easterEggScore: 29,     
         brandColor: "#7C3AED",
-        logoFileName: "eddie", // Zieht automatisch eddie.png
+        logoFileName: "eddie", 
         
         quotes: [
-            '"Eddie schaut weg. Du hast den Fokus verloren."',
-            '"Einstieg ist gemacht. Aber für Level 30 reicht das nicht."',
-            '"Du wirst wach. Jetzt zeig echten Macher-Instinkt."',
-            '"Gute Performance. Der Hund ist stolz auf dich."',
-            '"Stark. Mit dieser Präzision bist du fast am Ziel."',
-            '"Absolute Elite. Du hast das System dominiert. Respekt."'
+            '"Eddie is looking away. You lost your focus."',
+            '"Decent start. But the Level 30 Wall is different."',
+            '"Waking up. Now show real Macher-Instinct."',
+            '"Strong performance. The dog is proud of you."',
+            '"Elite level. You are dominating the system."',
+            '"ABSOLUTE UNAUFHALTSAM. You conquered the system. Respect."'
         ]
     };
 
@@ -152,10 +152,9 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     
-    // BILD LOGIK WIEDER HERGESTELLT
     const imgLogo = new Image(); 
     let fallbackIndex = 0;
-    let logoStatus = "LAEDT";
+    let logoStatus = "LOADING";
     let logoError = false;
     
     const fallbacks = [
@@ -168,7 +167,7 @@
         if (fallbackIndex < fallbacks.length) {
             imgLogo.src = fallbacks[fallbackIndex];
         } else {
-            logoStatus = "FEHLER";
+            logoStatus = "ERROR";
             logoError = true;
         }
     }
@@ -270,10 +269,9 @@
         ctx.fillStyle = "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
         ctx.strokeRect(box.x, y, box.w, box.h); ctx.fillRect(box.x, y, box.w, box.h);
         
-        // --- BILD RENDER LOGIK WIEDER DRIN ---
         if (logoStatus === "OK" && imgLogo.naturalWidth > 0) {
             ctx.drawImage(imgLogo, box.x + box.w * 0.04, y + box.h * 0.04, box.w * 0.92, box.h * 0.92);
-        } else if (logoStatus === "FEHLER" || logoError) {
+        } else if (logoStatus === "ERROR" || logoError) {
             ctx.save();
             ctx.fillStyle = CLIENT_CONFIG.brandColor;
             ctx.font = `900 ${Math.floor(box.w * 0.3)}px Arial`;
@@ -338,19 +336,19 @@
     document.getElementById("resetBtn").onclick = () => location.reload();
     
     // ======================================================
-    // ELITE LEADERBOARD SPEICHER LOGIK
+    // ELITE LEADERBOARD STORAGE (GLOBAL VERSION)
     // ======================================================
     document.getElementById("saveScoreBtn").onclick = async () => {
         const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
         const name = rawName.replace(/[^A-Z0-9]/g, ''); 
         const errorEl = document.getElementById("errorMsg");
 
-        if (!name) { errorEl.textContent = "BITTE REALEN NAMEN WAEHLEN"; errorEl.style.display = "block"; return; }
+        if (!name) { errorEl.textContent = "SELECT A REAL NAME"; errorEl.style.display = "block"; return; }
 
         const displayScore = state.score + 2;
 
         if (state.score < CLIENT_CONFIG.minScoreToSave) {
-            errorEl.textContent = "ZU SCHWACH FUER DAS SYSTEM.";
+            errorEl.textContent = "TOO WEAK FOR THE SYSTEM.";
             errorEl.style.display = "block";
             setTimeout(() => location.reload(), 2000);
             return;
@@ -365,7 +363,7 @@
             if (docSnap.exists) {
                 const existingData = docSnap.data();
                 if (displayScore <= existingData.score) {
-                    errorEl.textContent = "KEINE VERBESSERUNG. NUR DEIN BESTWERT ZAEHLT.";
+                    errorEl.textContent = "NO IMPROVEMENT. ONLY YOUR BEST COUNTS.";
                     errorEl.style.display = "block";
                     setTimeout(() => location.reload(), 2000);
                     return;
@@ -386,7 +384,7 @@
             location.reload();
         } catch (e) {
             console.error(e);
-            errorEl.textContent = "NETZWERKFEHLER. VERSUCHE ES ERNEUT.";
+            errorEl.textContent = "NETWORK ERROR. TRY AGAIN.";
             errorEl.style.display = "block";
             document.getElementById("saveScoreBtn").disabled = false;
         }
@@ -422,7 +420,7 @@
             rank++;
           });
         }, error => {
-           console.error("Leaderboard Fehler:", error);
+            console.error("Leaderboard Error:", error);
         });
       }
     });
