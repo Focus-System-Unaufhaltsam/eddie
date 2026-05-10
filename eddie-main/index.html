@@ -6,7 +6,7 @@
   <title>EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
   <meta name="description" content="The Eddie UNAUFHALTSAM Focus System. Real life. No staging. Level 30 is the wall." />
   <meta property="og:title" content="EDDIE UNAUFHALTSAM" />
-  <meta property="og:description" content="99% fail at Level 30. One mistake ends the system." />
+  <meta property="og:description" content="99% fail before Level 30. One mistake ends the system." />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#7C3AED" />
 
@@ -104,7 +104,7 @@
 
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <h2 id="uiBrandSub">99% FAIL AT LEVEL 30</h2>
+          <h2 id="uiBrandSub">LEVEL 30 IS THE WALL</h2>
           <p id="uiStartDesc">Real life. No staging. The dog is raw. You are the focus. One mistake ends the system.</p>
           <div class="micro-grid" aria-hidden="true">
             <div class="micro"><strong>30</strong>Wall</div>
@@ -159,7 +159,7 @@
 
     <section class="leaderboard-container">
       <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">LEVEL 30 WALL: NOT FOR TOURISTS</div>
-      <div class="leaderboard-title"><span>Global Elite Ranking</span><span>Top 10</span></div>
+      <div class="leaderboard-title"><span>Global Wall Ranking</span><span>Top 10</span></div>
       <div id="leaderboardList" class="muted-line">Loading ranking...</div>
     </section>
   </main>
@@ -173,7 +173,7 @@
       clientVersion: "eddie-unaufhaltsam-v2.5-link-guard",
       pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
       brandTitle: "EDDIE UNAUFHALTSAM",
-      brandSub: "99% FAIL AT LEVEL 30",
+      brandSub: "LEVEL 30 IS THE WALL",
       startDesc: "Real life. No staging. The dog is raw. You are the focus. One mistake ends the system.",
       startButton: "START SYSTEM",
       boxOverlayText: "FOCUS",
@@ -553,8 +553,8 @@
       document.getElementById("aiText").textContent = getAIQuote(state.score);
 
       const resultHint = document.getElementById("resultHint");
-      if (finalBoxes >= 30) resultHint.textContent = "Level 30 wall reached. Lock your rank.";
-      else resultHint.textContent = "Wall is Level 30. Lock a better run.";
+      if (finalBoxes >= 30) resultHint.textContent = "THE WALL IS DOWN. LOCK YOUR PROOF.";
+      else resultHint.textContent = "LEVEL 30 IS THE WALL. RUN IT BACK.";
 
       const entrySection = document.getElementById("leaderboardEntrySection");
       const errorEl = document.getElementById("errorMsg");
