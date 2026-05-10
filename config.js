@@ -1,11 +1,9 @@
 // ==========================================
 // UNAUFHALTSAM CONFIG
-// Change only this file for brand/copy/difficulty tuning.
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.2-one-slot",
-
+  clientVersion: "eddie-unaufhaltsam-hotfix",
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
   brandSub: "99% FAIL AT LEVEL 30",
@@ -13,15 +11,12 @@ window.UNAUFHALTSAM_CONFIG = {
   startButton: "START SYSTEM",
   boxOverlayText: "FOCUS",
   mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
-
   brandColor: "#7C3AED",
   logoFileName: "eddie_head",
-  logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
-
-  minScoreToSave: 4,       // score 4 = 6 visible boxes. Keeps spam out of the ranking.
-  easterEggScore: 29,      // Ends the system after the 30-box level is solved.
+  logoFallbacks: ["eddie-main/eddie_head.png", "eddie-main/unaufhaltsam_brand.png", "eddie-main/logo.png"],
+  minScoreToSave: 4,
+  easterEggScore: 29,
   maxLeaderboardEntries: 10,
-
   quotes: [
     '"Eddie did not blink. You did."',
     '"Clean start. But Level 30 is not a comfort zone."',
@@ -30,7 +25,6 @@ window.UNAUFHALTSAM_CONFIG = {
     '"Elite zone. You control the system."',
     '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
   ],
-
   shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall.",
   savePrompt: "Lock your rank with your social @:",
   tooWeakText: "Not leaderboard-ready yet. Deliver first, then claim your name.",
