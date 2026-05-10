@@ -64,6 +64,11 @@ service cloud.firestore {
       allow update: if isSignedIn()
         && validLeaderboardEntry(docId)
         && resource.data.docId == docId
+        && request.resource.data.docId == resource.data.docId
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.platform == resource.data.platform
+        && request.resource.data.socialHandle == resource.data.socialHandle
+        && request.resource.data.socialDisplay == resource.data.socialDisplay
         && (
           request.resource.data.score > resource.data.score ||
           (request.resource.data.score == resource.data.score && request.resource.data.time < resource.data.time)

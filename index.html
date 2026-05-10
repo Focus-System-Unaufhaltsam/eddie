@@ -171,7 +171,7 @@
     // ======================================================
     const DEFAULT_CONFIG = {
       id: "leaderboard_eddie-v1",
-      clientVersion: "eddie-unaufhaltsam-v2.1-social",
+      clientVersion: "eddie-unaufhaltsam-v2.2-one-slot",
       pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
       brandTitle: "EDDIE UNAUFHALTSAM",
       brandSub: "99% FAIL AT LEVEL 30",
@@ -200,7 +200,9 @@
       noImprovementText: "No improvement. Only your best run counts.",
       networkErrorText: "Network error. Try again.",
       socialRequiredText: "Social @ needs 2 to 30 characters.",
-      socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional."
+      socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional.",
+      oneRankText: "One player. One ranking slot. This device is already locked.",
+      slotLockedText: "Ranking slot locked. Only your best run can update it."
     };
 
     const CLIENT_CONFIG = Object.freeze({ ...DEFAULT_CONFIG, ...(window.UNAUFHALTSAM_CONFIG || {}) });
@@ -237,6 +239,7 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const BEST_KEY = "focusBest_" + CLIENT_CONFIG.id;
+    const PLAYER_SLOT_KEY = "focusPlayerSlot_" + CLIENT_CONFIG.id;
 
     const imgLogo = new Image();
     let fallbackIndex = 0;
@@ -285,6 +288,52 @@
     };
 
     function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
+    function getLockedPlayerSlot() {
+      try {
+        const raw = localStorage.getItem(PLAYER_SLOT_KEY);
+        if (!raw) return null;
+        const slot = JSON.parse(raw);
+        if (!slot || typeof slot !== "object") return null;
+        if (!slot.docId || !slot.socialHandle || !slot.name) return null;
+        return {
+          docId: String(slot.docId).slice(0, 80),
+          name: String(slot.name).replace(/[^A-Z0-9_]/g, "").slice(0, 15),
+          platform: String(slot.platform || "OTHER").replace(/[^A-Z]/g, "").slice(0, 12) || "OTHER",
+          socialHandle: String(slot.socialHandle).toLowerCase().replace(/[^a-z0-9._]/g, "").slice(0, 30),
+          lockedAt: String(slot.lockedAt || "")
+        };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function lockPlayerSlot(slot) {
+      localStorage.setItem(PLAYER_SLOT_KEY, JSON.stringify({
+        docId: slot.docId,
+        name: slot.name,
+        platform: slot.platform,
+        socialHandle: slot.socialHandle,
+        lockedAt: new Date().toISOString()
+      }));
+      applyLockedPlayerUI();
+    }
+
+    function applyLockedPlayerUI() {
+      const slot = getLockedPlayerSlot();
+      const nameInput = document.getElementById("nameInput");
+      const platformSelect = document.getElementById("platformSelect");
+      const socialInput = document.getElementById("socialInput");
+      const hint = document.querySelector(".social-hint");
+      if (!slot || !nameInput || !platformSelect || !socialInput) return;
+      nameInput.value = slot.name;
+      socialInput.value = "@" + slot.socialHandle;
+      platformSelect.value = ["TIKTOK", "INSTAGRAM", "YOUTUBE", "X", "LINKEDIN", "TWITCH", "OTHER"].includes(slot.platform) ? slot.platform : "OTHER";
+      nameInput.readOnly = true;
+      socialInput.readOnly = true;
+      platformSelect.disabled = true;
+      if (hint) hint.textContent = CLIENT_CONFIG.slotLockedText;
+    }
 
     function getAIQuote(score) {
       if (score <= 5) return CLIENT_CONFIG.quotes[0];
@@ -511,6 +560,7 @@
       const entrySection = document.getElementById("leaderboardEntrySection");
       const errorEl = document.getElementById("errorMsg");
       errorEl.style.display = "none";
+      applyLockedPlayerUI();
       if (state.score >= CLIENT_CONFIG.minScoreToSave) {
         entrySection.style.display = "block";
       } else {
@@ -589,6 +639,7 @@
         .filter(Boolean)
         .pop()
         .replace(/[^A-Za-z0-9._]/g, "")
+        .toLowerCase()
         .slice(0, 30);
     }
 
@@ -601,8 +652,23 @@
       return "OTHER";
     }
 
-    function makeDocId(platform, handle) {
-      return `${platform}_${handle}`.toUpperCase().replace(/[^A-Z0-9_]/g, "_").slice(0, 60);
+    function makeDocId(handle) {
+      return `PLAYER_${handle}`.toUpperCase().replace(/[^A-Z0-9_]/g, "_").slice(0, 60);
+    }
+
+    async function findExistingIdentityDoc(socialHandle) {
+      const snap = await dbRef.where("socialHandle", "==", socialHandle).get();
+      if (snap.empty) return null;
+
+      const docs = [];
+      snap.forEach(doc => docs.push({ ref: doc.ref, id: doc.id, data: doc.data() || {} }));
+      docs.sort((a, b) => {
+        const scoreA = Number(a.data.score || 0);
+        const scoreB = Number(b.data.score || 0);
+        if (scoreB !== scoreA) return scoreB - scoreA;
+        return Number(a.data.time || 999999) - Number(b.data.time || 999999);
+      });
+      return docs[0];
     }
 
     document.getElementById("socialInput").addEventListener("input", event => {
@@ -614,16 +680,31 @@
       const errorEl = document.getElementById("errorMsg");
       const saveMsg = document.getElementById("saveMsg");
       const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
-      const name = rawName.replace(/[^A-Z0-9_]/g, "").slice(0, 15);
+      let name = rawName.replace(/[^A-Z0-9_]/g, "").slice(0, 15);
       const rawSocial = document.getElementById("socialInput").value.trim();
-      const platform = detectPlatform(rawSocial, document.getElementById("platformSelect").value);
-      const socialHandle = cleanSocialHandle(rawSocial);
-      const socialDisplay = "@" + socialHandle;
-      const docId = makeDocId(platform, socialHandle);
+      let platform = detectPlatform(rawSocial, document.getElementById("platformSelect").value);
+      let socialHandle = cleanSocialHandle(rawSocial);
+      let socialDisplay = "@" + socialHandle;
       const displayScore = displayBoxesFromScore(state.score);
+      const lockedSlot = getLockedPlayerSlot();
 
       errorEl.style.display = "none";
       saveMsg.style.display = "none";
+
+      if (lockedSlot) {
+        const attemptedDifferentIdentity = socialHandle && socialHandle !== lockedSlot.socialHandle;
+        const attemptedDifferentName = name && name !== lockedSlot.name;
+        if (attemptedDifferentIdentity || attemptedDifferentName) {
+          errorEl.textContent = `${CLIENT_CONFIG.oneRankText} Locked to ${lockedSlot.name} / @${lockedSlot.socialHandle}.`;
+          errorEl.style.display = "block";
+          applyLockedPlayerUI();
+          return;
+        }
+        name = lockedSlot.name;
+        platform = lockedSlot.platform;
+        socialHandle = lockedSlot.socialHandle;
+        socialDisplay = "@" + socialHandle;
+      }
 
       if (name.length < 2) {
         errorEl.textContent = "Name needs at least 2 characters.";
@@ -637,7 +718,7 @@
         return;
       }
 
-      if (!/^[A-Za-z0-9._]{2,30}$/.test(socialHandle)) {
+      if (!/^[a-z0-9._]{2,30}$/.test(socialHandle)) {
         errorEl.textContent = CLIENT_CONFIG.socialInvalidText;
         errorEl.style.display = "block";
         return;
@@ -653,11 +734,21 @@
       saveBtn.disabled = true;
 
       try {
-        const userDocRef = dbRef.doc(docId);
-        const docSnap = await userDocRef.get();
+        const existingIdentityDoc = lockedSlot ? null : await findExistingIdentityDoc(socialHandle);
+        const docId = lockedSlot ? lockedSlot.docId : (existingIdentityDoc ? existingIdentityDoc.id : makeDocId(socialHandle));
+        const userDocRef = existingIdentityDoc ? existingIdentityDoc.ref : dbRef.doc(docId);
+        const docSnap = existingIdentityDoc ? null : await userDocRef.get();
+        const existingData = existingIdentityDoc ? existingIdentityDoc.data : (docSnap && docSnap.exists ? docSnap.data() : null);
 
-        if (docSnap.exists) {
-          const existingData = docSnap.data();
+        if (existingData) {
+          const existingName = String(existingData.name || "").replace(/[^A-Z0-9_]/g, "").slice(0, 15);
+          const existingPlatform = String(existingData.platform || "").replace(/[^A-Z]/g, "").slice(0, 12);
+          const existingHandle = String(existingData.socialHandle || "").toLowerCase().replace(/[^a-z0-9._]/g, "").slice(0, 30);
+          if (existingHandle === socialHandle) {
+            if (existingName) name = existingName;
+            if (existingPlatform) platform = existingPlatform;
+            socialDisplay = "@" + socialHandle;
+          }
           const existingScore = Number(existingData.score || 0);
           const existingTime = Number(existingData.time || 999999);
           if (displayScore < existingScore || (displayScore === existingScore && state.totalTime >= existingTime)) {
@@ -684,6 +775,7 @@
         });
 
         session.saved = true;
+        lockPlayerSlot({ docId, name, platform, socialHandle });
         saveMsg.textContent = CLIENT_CONFIG.savedText;
         saveMsg.style.display = "block";
         saveBtn.textContent = "SAVED";
@@ -722,7 +814,34 @@
       const socialDisplay = socialHandle ? "@" + socialHandle : "";
       const score = clamp(Number(data.score || 0), 0, 30);
       const time = typeof data.time === "number" ? data.time : 999999;
-      return { name, platform, socialDisplay, score, time };
+      return { name, platform, socialHandle: socialHandle.toLowerCase(), socialDisplay, score, time };
+    }
+
+    function betterEntry(a, b) {
+      if (!b) return true;
+      if (a.score !== b.score) return a.score > b.score;
+      return a.time < b.time;
+    }
+
+    function dedupeLeaderboardEntries(entries) {
+      const sorted = [...entries].sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.time - b.time;
+      });
+
+      const usedHandles = new Set();
+      const usedNames = new Set();
+      const result = [];
+
+      for (const entry of sorted) {
+        const handleKey = entry.socialHandle ? entry.socialHandle.toLowerCase() : "";
+        const nameKey = entry.name;
+        if ((handleKey && usedHandles.has(handleKey)) || usedNames.has(nameKey)) continue;
+        if (handleKey) usedHandles.add(handleKey);
+        usedNames.add(nameKey);
+        result.push(entry);
+      }
+      return result;
     }
 
     function renderLeaderboard(entries) {
@@ -767,11 +886,8 @@
       dbRef.onSnapshot(snap => {
         const allEntries = [];
         snap.forEach(d => allEntries.push(normalizeEntry(d.data())));
-        allEntries.sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return a.time - b.time;
-        });
-        renderLeaderboard(allEntries.slice(0, CLIENT_CONFIG.maxLeaderboardEntries));
+        const uniqueEntries = dedupeLeaderboardEntries(allEntries);
+        renderLeaderboard(uniqueEntries.slice(0, CLIENT_CONFIG.maxLeaderboardEntries));
       }, error => {
         console.error("Leaderboard Error:", error);
         const list = document.getElementById("leaderboardList");
@@ -788,6 +904,7 @@
     });
 
     function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
+    applyLockedPlayerUI();
     updateHud();
     requestAnimationFrame(loop);
   </script>

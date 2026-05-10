@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social",
+  clientVersion: "eddie-unaufhaltsam-v2.2-one-slot",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -38,5 +38,7 @@ window.UNAUFHALTSAM_CONFIG = {
   noImprovementText: "No improvement. Only your best run counts.",
   networkErrorText: "Network error. Try again.",
   socialRequiredText: "Social @ needs 2 to 30 characters.",
-  socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional."
+  socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional.",
+  oneRankText: "One player. One ranking slot. This device is already locked.",
+  slotLockedText: "Ranking slot locked. Only your best run can update it."
 };

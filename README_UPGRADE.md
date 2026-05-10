@@ -26,3 +26,15 @@
 ## Note
 
 GitHub Pages plus a client-side Firebase app is not fully cheat-proof. The rules reduce low-effort manipulation. Strong verification would require a Cloud Function or server-side score validation. For the current challenge funnel, this build keeps the system lean.
+
+## v2.2 One-Slot Ranking
+
+This version enforces one visible ranking slot per player identity:
+
+- Social handles are normalized to lowercase.
+- The same social @ updates one existing rank instead of creating another row.
+- The same browser/device is locked to the first saved ranking slot.
+- The leaderboard display deduplicates legacy duplicates by social handle and display name.
+- Firestore update rules lock identity fields; only a better score or same-score faster time can update a rank.
+
+Client-only GitHub Pages cannot prove a human identity across different devices and completely different social handles. Full enforcement would require a backend identity check or verified social login.
