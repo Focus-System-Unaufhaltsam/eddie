@@ -8,35 +8,35 @@ window.UNAUFHALTSAM_CONFIG = {
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
-  brandSub: "99% SCHEITERN AN LEVEL 30",
-  startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+  brandSub: "99% FAIL AT LEVEL 30",
+  startDesc: "Real life. No staging. The dog is raw. You are the focus. One mistake ends the system.",
   startButton: "START SYSTEM",
   boxOverlayText: "FOCUS",
-  mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
+  mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
 
   brandColor: "#7C3AED",
   logoFileName: "eddie_head",
   logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
 
-  minScoreToSave: 4,       // score 4 = 6 sichtbare Boxes. Hält Spam aus dem Ranking.
-  easterEggScore: 29,      // Nach gelöstem 30-Box-Level wird das System beendet.
+  minScoreToSave: 4,       // score 4 = 6 visible boxes. Keeps spam out of the ranking.
+  easterEggScore: 29,      // Ends the system after the 30-box level is solved.
   maxLeaderboardEntries: 10,
 
   quotes: [
-    '"Eddie hat nicht geblinzelt. Du schon."',
-    '"Netter Start. Aber Level 30 ist keine Komfortzone."',
-    '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
-    '"Stark. Macher-Instinkt ist sichtbar."',
-    '"Elite-Bereich. Du kontrollierst das System."',
-    '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+    '"Eddie did not blink. You did."',
+    '"Clean start. But Level 30 is not a comfort zone."',
+    '"Now the mental part begins. Do not get frantic."',
+    '"Strong. Operator instinct is visible."',
+    '"Elite zone. You control the system."',
+    '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
   ],
 
-  shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
-  savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
-  tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
-  savedText: "RANK GESICHERT.",
-  noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
-  networkErrorText: "Netzwerkfehler. Versuch es erneut.",
-  socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
-  socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional."
+  shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall.",
+  savePrompt: "Lock your rank with your social @:",
+  tooWeakText: "Not leaderboard-ready yet. Deliver first, then claim your name.",
+  savedText: "RANK LOCKED.",
+  noImprovementText: "No improvement. Only your best run counts.",
+  networkErrorText: "Network error. Try again.",
+  socialRequiredText: "Social @ needs 2 to 30 characters.",
+  socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional."
 };

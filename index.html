@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
-  <meta name="description" content="Das Eddie Unaufhaltsam Focus System. Real life. No staging. Level 30 ist die Wall." />
+  <meta name="description" content="The Eddie UNAUFHALTSAM Focus System. Real life. No staging. Level 30 is the wall." />
   <meta property="og:title" content="EDDIE UNAUFHALTSAM" />
-  <meta property="og:description" content="99% scheitern an Level 30. Ein Fehler beendet das System." />
+  <meta property="og:description" content="99% fail at Level 30. One mistake ends the system." />
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#7C3AED" />
 
@@ -94,28 +94,28 @@
       <button class="btn" id="resetBtn" type="button">RESET</button>
     </div>
 
-    <section class="hud" aria-label="Spielstand">
+    <section class="hud" aria-label="Score status">
       <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
       <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
       <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">30</div></div>
     </section>
 
     <section class="game-shell">
-      <canvas id="gameCanvas" width="960" height="540" aria-label="Unaufhaltsam Focus Game"></canvas>
+      <canvas id="gameCanvas" width="960" height="540" aria-label="UNAUFHALTSAM Focus Game"></canvas>
 
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <h2 id="uiBrandSub">99% SCHEITERN AN LEVEL 30</h2>
-          <p id="uiStartDesc">Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.</p>
+          <h2 id="uiBrandSub">99% FAIL AT LEVEL 30</h2>
+          <p id="uiStartDesc">Real life. No staging. The dog is raw. You are the focus. One mistake ends the system.</p>
           <div class="micro-grid" aria-hidden="true">
             <div class="micro"><strong>30</strong>Wall</div>
-            <div class="micro"><strong>1</strong>Fehler</div>
-            <div class="micro"><strong>0</strong>Ausreden</div>
+            <div class="micro"><strong>1</strong>Mistake</div>
+            <div class="micro"><strong>0</strong>Excuses</div>
           </div>
           <button class="btn btn-brand" id="startBtn" type="button" style="margin-top:18px; width:100%;">START SYSTEM</button>
           <div class="legal-links">
-            <a href="impressum.html">Impressum</a>
-            <a href="datenschutz.html">Datenschutz</a>
+            <a href="legal.html">Legal Notice</a>
+            <a href="privacy.html">Privacy</a>
           </div>
         </div>
       </div>
@@ -129,12 +129,12 @@
           <p id="resultHint" class="muted-line" style="margin-bottom:18px;"></p>
 
           <div id="leaderboardEntrySection" style="display:none; margin-bottom:16px; padding-top:15px; border-top:2px solid #000;">
-            <p id="savePrompt" style="font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; color:#000;">Sichere deinen Platz im Ranking:</p>
+            <p id="savePrompt" style="font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; color:#000;">Lock your rank on the board:</p>
             <div id="errorMsg"></div>
             <div id="saveMsg"></div>
-            <input type="text" id="nameInput" placeholder="ANZEIGENAME" maxlength="15" autocomplete="nickname" />
+            <input type="text" id="nameInput" placeholder="DISPLAY NAME" maxlength="15" autocomplete="nickname" />
             <div class="social-grid">
-              <select id="platformSelect" aria-label="Social Plattform">
+              <select id="platformSelect" aria-label="Social platform">
                 <option value="AUTO">AUTO</option>
                 <option value="TIKTOK">TIKTOK</option>
                 <option value="INSTAGRAM">INSTAGRAM</option>
@@ -144,14 +144,14 @@
                 <option value="TWITCH">TWITCH</option>
                 <option value="OTHER">OTHER</option>
               </select>
-              <input type="text" id="socialInput" placeholder="@deinhandle" maxlength="32" autocomplete="off" inputmode="text" />
+              <input type="text" id="socialInput" placeholder="@yourhandle" maxlength="32" autocomplete="off" inputmode="text" />
             </div>
-            <div class="social-hint">Plattform egal. Ein @ reicht. Beispiel: @eddie_unaufhaltsam</div>
+            <div class="social-hint">Any platform. One @ is enough. Example: @yourhandle</div>
             <button class="btn btn-brand" id="saveScoreBtn" type="button" style="width:100%; margin-bottom:10px;">SAVE RANK</button>
           </div>
 
           <div class="result-actions">
-            <button class="btn btn-ghost" id="shareBtn" type="button">CHALLENGE TEILEN</button>
+            <button class="btn btn-ghost" id="shareBtn" type="button">SHARE CHALLENGE</button>
             <button class="btn" id="restartBtn" type="button">REBOOT</button>
           </div>
         </div>
@@ -159,9 +159,9 @@
     </section>
 
     <section class="leaderboard-container">
-      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN</div>
+      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">LEVEL 30 WALL: NOT FOR TOURISTS</div>
       <div class="leaderboard-title"><span>Global Elite Ranking</span><span>Top 10</span></div>
-      <div id="leaderboardList" class="muted-line">Lade Ranking...</div>
+      <div id="leaderboardList" class="muted-line">Loading ranking...</div>
     </section>
   </main>
 
@@ -174,11 +174,11 @@
       clientVersion: "eddie-unaufhaltsam-v2.1-social",
       pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
       brandTitle: "EDDIE UNAUFHALTSAM",
-      brandSub: "99% SCHEITERN AN LEVEL 30",
-      startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+      brandSub: "99% FAIL AT LEVEL 30",
+      startDesc: "Real life. No staging. The dog is raw. You are the focus. One mistake ends the system.",
       startButton: "START SYSTEM",
       boxOverlayText: "FOCUS",
-      mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
+      mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
       brandColor: "#7C3AED",
       logoFileName: "eddie_head",
       logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
@@ -186,21 +186,21 @@
       easterEggScore: 29,
       maxLeaderboardEntries: 10,
       quotes: [
-        '"Eddie hat nicht geblinzelt. Du schon."',
-        '"Netter Start. Aber Level 30 ist keine Komfortzone."',
-        '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
-        '"Stark. Macher-Instinkt ist sichtbar."',
-        '"Elite-Bereich. Du kontrollierst das System."',
-        '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+        '"Eddie did not blink. You did."',
+        '"Clean start. But Level 30 is not a comfort zone."',
+        '"Now the mental part begins. Do not get frantic."',
+        '"Strong. Operator instinct is visible."',
+        '"Elite zone. You control the system."',
+        '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
       ],
-      shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
-      savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
-      tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
-      savedText: "RANK GESICHERT.",
-      noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
-      networkErrorText: "Netzwerkfehler. Versuch es erneut.",
-      socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
-      socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional."
+      shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall.",
+      savePrompt: "Lock your rank with your social @:",
+      tooWeakText: "Not leaderboard-ready yet. Deliver first, then claim your name.",
+      savedText: "RANK LOCKED.",
+      noImprovementText: "No improvement. Only your best run counts.",
+      networkErrorText: "Network error. Try again.",
+      socialRequiredText: "Social @ needs 2 to 30 characters.",
+      socialInvalidText: "Letters, numbers, dot and underscore only. @ is optional."
     };
 
     const CLIENT_CONFIG = Object.freeze({ ...DEFAULT_CONFIG, ...(window.UNAUFHALTSAM_CONFIG || {}) });
@@ -505,8 +505,8 @@
       document.getElementById("aiText").textContent = getAIQuote(state.score);
 
       const resultHint = document.getElementById("resultHint");
-      if (finalBoxes >= 30) resultHint.textContent = "30er-Wand erreicht. Jetzt Ranking sichern.";
-      else resultHint.textContent = `${30 - finalBoxes} Boxes bis zur Wall.`;
+      if (finalBoxes >= 30) resultHint.textContent = "Level 30 wall reached. Lock your rank.";
+      else resultHint.textContent = `${30 - finalBoxes} Boxes to the wall.`;
 
       const entrySection = document.getElementById("leaderboardEntrySection");
       const errorEl = document.getElementById("errorMsg");
@@ -626,7 +626,7 @@
       saveMsg.style.display = "none";
 
       if (name.length < 2) {
-        errorEl.textContent = "Name braucht mindestens 2 Zeichen.";
+        errorEl.textContent = "Name needs at least 2 characters.";
         errorEl.style.display = "block";
         return;
       }
@@ -704,8 +704,8 @@
           await navigator.share({ title: CLIENT_CONFIG.brandTitle, text, url: window.location.href });
         } else if (navigator.clipboard) {
           await navigator.clipboard.writeText(text);
-          btn.textContent = "KOPIERT";
-          setTimeout(() => { btn.textContent = "CHALLENGE TEILEN"; }, 1600);
+          btn.textContent = "COPIED";
+          setTimeout(() => { btn.textContent = "SHARE CHALLENGE"; }, 1600);
         }
       } catch (e) {
         console.warn("Share cancelled or failed", e);
@@ -729,7 +729,7 @@
       const list = document.getElementById("leaderboardList");
       list.innerHTML = "";
       if (!entries.length) {
-        list.textContent = "Noch kein Rank gesetzt.";
+        list.textContent = "No rank claimed yet.";
         list.className = "muted-line";
         return;
       }
@@ -775,7 +775,7 @@
       }, error => {
         console.error("Leaderboard Error:", error);
         const list = document.getElementById("leaderboardList");
-        list.textContent = "Ranking aktuell nicht erreichbar.";
+        list.textContent = "Ranking is currently unavailable.";
         list.className = "muted-line";
       });
     });
@@ -783,7 +783,7 @@
     auth.signInAnonymously().catch(error => {
       console.error("Auth Error:", error);
       const list = document.getElementById("leaderboardList");
-      list.textContent = "Firebase Auth blockiert. Ranking nicht erreichbar.";
+      list.textContent = "Firebase Auth is blocked. Ranking is unavailable.";
       list.className = "muted-line";
     });
 
