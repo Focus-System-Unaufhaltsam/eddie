@@ -39,7 +39,7 @@
     .btn-brand { background:var(--brand-color); color:#fff; }
     .btn-ghost { background:#fff; color:#000; border:2px solid #000; }
 
-    .hud { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+    .hud { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
     .stat { border:2px solid #000; border-radius:18px; padding:12px; background:#fff; text-align:center; }
     .stat .label { font-size:10px; opacity:.6; text-transform:uppercase; font-weight:800; margin-bottom:4px; }
     .stat .value { font-size:clamp(17px, 4vw, 28px); font-weight:900; line-height:1; color:var(--brand-color); }
@@ -97,7 +97,6 @@
     <section class="hud" aria-label="Score status">
       <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
       <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
-      <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">30</div></div>
     </section>
 
     <section class="game-shell">
@@ -114,8 +113,8 @@
           </div>
           <button class="btn btn-brand" id="startBtn" type="button" style="margin-top:18px; width:100%;">START SYSTEM</button>
           <div class="legal-links">
-            <a href="legal.html">Legal Notice</a>
-            <a href="privacy.html">Privacy</a>
+            <a href="legal.html?from=game">Legal Notice</a>
+            <a href="privacy.html?from=game">Privacy</a>
           </div>
         </div>
       </div>
@@ -171,7 +170,7 @@
     // ======================================================
     const DEFAULT_CONFIG = {
       id: "leaderboard_eddie-v1",
-      clientVersion: "eddie-unaufhaltsam-v2.3-wall30",
+      clientVersion: "eddie-unaufhaltsam-v2.5-link-guard",
       pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
       brandTitle: "EDDIE UNAUFHALTSAM",
       brandSub: "99% FAIL AT LEVEL 30",
@@ -584,7 +583,6 @@
       const bestBoxes = best > 0 ? displayBoxesFromScore(best) : 0;
       document.getElementById("boxValue").textContent = currentBoxes;
       document.getElementById("bestValue").textContent = bestBoxes;
-      document.getElementById("wallValue").textContent = "30";
     }
 
     function handleInteraction(x, y) {
@@ -787,13 +785,22 @@
       }
     };
 
+    function getCanonicalGameUrl() {
+      const url = new URL(window.location.href);
+      url.search = "";
+      url.hash = "";
+      url.pathname = url.pathname.replace(/(?:index\.html|legal\.html|privacy\.html|impressum\.html|datenschutz\.html)$/i, "");
+      return url.href;
+    }
+
     document.getElementById("shareBtn").onclick = async () => {
       const finalBoxes = displayBoxesFromScore(state.score);
-      const text = `${CLIENT_CONFIG.shareText}\nScore: ${finalBoxes}/30 Boxes.\n${window.location.href}`;
+      const gameUrl = getCanonicalGameUrl();
+      const text = `${CLIENT_CONFIG.shareText}\nScore: ${finalBoxes}/30 Boxes.\n${gameUrl}`;
       const btn = document.getElementById("shareBtn");
       try {
         if (navigator.share) {
-          await navigator.share({ title: CLIENT_CONFIG.brandTitle, text, url: window.location.href });
+          await navigator.share({ title: CLIENT_CONFIG.brandTitle, text, url: gameUrl });
         } else if (navigator.clipboard) {
           await navigator.clipboard.writeText(text);
           btn.textContent = "COPIED";

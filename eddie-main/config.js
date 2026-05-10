@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.3-wall30",
+  clientVersion: "eddie-unaufhaltsam-v2.5-link-guard",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",

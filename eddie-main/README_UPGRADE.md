@@ -45,3 +45,19 @@ Client-only GitHub Pages cannot prove a human identity across different devices 
 - The top HUD wall indicator is now fixed at `30`.
 - Wall 30 is the permanent target, not a countdown.
 - Removed dynamic copy such as `28 Boxes to the wall` from the result hint.
+
+
+## v2.4 No Wall HUD
+
+- Removed the top HUD wall counter entirely.
+- Top HUD now shows only `Boxes` and `Best`.
+- Wall 30 remains a brand concept in the copy, not a status tile or countdown.
+
+
+## v2.5 Link Guard
+
+- Main game link must be the folder root: `/eddie/`, not `/eddie/legal.html` or `/eddie/privacy.html`.
+- Footer legal links now open `legal.html?from=game` and `privacy.html?from=game`.
+- Direct accidental hits on `legal.html`, `privacy.html`, `impressum.html` or `datenschutz.html` are bounced back to the game.
+- Share output now always uses the clean game root URL, not the current subpage URL.
+- Added a simple GitHub Pages `404.html` fallback to route unknown paths back to the game.
