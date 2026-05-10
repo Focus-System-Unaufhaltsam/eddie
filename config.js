@@ -1,40 +1,42 @@
 // ==========================================
-// SYSTEM MASTER CONFIGURATION (White Label)
+// UNAUFHALTSAM CONFIG
+// Change only this file for brand/copy/difficulty tuning.
 // ==========================================
+window.UNAUFHALTSAM_CONFIG = {
+  id: "leaderboard_eddie-v1",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social",
 
-const CLIENT_CONFIG = {
-    // 1. SYSTEM & DATABASE
-    id: "unaufhaltsam-master-v1",   // Eindeutige Firebase ID (keine Leerzeichen)
-    brandColor: "#7C3AED",          // Deine Brand-Farbe (Purpur) als Standard
-    easterEggScore: 29,             // Sieg nach 30 Kisten (Score 29)
+  pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
+  brandTitle: "EDDIE UNAUFHALTSAM",
+  brandSub: "99% SCHEITERN AN LEVEL 30",
+  startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+  startButton: "START SYSTEM",
+  boxOverlayText: "FOCUS",
+  mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
 
-    // 2. BRANDING & IDENTITY (English, except UNAUFHALTSAM)
-    brandTitle: "UNAUFHALTSAM",
-    brandSub: "PRECISION UNDER PRESSURE",
-    startDesc: "Focus the target. Luxury means nothing without focus. Any mistake ends the system.",
-    boxOverlayText: "FOCUS",
-    
-    // 3. REWARDS & RETENTION
-    rewardTitle: "ELITE STATUS: CLAIM YOUR REWARD",
-    rewardSuccess: "CLAIMED. YOU WILL BE CONTACTED.",
+  brandColor: "#7C3AED",
+  logoFileName: "eddie_head",
+  logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
 
-    // 4. PSYCHOLOGICAL QUOTES (The Frustration Curve)
-    quotes: [
-        '"Focus is a choice. You just chose against it."',                 // 0-5
-        '"Consistency separates the wheat from the chaff."',              // 6-10
-        '"Waking up. Now the real mental work begins."',                  // 11-15
-        '"Strong performance. You are above average."',                   // 16-20
-        '"Outstanding. You control the system, not the other way around."',// 21-25
-        '"Absolute Elite. You broke the 30-box wall. Respect."'            // 26+
-    ],
+  minScoreToSave: 4,       // score 4 = 6 sichtbare Boxes. Hält Spam aus dem Ranking.
+  easterEggScore: 29,      // Nach gelöstem 30-Box-Level wird das System beendet.
+  maxLeaderboardEntries: 10,
 
-    // 5. LEGAL (Automatic injection)
-    legal: {
-        name: "YOUR NAME / COMPANY",
-        street: "STREET 123",
-        city: "ZIP CITY",
-        email: "MAIL@EXAMPLE.COM",
-        register: "COMMERCIAL REGISTER XXX",
-        ustid: "VAT ID: DE XXX XXX XXX"
-    }
+  quotes: [
+    '"Eddie hat nicht geblinzelt. Du schon."',
+    '"Netter Start. Aber Level 30 ist keine Komfortzone."',
+    '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
+    '"Stark. Macher-Instinkt ist sichtbar."',
+    '"Elite-Bereich. Du kontrollierst das System."',
+    '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+  ],
+
+  shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
+  savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
+  tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
+  savedText: "RANK GESICHERT.",
+  noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
+  networkErrorText: "Netzwerkfehler. Versuch es erneut.",
+  socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
+  socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional."
 };

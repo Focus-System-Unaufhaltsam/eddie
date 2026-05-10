@@ -1,133 +1,218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title id="uiPageTitle">EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
+  <title>EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
+  <meta name="description" content="Das Eddie Unaufhaltsam Focus System. Real life. No staging. Level 30 ist die Wall." />
+  <meta property="og:title" content="EDDIE UNAUFHALTSAM" />
+  <meta property="og:description" content="99% scheitern an Level 30. Ein Fehler beendet das System." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#7C3AED" />
 
+  <script src="config.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <style>
     :root {
-      --brand-color: #7C3AED; /* STRIKTE BRAND FARBE: PURPLE */
+      --brand-color: #7C3AED;
       --bg: #f5f5f7;
       --card-bg: #ffffff;
       --text-main: #343536;
       --success: #0f9d58;
       --danger: #c92a2a;
+      --muted: rgba(52,53,54,.62);
     }
 
-    * { margin:0; padding:0; box-sizing:border-box; font-family: 'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
     body { background:var(--bg); color:var(--text-main); min-height:100vh; padding:20px 14px 40px; overflow-x:hidden; }
-
     .wrap { width:100%; max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
     .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-    .title h1 { font-size:clamp(24px, 5vw, 42px); line-height:1; font-weight:900; letter-spacing:-0.8px; text-transform: uppercase;}
+    .title h1 { font-size:clamp(24px, 5vw, 42px); line-height:1; font-weight:900; letter-spacing:-.8px; text-transform:uppercase; }
+    .title p { margin-top:6px; font-size:12px; font-weight:900; letter-spacing:.6px; color:var(--muted); text-transform:uppercase; }
 
-    .btn { appearance:none; border:none; background:#343536; color:#fff; padding:16px 22px; border-radius:14px; font-weight: 900; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; transition:transform .12s ease; text-transform: uppercase; }
+    .btn { appearance:none; border:none; background:#343536; color:#fff; padding:16px 22px; border-radius:14px; font-weight:900; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; transition:transform .12s ease, opacity .12s ease; text-transform:uppercase; }
     .btn:active { transform:scale(.98); }
-    .btn-brand { background: var(--brand-color); color: #fff; }
+    .btn:disabled { opacity:.55; cursor:not-allowed; }
+    .btn-brand { background:var(--brand-color); color:#fff; }
+    .btn-ghost { background:#fff; color:#000; border:2px solid #000; }
 
-    .hud { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
+    .hud { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
     .stat { border:2px solid #000; border-radius:18px; padding:12px; background:#fff; text-align:center; }
     .stat .label { font-size:10px; opacity:.6; text-transform:uppercase; font-weight:800; margin-bottom:4px; }
-    .stat .value { font-size:clamp(18px, 4vw, 28px); font-weight:900; line-height:1; color: var(--brand-color); }
+    .stat .value { font-size:clamp(17px, 4vw, 28px); font-weight:900; line-height:1; color:var(--brand-color); }
 
     .game-shell { position:relative; width:100%; background:#fff; border:2px solid #000; border-radius:24px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-    canvas { display:block; width:100%; height:auto; background: radial-gradient(circle, #fff 0%, #eee 100%); touch-action: none; }
+    canvas { display:block; width:100%; height:auto; background:radial-gradient(circle, #fff 0%, #eee 100%); touch-action:none; }
 
-    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(52, 53, 54, 0.95); text-align:center; z-index:100; backdrop-filter: blur(5px); color: #fff; }
+    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(52,53,54,.95); text-align:center; z-index:100; backdrop-filter:blur(5px); color:#fff; }
     .overlay.hidden { display:none; }
+    .card { width:min(100%, 500px); background:#fff; border:2px solid #000; border-top:5px solid var(--brand-color); border-radius:5px; padding:30px 20px; color:#000; }
+    .card h2 { font-weight:900; letter-spacing:1.6px; text-transform:uppercase; margin-bottom:10px; }
+    .card p { color:#333; }
+    .micro-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:18px 0 4px; }
+    .micro { border:1px solid #000; padding:10px 6px; font-size:10px; font-weight:900; text-transform:uppercase; }
+    .micro strong { display:block; color:var(--brand-color); font-size:18px; margin-bottom:2px; }
 
-    .card { width:min(100%, 480px); background:#fff; border: 2px solid #000; border-top: 4px solid var(--brand-color); border-radius: 4px; padding:30px 20px; color: #000; }
-    .card h2 { font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+    .leaderboard-container { background:#fff; border:2px solid #000; border-radius:22px; padding:20px; margin-top:10px; color:#000; }
+    .leaderboard-title { font-weight:900; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px; display:flex; justify-content:space-between; gap:10px; }
+    .leaderboard-entry { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #eee; font-weight:700; list-style:none; font-size:15px; }
+    .leaderboard-entry .rank-name { display:flex; gap:10px; align-items:center; min-width:0; }
+    .leaderboard-entry .rank-number { font-weight:900; color:var(--brand-color); min-width:30px; }
+    .leaderboard-entry .player-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .leaderboard-entry .score-line { white-space:nowrap; }
+    .muted-line { color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; }
 
-    .leaderboard-container { background:#fff; border:2px solid #000; border-radius:22px; padding:20px; margin-top:10px; color: #000; }
-    .leaderboard-title { font-weight:900; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px; }
-    .leaderboard-entry { display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-weight:700; list-style:none; font-size: 15px; }
-    .leaderboard-entry .rank-name { display: flex; gap: 10px; align-items: center; }
-    .leaderboard-entry .rank-number { font-weight: 900; color: var(--brand-color); min-width: 25px; }
+    #nameInput, #platformSelect, #socialInput { width:100%; padding:15px; margin-bottom:12px; border:1px solid #bbb; font-size:15px; text-align:center; font-weight:900; outline:none; }
+    #nameInput { text-transform:uppercase; }
+    #platformSelect { text-transform:uppercase; background:#fff; color:#000; }
+    #socialInput { text-transform:none; }
+    .social-grid { display:grid; grid-template-columns:1fr 1.35fr; gap:10px; }
+    .social-hint { font-size:10px; color:#555; font-weight:900; text-transform:uppercase; margin:-5px 0 10px; }
+    #errorMsg, #saveMsg { color:var(--danger); font-size:11px; font-weight:900; margin-bottom:10px; display:none; text-transform:uppercase; }
+    #saveMsg { color:var(--success); }
+    .result-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+    .legal-links { margin-top:18px; display:flex; justify-content:center; gap:18px; }
+    .legal-links a { font-size:11px; color:#777; text-decoration:none; font-weight:900; text-transform:uppercase; }
 
-    #nameInput { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ccc; font-size: 15px; text-align: center; font-weight: bold; outline: none; text-transform: uppercase; }
-    #errorMsg { color: var(--danger); font-size: 11px; font-weight: 900; margin-bottom: 10px; display: none; text-transform: uppercase; }
-
-    @media (max-width:720px){ .btn { width:100%; } }
+    @media (max-width:720px) {
+      .btn { width:100%; }
+      .result-actions, .social-grid { grid-template-columns:1fr; }
+      .micro-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
     <div class="topbar">
-      <div class="title"><h1 id="uiBrandTitle">EDDIE UNAUFHALTSAM</h1></div>
-      <button class="btn" id="resetBtn">RESET</button>
+      <div class="title">
+        <h1 id="uiBrandTitle">EDDIE UNAUFHALTSAM</h1>
+        <p id="uiBrandSubLine">Real life. No staging.</p>
+      </div>
+      <button class="btn" id="resetBtn" type="button">RESET</button>
     </div>
 
-    <section class="hud">
+    <section class="hud" aria-label="Spielstand">
       <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
       <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
+      <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">30</div></div>
     </section>
 
     <section class="game-shell">
-      <canvas id="gameCanvas" width="960" height="540"></canvas>
+      <canvas id="gameCanvas" width="960" height="540" aria-label="Unaufhaltsam Focus Game"></canvas>
 
       <div class="overlay" id="startOverlay">
         <div class="card">
-          <h2 id="uiBrandSub">UNAUFHALTSAM CHALLENGE</h2>
-          <p id="uiStartDesc">The star is the dog. The focus is you. Reach the Level 30 Wall.</p>
-          <button class="btn btn-brand" id="startBtn" style="margin-top:20px; width:100%;">START SYSTEM</button>
+          <h2 id="uiBrandSub">99% SCHEITERN AN LEVEL 30</h2>
+          <p id="uiStartDesc">Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.</p>
+          <div class="micro-grid" aria-hidden="true">
+            <div class="micro"><strong>30</strong>Wall</div>
+            <div class="micro"><strong>1</strong>Fehler</div>
+            <div class="micro"><strong>0</strong>Ausreden</div>
+          </div>
+          <button class="btn btn-brand" id="startBtn" type="button" style="margin-top:18px; width:100%;">START SYSTEM</button>
+          <div class="legal-links">
+            <a href="impressum.html">Impressum</a>
+            <a href="datenschutz.html">Datenschutz</a>
+          </div>
         </div>
       </div>
 
       <div class="overlay hidden" id="gameOverOverlay">
         <div class="card">
           <h2 id="uiGameOverFail" style="color:var(--danger)">SYSTEM FAILED</h2>
-          <p id="aiText" style="font-size:13px; font-weight:bold; font-style:italic; margin:15px 0; min-height:40px; color:#555;"></p>
-          <div id="finalScore" style="font-size:60px; font-weight:900; margin:10px 0; color: #000;">0 BOXES</div>
-          <p id="finalTime" style="font-size:16px; font-weight:900; color:var(--brand-color); margin-bottom:20px;">TIME: 0.00s</p>
-          
-          <div id="leaderboardEntrySection" style="display:none; margin-bottom: 20px; padding-top: 15px; border-top: 2px solid #000;">
-            <p style="font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; color:#000;">Secure your spot in the ranking:</p>
+          <p id="aiText" style="font-size:13px; font-weight:900; font-style:italic; margin:15px 0; min-height:40px; color:#555;"></p>
+          <div id="finalScore" style="font-size:60px; font-weight:900; margin:10px 0; color:#000;">0 BOXES</div>
+          <p id="finalTime" style="font-size:16px; font-weight:900; color:var(--brand-color); margin-bottom:8px;">TIME: 0.00s</p>
+          <p id="resultHint" class="muted-line" style="margin-bottom:18px;"></p>
+
+          <div id="leaderboardEntrySection" style="display:none; margin-bottom:16px; padding-top:15px; border-top:2px solid #000;">
+            <p id="savePrompt" style="font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; color:#000;">Sichere deinen Platz im Ranking:</p>
             <div id="errorMsg"></div>
-            <input type="text" id="nameInput" placeholder="YOUR NAME" maxlength="15" />
-            <button class="btn btn-brand" id="saveScoreBtn" style="width:100%; margin-bottom: 10px;">SAVE RANK</button>
+            <div id="saveMsg"></div>
+            <input type="text" id="nameInput" placeholder="ANZEIGENAME" maxlength="15" autocomplete="nickname" />
+            <div class="social-grid">
+              <select id="platformSelect" aria-label="Social Plattform">
+                <option value="AUTO">AUTO</option>
+                <option value="TIKTOK">TIKTOK</option>
+                <option value="INSTAGRAM">INSTAGRAM</option>
+                <option value="YOUTUBE">YOUTUBE</option>
+                <option value="X">X / TWITTER</option>
+                <option value="LINKEDIN">LINKEDIN</option>
+                <option value="TWITCH">TWITCH</option>
+                <option value="OTHER">OTHER</option>
+              </select>
+              <input type="text" id="socialInput" placeholder="@deinhandle" maxlength="32" autocomplete="off" inputmode="text" />
+            </div>
+            <div class="social-hint">Plattform egal. Ein @ reicht. Beispiel: @eddie_unaufhaltsam</div>
+            <button class="btn btn-brand" id="saveScoreBtn" type="button" style="width:100%; margin-bottom:10px;">SAVE RANK</button>
           </div>
-          
-          <button class="btn" id="restartBtn" style="width:100%;">REBOOT</button>
+
+          <div class="result-actions">
+            <button class="btn btn-ghost" id="shareBtn" type="button">CHALLENGE TEILEN</button>
+            <button class="btn" id="restartBtn" type="button">REBOOT</button>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="leaderboard-container">
-      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">30 BOXES: NOBODY</div>
-      <div class="leaderboard-title">Global Elite Ranking</div>
-      <div id="leaderboardList"></div>
+      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN</div>
+      <div class="leaderboard-title"><span>Global Elite Ranking</span><span>Top 10</span></div>
+      <div id="leaderboardList" class="muted-line">Lade Ranking...</div>
     </section>
   </main>
 
   <script>
     // ======================================================
-    // 1. CONFIGURATION (GLOBAL ENGLISH + UNAUFHALTSAM BRAND)
+    // 1. CONFIGURATION
     // ======================================================
-    const CLIENT_CONFIG = {
-        id: "leaderboard_eddie-v1", 
-        minScoreToSave: 1,      
-        easterEggScore: 29,     
-        brandColor: "#7C3AED",
-        logoFileName: "eddie", 
-        
-        quotes: [
-            '"Eddie is looking away. You lost your focus."',
-            '"Decent start. But the Level 30 Wall is different."',
-            '"Waking up. Now show real Macher-Instinct."',
-            '"Strong performance. The dog is proud of you."',
-            '"Elite level. You are dominating the system."',
-            '"ABSOLUTE UNAUFHALTSAM. You conquered the system. Respect."'
-        ]
+    const DEFAULT_CONFIG = {
+      id: "leaderboard_eddie-v1",
+      clientVersion: "eddie-unaufhaltsam-v2.1-social",
+      pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
+      brandTitle: "EDDIE UNAUFHALTSAM",
+      brandSub: "99% SCHEITERN AN LEVEL 30",
+      startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+      startButton: "START SYSTEM",
+      boxOverlayText: "FOCUS",
+      mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
+      brandColor: "#7C3AED",
+      logoFileName: "eddie_head",
+      logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
+      minScoreToSave: 4,
+      easterEggScore: 29,
+      maxLeaderboardEntries: 10,
+      quotes: [
+        '"Eddie hat nicht geblinzelt. Du schon."',
+        '"Netter Start. Aber Level 30 ist keine Komfortzone."',
+        '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
+        '"Stark. Macher-Instinkt ist sichtbar."',
+        '"Elite-Bereich. Du kontrollierst das System."',
+        '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+      ],
+      shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
+      savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
+      tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
+      savedText: "RANK GESICHERT.",
+      noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
+      networkErrorText: "Netzwerkfehler. Versuch es erneut.",
+      socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
+      socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional."
     };
 
-    document.documentElement.style.setProperty('--brand-color', CLIENT_CONFIG.brandColor);
+    const CLIENT_CONFIG = Object.freeze({ ...DEFAULT_CONFIG, ...(window.UNAUFHALTSAM_CONFIG || {}) });
+    document.title = CLIENT_CONFIG.pageTitle;
+    document.documentElement.style.setProperty("--brand-color", CLIENT_CONFIG.brandColor);
+    document.querySelector('meta[name="theme-color"]').setAttribute("content", CLIENT_CONFIG.brandColor);
+    document.getElementById("uiBrandTitle").textContent = CLIENT_CONFIG.brandTitle;
+    document.getElementById("uiBrandSub").textContent = CLIENT_CONFIG.brandSub;
+    document.getElementById("uiStartDesc").textContent = CLIENT_CONFIG.startDesc;
+    document.getElementById("startBtn").textContent = CLIENT_CONFIG.startButton;
+    document.getElementById("uiMyth").textContent = CLIENT_CONFIG.mythText;
+    document.getElementById("savePrompt").textContent = CLIENT_CONFIG.savePrompt;
 
     // ======================================================
     // 2. FIREBASE ENGINE
@@ -147,77 +232,126 @@
     const dbRef = db.collection(CLIENT_CONFIG.id);
 
     // ======================================================
-    // 3. GAME ENGINE LOGIC & IMAGE LOADER
+    // 3. GAME ENGINE
     // ======================================================
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    
-    const imgLogo = new Image(); 
-    let fallbackIndex = 0;
-    let logoStatus = "LOADING";
-    let logoError = false;
-    
-    const fallbacks = [
-        `${CLIENT_CONFIG.logoFileName}.png`,
-        `./${CLIENT_CONFIG.logoFileName}.png`,
-        "logo.png"
-    ];
-
-    function loadNextFallback() {
-        if (fallbackIndex < fallbacks.length) {
-            imgLogo.src = fallbacks[fallbackIndex];
-        } else {
-            logoStatus = "ERROR";
-            logoError = true;
-        }
-    }
-
-    imgLogo.onload = () => { logoStatus = "OK"; logoError = false; };
-    imgLogo.onerror = () => { fallbackIndex++; loadNextFallback(); };
-    loadNextFallback();
-    
     const BEST_KEY = "focusBest_" + CLIENT_CONFIG.id;
 
+    const imgLogo = new Image();
+    let fallbackIndex = 0;
+    let logoStatus = "LOADING";
+    const fallbacks = Array.isArray(CLIENT_CONFIG.logoFallbacks) && CLIENT_CONFIG.logoFallbacks.length
+      ? CLIENT_CONFIG.logoFallbacks
+      : [`${CLIENT_CONFIG.logoFileName}.png`, `./${CLIENT_CONFIG.logoFileName}.png`, "logo.png"];
+
+    function loadNextFallback() {
+      if (fallbackIndex < fallbacks.length) {
+        imgLogo.src = fallbacks[fallbackIndex];
+      } else {
+        logoStatus = "ERROR";
+      }
+    }
+
+    imgLogo.onload = () => { logoStatus = "OK"; };
+    imgLogo.onerror = () => { fallbackIndex += 1; loadNextFallback(); };
+    loadNextFallback();
+
+    function createSessionId() {
+      const arr = new Uint32Array(4);
+      if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(arr);
+      else for (let i = 0; i < arr.length; i += 1) arr[i] = Math.floor(Math.random() * 2 ** 32);
+      return Array.from(arr, n => n.toString(16).padStart(8, "0")).join("");
+    }
+
+    const session = { id: createSessionId(), saved: false };
+
     let state = {
-      running: false, score: 0, startTime: 0, totalTime: 0,
-      phase: "idle", phaseStartedAt: 0, boxes: [], 
-      correctId: null, selectedId: null, swapsRemaining: 0, activeSwap: null,
-      showBallTime: 1400, breatherMs: 300
+      running: false,
+      score: 0,
+      startTime: 0,
+      totalTime: 0,
+      phase: "idle",
+      phaseStartedAt: 0,
+      boxes: [],
+      correctId: null,
+      selectedId: null,
+      swapsRemaining: 0,
+      activeSwap: null,
+      showBallTime: 1400,
+      breatherMs: 300,
+      swapDuration: 280,
+      correctPressure: .6
     };
 
+    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+
     function getAIQuote(score) {
-        if (score <= 5) return CLIENT_CONFIG.quotes[0];
-        if (score <= 10) return CLIENT_CONFIG.quotes[1];
-        if (score <= 15) return CLIENT_CONFIG.quotes[2];
-        if (score <= 20) return CLIENT_CONFIG.quotes[3];
-        if (score <= 25) return CLIENT_CONFIG.quotes[4];
-        return CLIENT_CONFIG.quotes[5];
+      if (score <= 5) return CLIENT_CONFIG.quotes[0];
+      if (score <= 10) return CLIENT_CONFIG.quotes[1];
+      if (score <= 15) return CLIENT_CONFIG.quotes[2];
+      if (score <= 20) return CLIENT_CONFIG.quotes[3];
+      if (score <= 25) return CLIENT_CONFIG.quotes[4];
+      return CLIENT_CONFIG.quotes[5];
+    }
+
+    function getDifficulty(score, count) {
+      const phaseBoost = score < 10 ? 1.12 : score < 20 ? 1.34 : 1.56;
+      return {
+        swaps: clamp(Math.round(3 + count * phaseBoost + score * .25), 4, 64),
+        duration: clamp(340 - score * 7.5 - count * 2.8, 125, 340),
+        showMs: clamp(1550 - score * 22, 780, 1550),
+        breatherMs: clamp(320 - score * 5, 120, 320),
+        correctPressure: score < 10 ? .55 : score < 20 ? .66 : .76
+      };
     }
 
     function buildRound() {
       if (state.score >= CLIENT_CONFIG.easterEggScore) { finish(true); return; }
-      state.boxes = []; state.selectedId = null; state.activeSwap = null;
+
+      state.boxes = [];
+      state.selectedId = null;
+      state.activeSwap = null;
+
       const count = Math.min(30, 2 + state.score);
       const cols = Math.ceil(Math.sqrt(count));
-      const boxW = Math.max(45, Math.min(92, (canvas.width - 160) / cols - 24));
-      const gridW = cols * boxW + (cols - 1) * 24;
-      const startX = (canvas.width - gridW) / 2; 
-      const startY = 160 + ((canvas.height - 200) - (Math.ceil(count / cols) * boxW + (Math.ceil(count / cols) - 1) * 24)) / 2;
+      const rows = Math.ceil(count / cols);
+      const gap = 24;
+      const boxW = Math.max(45, Math.min(92, (canvas.width - 160) / cols - gap));
+      const gridW = cols * boxW + (cols - 1) * gap;
+      const gridH = rows * boxW + (rows - 1) * gap;
+      const startX = (canvas.width - gridW) / 2;
+      const startY = 160 + ((canvas.height - 200) - gridH) / 2;
 
-      for (let i = 0; i < count; i++) {
-        state.boxes.push({ id: i, x: startX + (i % cols) * (boxW + 24), y: startY + Math.floor(i / cols) * (boxW + 24), w: boxW, h: boxW, lift: 0 });
+      for (let i = 0; i < count; i += 1) {
+        state.boxes.push({
+          id: i,
+          x: startX + (i % cols) * (boxW + gap),
+          y: startY + Math.floor(i / cols) * (boxW + gap),
+          w: boxW,
+          h: boxW,
+          lift: 0
+        });
       }
+
+      const difficulty = getDifficulty(state.score, count);
       state.correctId = Math.floor(Math.random() * count);
-      state.swapsRemaining = Math.max(4, 3 + Math.floor(count * 1.5));
-      state.showBallTime = state.score >= 14 ? 1000 : 1400;
+      state.swapsRemaining = difficulty.swaps;
+      state.showBallTime = difficulty.showMs;
+      state.breatherMs = difficulty.breatherMs;
+      state.swapDuration = difficulty.duration;
+      state.correctPressure = difficulty.correctPressure;
+
       setPhase("show");
       updateHud();
     }
 
     function startNextSwap() {
       if (state.swapsRemaining <= 0) { state.activeSwap = null; setPhase("wait"); return; }
-      let a, b;
-      if (Math.random() < 0.6) {
+
+      let a;
+      let b;
+      if (Math.random() < state.correctPressure) {
         a = state.boxes.findIndex(box => box.id === state.correctId);
         b = Math.floor(Math.random() * state.boxes.length);
         while (b === a) b = Math.floor(Math.random() * state.boxes.length);
@@ -226,207 +360,435 @@
         b = Math.floor(Math.random() * state.boxes.length);
         while (b === a) b = Math.floor(Math.random() * state.boxes.length);
       }
+
       state.activeSwap = {
-        aId: state.boxes[a].id, bId: state.boxes[b].id, 
-        aStartX: state.boxes[a].x, bStartX: state.boxes[b].x, aStartY: state.boxes[a].y, bStartY: state.boxes[b].y,
-        aTargetX: state.boxes[b].x, bTargetX: state.boxes[a].x, aTargetY: state.boxes[b].y, bTargetY: state.boxes[a].y,
-        start: performance.now(), duration: Math.max(140, (2200 - state.score * 90) / 7.5)
+        aId: state.boxes[a].id,
+        bId: state.boxes[b].id,
+        aStartX: state.boxes[a].x,
+        bStartX: state.boxes[b].x,
+        aStartY: state.boxes[a].y,
+        bStartY: state.boxes[b].y,
+        aTargetX: state.boxes[b].x,
+        bTargetX: state.boxes[a].x,
+        aTargetY: state.boxes[b].y,
+        bTargetY: state.boxes[a].y,
+        start: performance.now(),
+        duration: state.swapDuration
       };
-      state.swapsRemaining--;
+      state.swapsRemaining -= 1;
     }
 
     function update(ts) {
       if (!state.running) return;
-      if (state.phase === "show" && ts - state.phaseStartedAt > state.showBallTime) { setPhase("shuffle"); startNextSwap(); }
-      else if (state.phase === "shuffle") {
+
+      if (state.phase === "show" && ts - state.phaseStartedAt > state.showBallTime) {
+        setPhase("shuffle");
+        startNextSwap();
+      } else if (state.phase === "shuffle") {
         if (!state.activeSwap) { startNextSwap(); return; }
-        const s = state.activeSwap, p = Math.min(1, (ts - s.start) / s.duration), e = p < 0.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
-        const bA = state.boxes.find(b => b.id === s.aId), bB = state.boxes.find(b => b.id === s.bId);
-        if(bA && bB) {
-            bA.x = s.aStartX + (s.aTargetX - s.aStartX) * e; bB.x = s.bStartX + (s.bTargetX - s.bStartX) * e;
-            bA.y = s.aStartY + (s.aTargetY - s.aStartY) * e; bB.y = s.bStartY + (s.bTargetY - s.bStartY) * e;
-            if (p >= 1) { bA.x = s.aTargetX; bA.y = s.aTargetY; bB.x = s.bTargetX; bB.y = s.bTargetY; state.activeSwap = null; }
+        const s = state.activeSwap;
+        const p = Math.min(1, (ts - s.start) / s.duration);
+        const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        const bA = state.boxes.find(bx => bx.id === s.aId);
+        const bB = state.boxes.find(bx => bx.id === s.bId);
+        if (bA && bB) {
+          bA.x = s.aStartX + (s.aTargetX - s.aStartX) * e;
+          bB.x = s.bStartX + (s.bTargetX - s.bStartX) * e;
+          bA.y = s.aStartY + (s.aTargetY - s.aStartY) * e;
+          bB.y = s.bStartY + (s.bTargetY - s.bStartY) * e;
+          if (p >= 1) {
+            bA.x = s.aTargetX; bA.y = s.aTargetY;
+            bB.x = s.bTargetX; bB.y = s.bTargetY;
+            state.activeSwap = null;
+          }
         }
-      } else if (state.phase === "wait" && ts - state.phaseStartedAt > state.breatherMs) setPhase("pick");
-      else if (state.phase === "reveal") {
-        const sel = state.boxes.find(b => b.id === state.selectedId), cor = state.boxes.find(b => b.id === state.correctId);
-        if (sel) sel.lift = Math.min(sel.h * 0.8, sel.lift + 5);
-        if (cor && cor.id !== state.selectedId) cor.lift = Math.min(cor.h * 0.8, cor.lift + 5);
-        if (ts - state.phaseStartedAt > 1200) {
-            if (state.selectedId === state.correctId) { state.score++; buildRound(); }
-            else { if(state.score >= 18) setTimeout(() => finish(false), 600); else finish(false); }
+      } else if (state.phase === "wait" && ts - state.phaseStartedAt > state.breatherMs) {
+        setPhase("pick");
+      } else if (state.phase === "reveal") {
+        const sel = state.boxes.find(b => b.id === state.selectedId);
+        const cor = state.boxes.find(b => b.id === state.correctId);
+        if (sel) sel.lift = Math.min(sel.h * .8, sel.lift + 5);
+        if (cor && cor.id !== state.selectedId) cor.lift = Math.min(cor.h * .8, cor.lift + 5);
+        if (ts - state.phaseStartedAt > 1100) {
+          if (state.selectedId === state.correctId) {
+            state.score += 1;
+            buildRound();
+          } else {
+            finish(false);
+          }
         }
       }
-      if (state.phase !== "reveal") state.boxes.forEach(b => b.lift = Math.max(0, b.lift - 6));
+
+      if (state.phase !== "reveal") state.boxes.forEach(b => { b.lift = Math.max(0, b.lift - 6); });
     }
 
     function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       state.boxes.forEach(box => {
         const y = box.y - box.lift;
         ctx.save();
-        
-        ctx.fillStyle = "#fff"; ctx.strokeStyle = "#000"; ctx.lineWidth = 3;
-        ctx.strokeRect(box.x, y, box.w, box.h); ctx.fillRect(box.x, y, box.w, box.h);
-        
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 3;
+        ctx.fillRect(box.x, y, box.w, box.h);
+        ctx.strokeRect(box.x, y, box.w, box.h);
+
         if (logoStatus === "OK" && imgLogo.naturalWidth > 0) {
-            ctx.drawImage(imgLogo, box.x + box.w * 0.04, y + box.h * 0.04, box.w * 0.92, box.h * 0.92);
-        } else if (logoStatus === "ERROR" || logoError) {
-            ctx.save();
-            ctx.fillStyle = CLIENT_CONFIG.brandColor;
-            ctx.font = `900 ${Math.floor(box.w * 0.3)}px Arial`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText("EDDIE", box.x + box.w / 2, y + box.h / 2);
-            ctx.restore();
+          ctx.drawImage(imgLogo, box.x + box.w * .04, y + box.h * .04, box.w * .92, box.h * .92);
+        } else if (logoStatus === "ERROR") {
+          ctx.save();
+          ctx.fillStyle = CLIENT_CONFIG.brandColor;
+          ctx.font = `900 ${Math.floor(box.w * .28)}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("EDDIE", box.x + box.w / 2, y + box.h / 2);
+          ctx.restore();
         }
 
         if (state.phase === "show" && box.id === state.correctId) {
-            ctx.save(); const pulse = Math.sin(performance.now() / 150) * 0.2 + 0.8; ctx.globalAlpha = pulse;
-            ctx.strokeStyle = CLIENT_CONFIG.brandColor; ctx.lineWidth = 6; ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
-            ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; ctx.fillRect(box.x, y, box.w, box.h);
-            ctx.font = `900 ${Math.floor(box.w * 0.24)}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.strokeStyle = "#000"; ctx.lineWidth = 4; ctx.strokeText("FOCUS", box.x + box.w/2, y + box.h/2);
-            ctx.fillStyle = "#fff"; ctx.fillText("FOCUS", box.x + box.w/2, y + box.h/2); ctx.restore();
+          ctx.save();
+          const pulse = Math.sin(performance.now() / 150) * .2 + .8;
+          ctx.globalAlpha = pulse;
+          ctx.strokeStyle = CLIENT_CONFIG.brandColor;
+          ctx.lineWidth = 6;
+          ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
+          ctx.fillStyle = "rgba(255,255,255,.8)";
+          ctx.fillRect(box.x, y, box.w, box.h);
+          ctx.font = `900 ${Math.floor(box.w * .22)}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 4;
+          ctx.strokeText(CLIENT_CONFIG.boxOverlayText, box.x + box.w / 2, y + box.h / 2);
+          ctx.fillStyle = "#fff";
+          ctx.fillText(CLIENT_CONFIG.boxOverlayText, box.x + box.w / 2, y + box.h / 2);
+          ctx.restore();
         }
 
         if (state.phase === "reveal" && box.id === state.correctId) {
-            ctx.fillStyle = "rgba(255, 255, 255, 0.7)"; ctx.fillRect(box.x, y, box.w, box.h);
-            ctx.fillStyle = CLIENT_CONFIG.brandColor; ctx.font = `${box.w * 0.5}px Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.fillText("👑", box.x + box.w/2, y + box.h/2);
+          ctx.fillStyle = "rgba(255,255,255,.72)";
+          ctx.fillRect(box.x, y, box.w, box.h);
+          ctx.fillStyle = CLIENT_CONFIG.brandColor;
+          ctx.font = `${box.w * .5}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("✓", box.x + box.w / 2, y + box.h / 2);
         }
+
         if (state.phase === "reveal" && box.id === state.selectedId) {
-            ctx.strokeStyle = (state.selectedId === state.correctId ? "#0f9d58" : "#d92d20");
-            ctx.lineWidth = 6; ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
+          ctx.strokeStyle = state.selectedId === state.correctId ? "#0f9d58" : "#d92d20";
+          ctx.lineWidth = 6;
+          ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
         }
         ctx.restore();
       });
     }
 
+    function displayBoxesFromScore(score) { return Math.min(30, score + 2); }
+
     function finish(victory) {
+      if (!state.running) return;
       state.running = false;
       state.totalTime = (performance.now() - state.startTime) / 1000;
+
+      const finalBoxes = displayBoxesFromScore(state.score);
+      const oldBest = Number(localStorage.getItem(BEST_KEY) || 0);
+      if (state.score > oldBest) localStorage.setItem(BEST_KEY, String(state.score));
+      updateHud();
+
       document.getElementById("gameOverOverlay").classList.remove("hidden");
-      const finalBoxes = Math.min(30, state.score + 2);
+      document.getElementById("uiGameOverFail").textContent = victory ? "WALL BROKEN" : "SYSTEM FAILED";
+      document.getElementById("uiGameOverFail").style.color = victory ? "var(--success)" : "var(--danger)";
       document.getElementById("finalScore").textContent = finalBoxes + " BOXES";
       document.getElementById("finalTime").textContent = `TIME: ${state.totalTime.toFixed(2)}s`;
       document.getElementById("aiText").textContent = getAIQuote(state.score);
-      
-      if (state.score >= CLIENT_CONFIG.minScoreToSave) document.getElementById("leaderboardEntrySection").style.display = "block";
+
+      const resultHint = document.getElementById("resultHint");
+      if (finalBoxes >= 30) resultHint.textContent = "30er-Wand erreicht. Jetzt Ranking sichern.";
+      else resultHint.textContent = `${30 - finalBoxes} Boxes bis zur Wall.`;
+
+      const entrySection = document.getElementById("leaderboardEntrySection");
+      const errorEl = document.getElementById("errorMsg");
+      errorEl.style.display = "none";
+      if (state.score >= CLIENT_CONFIG.minScoreToSave) {
+        entrySection.style.display = "block";
+      } else {
+        entrySection.style.display = "block";
+        document.getElementById("nameInput").style.display = "none";
+        document.getElementById("platformSelect").style.display = "none";
+        document.getElementById("socialInput").style.display = "none";
+        const socialHint = document.querySelector(".social-hint");
+        if (socialHint) socialHint.style.display = "none";
+        document.getElementById("saveScoreBtn").style.display = "none";
+        errorEl.textContent = CLIENT_CONFIG.tooWeakText;
+        errorEl.style.display = "block";
+      }
     }
 
     function setPhase(p) { state.phase = p; state.phaseStartedAt = performance.now(); }
-    function updateHud() {
-        const best = Number(localStorage.getItem(BEST_KEY) || 0);
-        document.getElementById("boxValue").textContent = Math.min(30, state.score + 2);
-        document.getElementById("bestValue").textContent = Math.min(30, best + 2);
-    }
 
-    canvas.onmousedown = e => { const r = canvas.getBoundingClientRect(); handleInteraction((e.clientX - r.left)*(canvas.width/r.width), (e.clientY - r.top)*(canvas.height/r.height)); };
-    canvas.ontouchstart = e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); handleInteraction((e.touches[0].clientX - r.left)*(canvas.width/r.width), (e.touches[0].clientY - r.top)*(canvas.height/r.height)); };
+    function updateHud() {
+      const best = Number(localStorage.getItem(BEST_KEY) || 0);
+      const currentBoxes = displayBoxesFromScore(state.score);
+      const bestBoxes = best > 0 ? displayBoxesFromScore(best) : 0;
+      document.getElementById("boxValue").textContent = currentBoxes;
+      document.getElementById("bestValue").textContent = bestBoxes;
+      document.getElementById("wallValue").textContent = currentBoxes >= 30 ? "LIVE" : String(30 - currentBoxes);
+    }
 
     function handleInteraction(x, y) {
-      if (state.phase === "pick") {
-        state.boxes.forEach(b => { if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) { state.selectedId = b.id; setPhase("reveal"); } });
+      if (state.phase !== "pick" || state.selectedId !== null) return;
+      for (const b of state.boxes) {
+        if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) {
+          state.selectedId = b.id;
+          setPhase("reveal");
+          break;
+        }
       }
     }
 
-    document.getElementById("startBtn").onclick = () => { state.running = true; state.score = 0; state.startTime = performance.now(); document.getElementById("startOverlay").classList.add("hidden"); buildRound(); };
-    document.getElementById("restartBtn").onclick = () => location.reload();
-    document.getElementById("resetBtn").onclick = () => location.reload();
-    
-    // ======================================================
-    // ELITE LEADERBOARD STORAGE (GLOBAL VERSION)
-    // ======================================================
-    document.getElementById("saveScoreBtn").onclick = async () => {
-        const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
-        const name = rawName.replace(/[^A-Z0-9]/g, ''); 
-        const errorEl = document.getElementById("errorMsg");
+    canvas.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      const r = canvas.getBoundingClientRect();
+      handleInteraction((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
+    }, { passive: false });
 
-        if (!name) { errorEl.textContent = "SELECT A REAL NAME"; errorEl.style.display = "block"; return; }
-
-        const displayScore = state.score + 2;
-
-        if (state.score < CLIENT_CONFIG.minScoreToSave) {
-            errorEl.textContent = "TOO WEAK FOR THE SYSTEM.";
-            errorEl.style.display = "block";
-            setTimeout(() => location.reload(), 2000);
-            return;
-        }
-
-        document.getElementById("saveScoreBtn").disabled = true;
-
-        try {
-            const userDocRef = dbRef.doc(name);
-            const docSnap = await userDocRef.get();
-
-            if (docSnap.exists) {
-                const existingData = docSnap.data();
-                if (displayScore <= existingData.score) {
-                    errorEl.textContent = "NO IMPROVEMENT. ONLY YOUR BEST COUNTS.";
-                    errorEl.style.display = "block";
-                    setTimeout(() => location.reload(), 2000);
-                    return;
-                }
-            }
-
-            const finalScoreToSave = Math.min(CLIENT_CONFIG.easterEggScore + 2, displayScore);
-            await userDocRef.set({
-                name: name,
-                score: finalScoreToSave,
-                time: state.totalTime,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            if (state.score > (Number(localStorage.getItem(BEST_KEY)) || 0)) {
-                localStorage.setItem(BEST_KEY, state.score);
-            }
-            location.reload();
-        } catch (e) {
-            console.error(e);
-            errorEl.textContent = "NETWORK ERROR. TRY AGAIN.";
-            errorEl.style.display = "block";
-            document.getElementById("saveScoreBtn").disabled = false;
-        }
+    document.getElementById("startBtn").onclick = () => {
+      state.running = true;
+      state.score = 0;
+      state.startTime = performance.now();
+      document.getElementById("startOverlay").classList.add("hidden");
+      buildRound();
     };
 
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        dbRef.onSnapshot(snap => {
-          let allEntries = [];
-          snap.forEach(d => allEntries.push(d.data()));
-          
-          allEntries.sort((a, b) => {
-             if (b.score !== a.score) return b.score - a.score;
-             const timeA = typeof a.time === 'number' ? a.time : 999;
-             const timeB = typeof b.time === 'number' ? b.time : 999;
-             return timeA - timeB;
-          });
+    document.getElementById("restartBtn").onclick = () => location.reload();
+    document.getElementById("resetBtn").onclick = () => location.reload();
 
-          const top10 = allEntries.slice(0, 10);
-          const list = document.getElementById("leaderboardList"); 
-          list.innerHTML = "";
-          let rank = 1;
-          top10.forEach(data => {
-            const tm = typeof data.time === 'number' ? data.time.toFixed(1) + "s" : "N/A";
-            list.innerHTML += `
-              <li class="leaderboard-entry">
-                <div class="rank-name">
-                    <span class="rank-number">#${rank}</span>
-                    <span>${data.name}</span>
-                </div>
-                <span>${data.score} BOXES <span style="font-size:10px; opacity:0.5;">(${tm})</span></span>
-              </li>`;
-            rank++;
-          });
-        }, error => {
-            console.error("Leaderboard Error:", error);
-        });
+    // ======================================================
+    // 4. LEADERBOARD WRITE
+    // ======================================================
+    const PLATFORM_ALIASES = {
+      TIKTOK: ["tiktok.com/@", "vm.tiktok.com/"],
+      INSTAGRAM: ["instagram.com/"],
+      YOUTUBE: ["youtube.com/@", "youtube.com/c/", "youtube.com/user/", "youtu.be/"],
+      X: ["twitter.com/", "x.com/"],
+      LINKEDIN: ["linkedin.com/in/", "linkedin.com/company/"],
+      TWITCH: ["twitch.tv/"]
+    };
+
+    function cleanSocialHandle(raw) {
+      return String(raw || "")
+        .trim()
+        .replace(/^https?:\/\//i, "")
+        .replace(/^www\./i, "")
+        .replace(/\?.*$/, "")
+        .replace(/#.*$/, "")
+        .replace(/^@+/, "")
+        .split("/")
+        .filter(Boolean)
+        .pop()
+        .replace(/[^A-Za-z0-9._]/g, "")
+        .slice(0, 30);
+    }
+
+    function detectPlatform(raw, selected) {
+      if (selected && selected !== "AUTO") return selected;
+      const value = String(raw || "").toLowerCase();
+      for (const [platform, needles] of Object.entries(PLATFORM_ALIASES)) {
+        if (needles.some(needle => value.includes(needle))) return platform;
       }
+      return "OTHER";
+    }
+
+    function makeDocId(platform, handle) {
+      return `${platform}_${handle}`.toUpperCase().replace(/[^A-Z0-9_]/g, "_").slice(0, 60);
+    }
+
+    document.getElementById("socialInput").addEventListener("input", event => {
+      const current = event.target.value;
+      if (current && !current.startsWith("@") && !current.startsWith("http")) event.target.value = "@" + current;
     });
-    auth.signInAnonymously();
+
+    document.getElementById("saveScoreBtn").onclick = async () => {
+      const errorEl = document.getElementById("errorMsg");
+      const saveMsg = document.getElementById("saveMsg");
+      const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
+      const name = rawName.replace(/[^A-Z0-9_]/g, "").slice(0, 15);
+      const rawSocial = document.getElementById("socialInput").value.trim();
+      const platform = detectPlatform(rawSocial, document.getElementById("platformSelect").value);
+      const socialHandle = cleanSocialHandle(rawSocial);
+      const socialDisplay = "@" + socialHandle;
+      const docId = makeDocId(platform, socialHandle);
+      const displayScore = displayBoxesFromScore(state.score);
+
+      errorEl.style.display = "none";
+      saveMsg.style.display = "none";
+
+      if (name.length < 2) {
+        errorEl.textContent = "Name braucht mindestens 2 Zeichen.";
+        errorEl.style.display = "block";
+        return;
+      }
+
+      if (socialHandle.length < 2 || socialHandle.length > 30) {
+        errorEl.textContent = CLIENT_CONFIG.socialRequiredText;
+        errorEl.style.display = "block";
+        return;
+      }
+
+      if (!/^[A-Za-z0-9._]{2,30}$/.test(socialHandle)) {
+        errorEl.textContent = CLIENT_CONFIG.socialInvalidText;
+        errorEl.style.display = "block";
+        return;
+      }
+
+      if (state.score < CLIENT_CONFIG.minScoreToSave) {
+        errorEl.textContent = CLIENT_CONFIG.tooWeakText;
+        errorEl.style.display = "block";
+        return;
+      }
+
+      const saveBtn = document.getElementById("saveScoreBtn");
+      saveBtn.disabled = true;
+
+      try {
+        const userDocRef = dbRef.doc(docId);
+        const docSnap = await userDocRef.get();
+
+        if (docSnap.exists) {
+          const existingData = docSnap.data();
+          const existingScore = Number(existingData.score || 0);
+          const existingTime = Number(existingData.time || 999999);
+          if (displayScore < existingScore || (displayScore === existingScore && state.totalTime >= existingTime)) {
+            errorEl.textContent = CLIENT_CONFIG.noImprovementText;
+            errorEl.style.display = "block";
+            saveBtn.disabled = false;
+            return;
+          }
+        }
+
+        await userDocRef.set({
+          name,
+          platform,
+          socialHandle,
+          socialDisplay,
+          docId,
+          score: displayScore,
+          time: Number(state.totalTime.toFixed(3)),
+          rounds: state.score,
+          sessionId: session.id,
+          clientVersion: CLIENT_CONFIG.clientVersion,
+          userAgent: navigator.userAgent.slice(0, 160),
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        session.saved = true;
+        saveMsg.textContent = CLIENT_CONFIG.savedText;
+        saveMsg.style.display = "block";
+        saveBtn.textContent = "SAVED";
+      } catch (e) {
+        console.error(e);
+        errorEl.textContent = CLIENT_CONFIG.networkErrorText;
+        errorEl.style.display = "block";
+        saveBtn.disabled = false;
+      }
+    };
+
+    document.getElementById("shareBtn").onclick = async () => {
+      const finalBoxes = displayBoxesFromScore(state.score);
+      const text = `${CLIENT_CONFIG.shareText}\nScore: ${finalBoxes}/30 Boxes.\n${window.location.href}`;
+      const btn = document.getElementById("shareBtn");
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: CLIENT_CONFIG.brandTitle, text, url: window.location.href });
+        } else if (navigator.clipboard) {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "KOPIERT";
+          setTimeout(() => { btn.textContent = "CHALLENGE TEILEN"; }, 1600);
+        }
+      } catch (e) {
+        console.warn("Share cancelled or failed", e);
+      }
+    };
+
+    // ======================================================
+    // 5. LEADERBOARD READ
+    // ======================================================
+    function normalizeEntry(data) {
+      const name = String(data.name || "UNKNOWN").replace(/[^A-Z0-9_]/g, "").slice(0, 15) || "UNKNOWN";
+      const platform = String(data.platform || "").replace(/[^A-Z]/g, "").slice(0, 12);
+      const socialHandle = String(data.socialHandle || "").replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
+      const socialDisplay = socialHandle ? "@" + socialHandle : "";
+      const score = clamp(Number(data.score || 0), 0, 30);
+      const time = typeof data.time === "number" ? data.time : 999999;
+      return { name, platform, socialDisplay, score, time };
+    }
+
+    function renderLeaderboard(entries) {
+      const list = document.getElementById("leaderboardList");
+      list.innerHTML = "";
+      if (!entries.length) {
+        list.textContent = "Noch kein Rank gesetzt.";
+        list.className = "muted-line";
+        return;
+      }
+      list.className = "";
+      const fragment = document.createDocumentFragment();
+      entries.forEach((data, index) => {
+        const li = document.createElement("li");
+        li.className = "leaderboard-entry";
+
+        const left = document.createElement("div");
+        left.className = "rank-name";
+
+        const rank = document.createElement("span");
+        rank.className = "rank-number";
+        rank.textContent = `#${index + 1}`;
+
+        const name = document.createElement("span");
+        name.className = "player-name";
+        name.textContent = data.socialDisplay ? `${data.name} · ${data.socialDisplay}${data.platform ? " / " + data.platform : ""}` : data.name;
+
+        const score = document.createElement("span");
+        score.className = "score-line";
+        const timeText = Number.isFinite(data.time) && data.time < 999999 ? `${data.time.toFixed(1)}s` : "N/A";
+        score.textContent = `${data.score} BOXES (${timeText})`;
+
+        left.append(rank, name);
+        li.append(left, score);
+        fragment.appendChild(li);
+      });
+      list.appendChild(fragment);
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return;
+      dbRef.onSnapshot(snap => {
+        const allEntries = [];
+        snap.forEach(d => allEntries.push(normalizeEntry(d.data())));
+        allEntries.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.time - b.time;
+        });
+        renderLeaderboard(allEntries.slice(0, CLIENT_CONFIG.maxLeaderboardEntries));
+      }, error => {
+        console.error("Leaderboard Error:", error);
+        const list = document.getElementById("leaderboardList");
+        list.textContent = "Ranking aktuell nicht erreichbar.";
+        list.className = "muted-line";
+      });
+    });
+
+    auth.signInAnonymously().catch(error => {
+      console.error("Auth Error:", error);
+      const list = document.getElementById("leaderboardList");
+      list.textContent = "Firebase Auth blockiert. Ranking nicht erreichbar.";
+      list.className = "muted-line";
+    });
 
     function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
+    updateHud();
     requestAnimationFrame(loop);
   </script>
 </body>
