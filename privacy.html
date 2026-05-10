@@ -1,36 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy – Eddie UNAUFHALTSAM</title>
-  <style>
-    body { font-family: Arial, sans-serif; line-height:1.6; padding:40px; max-width:720px; margin:auto; color:#000; }
-    h1 { font-weight:900; border-bottom:2px solid #000; padding-bottom:10px; text-transform:uppercase; }
-    h2 { font-size:18px; margin-top:25px; font-weight:900; }
-    a { color:#000; font-weight:bold; text-decoration:none; font-size:12px; opacity:.65; display:block; margin-top:40px; text-transform:uppercase; }
-  </style>
-</head>
-<body>
-  <h1>Privacy</h1>
+# UNAUFHALTSAM v2.2 Social / English UI
 
-  <p>Website operator: Kevin Schulze. See the legal notice for details.</p>
+## Changed in this build
 
-  <h2>1. Hosting</h2>
-  <p>This website is hosted with GitHub Pages. When the site is accessed, technical access data may be processed, including IP address, browser information and access time.</p>
+- All visible interface copy is English.
+- `UNAUFHALTSAM` is intentionally kept as the only German word in the product language.
+- Social-@ leaderboard entry remains active across TikTok, Instagram, YouTube, X, LinkedIn, Twitch and Other.
+- Legacy legal URLs redirect to English pages: `privacy.html` and `legal.html`.
+- Duplicate Firebase initialization line from the prior packaged build was removed.
 
-  <h2>2. Firebase / Leaderboard</h2>
-  <p>The global ranking uses Google Firebase / Firestore. When you save a rank, the display name, selected platform, social handle, score, play time, technical session data and timestamp are stored. Firebase Anonymous Authentication is also used to restrict write access to the ranking.</p>
+## Deploy
 
-  <h2>3. LocalStorage</h2>
-  <p>The game stores your local best score in browser LocalStorage. This information stays on your device until you delete browser data or remove the storage manually.</p>
+1. Copy the contents of this folder into the GitHub Pages repository.
+2. Commit and push.
+3. Open Firebase Console → Firestore → Rules.
+4. Replace the rules with the contents of `firestore.rules` and publish.
+5. Hard-refresh the website after deployment.
 
-  <h2>4. External Links</h2>
-  <p>Links to external platforms lead to websites outside this offer. Their own privacy terms apply.</p>
+## Test handles
 
-  <h2>5. Contact and Rights</h2>
-  <p>You may request access, correction or deletion of personal data. Contact: eddiekeschflow@gmail.com.</p>
+- `@yourhandle`
+- `https://www.tiktok.com/@yourhandle`
+- `instagram.com/testname`
+- `x.com/testname`
 
-  <a href="index.html">← Back to the system</a>
-</body>
-</html>
+## Note
+
+GitHub Pages plus a client-side Firebase app is not fully cheat-proof. The rules reduce low-effort manipulation. Strong verification would require a Cloud Function or server-side score validation. For the current challenge funnel, this build keeps the system lean.
+
+## v2.2 One-Slot Ranking
+
+This version enforces one visible ranking slot per player identity:
+
+- Social handles are normalized to lowercase.
+- The same social @ updates one existing rank instead of creating another row.
+- The same browser/device is locked to the first saved ranking slot.
+- The leaderboard display deduplicates legacy duplicates by social handle and display name.
+- Firestore update rules lock identity fields; only a better score or same-score faster time can update a rank.
+
+Client-only GitHub Pages cannot prove a human identity across different devices and completely different social handles. Full enforcement would require a backend identity check or verified social login.
+
+
+## v2.3 Wall 30 Fix
+
+- The top HUD wall indicator is now fixed at `30`.
+- Wall 30 is the permanent target, not a countdown.
+- Removed dynamic copy such as `28 Boxes to the wall` from the result hint.
+
+
+## v2.4 No Wall HUD
+
+- Removed the top HUD wall counter entirely.
+- Top HUD now shows only `Boxes` and `Best`.
+- Wall 30 remains a brand concept in the copy, not a status tile or countdown.
