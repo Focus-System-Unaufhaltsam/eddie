@@ -6,223 +6,52 @@
   <title>EDDIE’S WORLD | UNAUFHALTSAM</title>
   <meta name="description" content="Unaufhaltsam. Level 30 ist die Wand. Ein Fehler beendet das System." />
   <meta name="theme-color" content="#b01fa5" />
-
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
   <style>
-    :root { --brand-color:#b01fa5; --bg:#f5f5f7; --black:#000; --white:#fff; --grass:#e7f7e7; --shadow:rgba(0,0,0,.08); --success:#0f9d58; --danger:#d92d20; }
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
-    body { background:var(--bg); color:var(--black); min-height:100vh; overflow-x:hidden; }
-    .hidden { display:none !important; }
-    .view-section { padding:20px; min-height:100vh; }
-    #landing-page { display:flex; align-items:center; justify-content:center; text-align:center; }
-    .landing-container { max-width:900px; width:100%; }
-    .logo-main { width:120px; height:auto; margin-bottom:20px; }
-    h1.hero-title { font-size:clamp(32px,8vw,64px); font-weight:900; margin-bottom:5px; letter-spacing:-1px; text-transform:uppercase; }
-    .marke-sub { font-size:14px; font-weight:900; letter-spacing:3px; text-transform:uppercase; margin-bottom:40px; opacity:.8; }
-    .btn { display:inline-flex; align-items:center; justify-content:center; padding:16px 24px; border-radius:16px; font-weight:900; text-decoration:none; text-transform:uppercase; transition:all .2s ease; cursor:pointer; border:none; }
-    .btn:active { transform:scale(.97); }
-    .btn-game-trigger { min-width:320px; padding:22px 28px; background:var(--white); color:var(--black); border:3px solid var(--black); font-size:20px; box-shadow:0 6px 0 var(--black); }
-    .btn-game-trigger:hover { border-color:var(--brand-color); color:var(--brand-color); }
-    .btn-primary { background:var(--brand-color); color:var(--white); }
-    .btn-secondary { background:var(--black); color:var(--white); }
-    .btn-dark { background:#333; color:var(--white); }
-    #game-page { padding:20px 14px 40px; }
-    .wrap { width:100%; max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-    .hud { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-    .stat { border:2px solid #000; border-radius:18px; padding:12px; background:#fff; text-align:center; }
-    .stat .label { font-size:10px; opacity:.6; text-transform:uppercase; font-weight:800; margin-bottom:4px; }
-    .stat .value { font-size:clamp(18px,4vw,28px); font-weight:900; line-height:1; color:var(--brand-color); }
-    .game-shell { position:relative; width:100%; background:#fff; border:2px solid #000; border-radius:24px; overflow:hidden; box-shadow:0 10px 30px var(--shadow); }
-    canvas { display:block; width:100%; height:auto; background:linear-gradient(to bottom,#fff 72%,var(--grass) 72%); touch-action:none; }
-    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(255,255,255,.95); text-align:center; z-index:100; }
-    .card { width:min(100%,480px); background:#fff; border:2px solid #000; border-radius:22px; padding:30px 20px; }
-    .leaderboard-container { background:#fff; border:2px solid #000; border-radius:22px; padding:20px; margin-top:10px; }
-    .leaderboard-title { font-weight:900; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px; }
-    .leaderboard-entry { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #eee; font-weight:700; list-style:none; }
-    .lb-rank { opacity:.4; margin-right:10px; font-style:italic; }
-    .lb-needed { font-size:11px; font-weight:900; text-align:center; margin-top:12px; opacity:.6; text-transform:uppercase; }
-    #nameInput { border:2px solid #000; padding:14px; border-radius:12px; width:100%; font-size:18px; font-weight:900; text-align:center; margin:15px 0; outline:none; text-transform:uppercase; }
-    .legal-view { max-width:700px; margin:0 auto; padding:40px 20px; line-height:1.6; }
-    .legal-view h1 { font-weight:900; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:20px; }
-    .legal-view h2 { font-size:18px; margin-top:25px; font-weight:900; }
-    .legal-view p { margin-bottom:15px; }
-    .legal-view .back-link { color:#000; font-weight:bold; text-decoration:none; font-size:14px; opacity:.6; display:block; margin-top:40px; cursor:pointer; }
-    .footer-links { margin-top:40px; display:flex; justify-content:center; gap:20px; }
-    .footer-links span { font-size:11px; color:#aaa; font-weight:bold; text-transform:uppercase; cursor:pointer; }
-    @media (max-width:720px) { .btn-game-trigger { min-width:0; width:100%; } #game-page .topbar h1 { font-size:24px; } }
+    :root{--brand:#b01fa5;--bg:#f5f5f7;--black:#000;--white:#fff;--grass:#e7f7e7;--danger:#d92d20}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-tap-highlight-color:transparent}body{background:var(--bg);color:#000;min-height:100vh;overflow-x:hidden}.hidden{display:none!important}.view{min-height:100vh;padding:20px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:16px 24px;border-radius:16px;font-weight:900;text-decoration:none;text-transform:uppercase;cursor:pointer;border:0}.btn:active{transform:scale(.97)}.btn-main{background:var(--brand);color:#fff}.btn-black{background:#000;color:#fff}.btn-trigger{min-width:320px;padding:22px 28px;background:#fff;color:#000;border:3px solid #000;font-size:20px;box-shadow:0 6px 0 #000}#landing{display:flex;align-items:center;justify-content:center;text-align:center}.landing{max-width:900px;width:100%}.logo{width:120px;margin-bottom:20px}h1.hero{font-size:clamp(32px,8vw,64px);font-weight:900;letter-spacing:-1px;text-transform:uppercase}.sub{font-size:14px;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin:18px 0 40px;opacity:.8}.stack{display:flex;flex-direction:column;align-items:center;gap:16px}.stack>*{width:100%;max-width:420px}.footer{margin-top:40px;display:flex;justify-content:center;gap:20px}.footer span{font-size:11px;color:#aaa;font-weight:900;text-transform:uppercase;cursor:pointer}.wrap{width:100%;max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:18px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.hud{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stat{border:2px solid #000;border-radius:18px;padding:12px;background:#fff;text-align:center}.stat .label{font-size:10px;opacity:.6;text-transform:uppercase;font-weight:800;margin-bottom:4px}.stat .value{font-size:clamp(18px,4vw,28px);font-weight:900;color:var(--brand)}.shell{position:relative;background:#fff;border:2px solid #000;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08)}canvas{display:block;width:100%;height:auto;background:linear-gradient(to bottom,#fff 72%,var(--grass) 72%);touch-action:none}.overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(255,255,255,.96);text-align:center;z-index:100}.card{width:min(100%,480px);background:#fff;border:2px solid #000;border-radius:22px;padding:30px 20px}.leader{background:#fff;border:2px solid #000;border-radius:22px;padding:20px;margin-top:10px}.leader-title{font-weight:900;text-transform:uppercase;margin-bottom:10px;border-bottom:2px solid #000;padding-bottom:5px}.entry{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-weight:700;list-style:none}.rank{opacity:.4;margin-right:10px;font-style:italic}.need{font-size:11px;font-weight:900;text-align:center;margin-top:12px;opacity:.6;text-transform:uppercase}#nameInput{border:2px solid #000;padding:14px;border-radius:12px;width:100%;font-size:18px;font-weight:900;text-align:center;margin:15px 0;text-transform:uppercase}.legal{max-width:700px;margin:0 auto;padding:40px 20px;line-height:1.6}.legal h1{font-weight:900;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:20px}.legal h2{font-size:18px;margin-top:25px;font-weight:900}.back{color:#000;font-weight:900;opacity:.6;display:block;margin-top:40px;cursor:pointer}@media(max-width:720px){.btn-trigger{min-width:0;width:100%}.topbar h1{font-size:24px}}
   </style>
 </head>
 <body>
-  <section id="landing-page" class="view-section">
-    <div class="landing-container">
-      <img src="./eddie-main/logo.png" alt="Eddie Logo" class="logo-main" onerror="this.style.display='none'">
-      <h1 class="hero-title">UNAUFHALTSAM</h1>
-      <p class="marke-sub">LEVEL 30 IS THE WALL</p>
-      <div style="margin-bottom:28px;">
-        <p style="margin-bottom:12px; font-weight:900; text-transform:uppercase; font-size:16px;">KEIN WEG ZURÜCK.</p>
-        <button class="btn btn-game-trigger" onclick="switchView('game-page')">SPIEL STARTEN</button>
-        <p style="font-size:12px; opacity:.6; font-weight:700; margin-top:14px;">99% SCHEITERN VOR LEVEL 20.</p>
-      </div>
-      <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
-        <a class="btn btn-primary" style="width:100%; max-width:420px;" href="https://ko-fi.com/eddiesworld" target="_blank" rel="noopener">🔐 JOIN STATUS</a>
-        <button class="btn btn-dark" style="width:100%; max-width:420px;" onclick="switchView('game-page')">🚀 CREATE SYSTEM</button>
-        <a class="btn btn-secondary" style="width:100%; max-width:420px;" href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam" target="_blank" rel="noopener">🛒 MERCH</a>
-      </div>
-      <div class="footer-links"><span onclick="switchView('impressum-view')">Impressum</span><span onclick="switchView('datenschutz-view')">Datenschutz</span></div>
+  <section id="landing" class="view">
+    <div class="landing">
+      <img src="./eddie-main/logo.png" class="logo" alt="Eddie Logo" onerror="this.style.display='none'">
+      <h1 class="hero">UNAUFHALTSAM</h1><p class="sub">LEVEL 30 IS THE WALL</p>
+      <div style="margin-bottom:28px"><p style="margin-bottom:12px;font-weight:900;text-transform:uppercase">KEIN WEG ZURÜCK.</p><button class="btn btn-trigger" onclick="switchView('game')">SPIEL STARTEN</button><p style="font-size:12px;opacity:.6;font-weight:700;margin-top:14px">99% SCHEITERN VOR LEVEL 20.</p></div>
+      <div class="stack"><a class="btn btn-main" href="https://ko-fi.com/eddiesworld" target="_blank" rel="noopener">🔐 JOIN STATUS</a><button class="btn btn-black" onclick="switchView('game')">🚀 CREATE SYSTEM</button><a class="btn btn-black" href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam" target="_blank" rel="noopener">🛒 MERCH</a></div>
+      <div class="footer"><span onclick="switchView('impressum')">Impressum</span><span onclick="switchView('datenschutz')">Datenschutz</span></div>
     </div>
   </section>
 
-  <section id="game-page" class="view-section hidden">
-    <main class="wrap">
-      <div class="topbar"><div class="title"><h1>UNAUFHALTSAM</h1></div><button class="btn btn-secondary" onclick="switchView('landing-page')">HOME</button></div>
-      <section class="hud"><div class="stat"><div class="label">Boxen</div><div class="value" id="boxValue">2</div></div><div class="stat"><div class="label">Bestwert</div><div class="value" id="bestValue">0</div></div></section>
-      <section class="game-shell">
-        <canvas id="gameCanvas" width="960" height="540"></canvas>
-        <div class="overlay" id="startOverlay"><div class="card"><h2>FOCUS SYSTEM V1.0</h2><p>Fokussiere die richtige Box. Ein Fehler bedeutet das Ende.</p><button class="btn btn-primary" id="startBtn" style="margin-top:20px; width:100%;">SYSTEM STARTEN</button></div></div>
-        <div class="overlay hidden" id="nameOverlay"><div class="card"><h2>FOKUS BESTÄTIGT!</h2><p>Trage dich in die globale Rangliste ein:</p><input type="text" id="nameInput" placeholder="DEIN NAME" maxlength="12" /><button class="btn btn-primary" id="saveScoreBtn" style="width:100%; margin-top:10px;">RANKING SPEICHERN</button></div></div>
-        <div class="overlay hidden" id="gameOverOverlay"><div class="card"><h2>FOKUS VERLOREN</h2><div id="finalScore" style="font-size:48px; font-weight:900; color:var(--brand-color); margin:10px 0;">0 BOXEN</div><p id="bestLine" style="font-weight:800; opacity:.6; margin-bottom:20px;">BEST: 0 BOXEN</p><button class="btn btn-secondary" id="restartBtn" style="width:100%; margin-bottom:12px;">NOCHMAL VERSUCHEN</button><div id="promoBox" style="display:none; margin-top:15px; padding:15px; background:rgba(0,0,0,.03); border-radius:16px;"><p style="font-size:13px; font-weight:800; margin-bottom:10px; line-height:1.4;">ABSOLUTER FOKUS BELOHNT:<br>1 MONAT KO-FI MITGLIEDSCHAFT INKL. PRINT ENGINE.</p><a href="https://ko-fi.com/s/f84c7bff38" target="_blank" rel="noopener" class="btn" style="background:var(--brand-color); width:100%;">ZUM SHOP & CODE</a></div><div id="eliteReward" style="display:none; margin-top:15px; padding:15px; background:var(--brand-color); color:#fff; border-radius:16px;"><p style="font-size:12px; font-weight:800; margin-bottom:5px;">ELITE STATUS ERREICHT</p><p style="font-size:18px; font-weight:900;">CODE: EDDIE30</p></div></div></div>
-      </section>
-      <section class="leaderboard-container"><div id="uiMythTitle" style="font-weight:900; margin-bottom:8px; color:var(--danger);">NIEMAND HAT DAS ENDE GESEHEN</div><div class="leaderboard-title">Globales Fokus-Ranking</div><ul id="leaderboardList"></ul><div id="lbNeeded" class="lb-needed">LADE RANKING...</div></section>
-    </main>
-  </section>
-
-  <section id="impressum-view" class="view-section hidden"><div class="legal-view"><h1>Impressum</h1><p>Angaben gemäß § 5 TMG:</p><p>Kevin Schulze<br>Jungfernstieg 18<br>39340 Haldensleben</p><p><strong>Kontakt:</strong><br>E-Mail: eddiekeschflow@gmail.com</p><p><strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:</strong><br>Kevin Schulze<br>Jungfernstieg 18<br>39340 Haldensleben</p><span class="back-link" onclick="switchView('landing-page')">← Zurück zur Hauptseite</span></div></section>
-  <section id="datenschutz-view" class="view-section hidden"><div class="legal-view"><h1>Datenschutz</h1><p>Betreiber der Website: Kevin Schulze (siehe Impressum).</p><h2>1. Hosting</h2><p>Diese Website wird über GitHub Pages gehostet. GitHub kann beim Zugriff Log-Daten, zum Beispiel IP-Adresse, erfassen.</p><h2>2. Firebase / Ranking</h2><p>Für das Spiel werden Ranking- und Nutzungsdaten über Firebase gespeichert. Dazu gehören Name, Score, Zeit bis zur Speicherung, Versuche pro Sitzung und technische Sitzungskennungen.</p><h2>3. Externe Links</h2><p>Links zu Ko-fi, Creator-Spring und anderen Plattformen führen auf externe Websites. Es gelten deren Datenschutzbestimmungen.</p><h2>4. Ihre Rechte</h2><p>Sie haben das Recht auf Auskunft, Berichtigung oder Löschung Ihrer personenbezogenen Daten.</p><span class="back-link" onclick="switchView('landing-page')">← Zurück zur Hauptseite</span></div></section>
+  <section id="game" class="view hidden"><main class="wrap"><div class="topbar"><h1>UNAUFHALTSAM</h1><button class="btn btn-black" onclick="switchView('landing')">HOME</button></div><section class="hud"><div class="stat"><div class="label">Boxen</div><div class="value" id="boxValue">2</div></div><div class="stat"><div class="label">Bestwert</div><div class="value" id="bestValue">0</div></div></section><section class="shell"><canvas id="gameCanvas" width="960" height="540"></canvas><div class="overlay" id="startOverlay"><div class="card"><h2>FOCUS SYSTEM V1.1</h2><p>Fokussiere die richtige Box. Ein Fehler bedeutet das Ende.</p><button class="btn btn-main" id="startBtn" style="margin-top:20px;width:100%">SYSTEM STARTEN</button></div></div><div class="overlay hidden" id="nameOverlay"><div class="card"><h2>FOKUS BESTÄTIGT!</h2><p>Trage dich in die globale Rangliste ein:</p><input type="text" id="nameInput" placeholder="DEIN NAME" maxlength="12"><button class="btn btn-main" id="saveScoreBtn" style="width:100%;margin-top:10px">RANKING SPEICHERN</button></div></div><div class="overlay hidden" id="gameOverOverlay"><div class="card"><h2>FOKUS VERLOREN</h2><div id="finalScore" style="font-size:48px;font-weight:900;color:var(--brand);margin:10px 0">0 BOXEN</div><p id="bestLine" style="font-weight:800;opacity:.6;margin-bottom:20px">BEST: 0 BOXEN</p><button class="btn btn-black" id="restartBtn" style="width:100%;margin-bottom:12px">NOCHMAL VERSUCHEN</button><div id="promoBox" style="display:none;margin-top:15px;padding:15px;background:rgba(0,0,0,.03);border-radius:16px"><p style="font-size:13px;font-weight:800;margin-bottom:10px;line-height:1.4">ABSOLUTER FOKUS BELOHNT:<br>1 MONAT KO-FI MITGLIEDSCHAFT INKL. PRINT ENGINE.</p><a href="https://ko-fi.com/s/f84c7bff38" target="_blank" rel="noopener" class="btn btn-main" style="width:100%">ZUM SHOP & CODE</a></div><div id="eliteReward" style="display:none;margin-top:15px;padding:15px;background:var(--brand);color:#fff;border-radius:16px"><p style="font-size:12px;font-weight:800;margin-bottom:5px">ELITE STATUS ERREICHT</p><p style="font-size:18px;font-weight:900">CODE: EDDIE30</p></div></div></div></section><section class="leader"><div id="uiMythTitle" style="font-weight:900;margin-bottom:8px;color:var(--danger)">NIEMAND HAT DAS ENDE GESEHEN</div><div class="leader-title">Globales Fokus-Ranking</div><ul id="leaderboardList"></ul><div id="lbNeeded" class="need">LADE RANKING...</div></section></main></section>
+  <section id="impressum" class="view hidden"><div class="legal"><h1>Impressum</h1><p>Angaben gemäß § 5 TMG:</p><p>Kevin Schulze<br>Jungfernstieg 18<br>39340 Haldensleben</p><p><strong>Kontakt:</strong><br>E-Mail: eddiekeschflow@gmail.com</p><p><strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:</strong><br>Kevin Schulze<br>Jungfernstieg 18<br>39340 Haldensleben</p><span class="back" onclick="switchView('landing')">← Zurück zur Hauptseite</span></div></section>
+  <section id="datenschutz" class="view hidden"><div class="legal"><h1>Datenschutz</h1><p>Betreiber der Website: Kevin Schulze.</p><h2>1. Hosting</h2><p>Diese Website wird über GitHub Pages gehostet.</p><h2>2. Firebase / Ranking</h2><p>Für das Spiel werden Ranking- und Nutzungsdaten über Firebase gespeichert. Dazu gehören Name, Score, Zeit bis zur Speicherung, Versuche pro Sitzung und technische Sitzungskennungen.</p><h2>3. Externe Links</h2><p>Links zu Ko-fi und Creator-Spring führen auf externe Websites. Es gelten deren Datenschutzbestimmungen.</p><span class="back" onclick="switchView('landing')">← Zurück zur Hauptseite</span></div></section>
 
   <script>
-    function switchView(viewId) { document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden')); document.getElementById(viewId).classList.remove('hidden'); window.scrollTo(0,0); if (viewId === 'game-page') initGameView(); }
-
-    const CLIENT_CONFIG = { id:'eddie-v1', brandColor:'#b01fa5', campaign:'level30_wall', source:'github_pages' };
-    const firebaseConfig = { apiKey:'AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A', authDomain:'mg-challenge.firebaseapp.com', projectId:'mg-challenge', storageBucket:'mg-challenge.firebasestorage.app', messagingSenderId:'472289048663', appId:'1:472289048663:web:4d2cdb6f868ac9c32c4b12' };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const eddieDbRef = db.collection(`leaderboard_${CLIENT_CONFIG.id}`);
-    const statsRef = db.collection(`stats_leaderboard_${CLIENT_CONFIG.id}`).doc('global');
-    const sessionsRef = db.collection(`sessions_leaderboard_${CLIENT_CONFIG.id}`);
-
-    function makeSessionId() { if (crypto && crypto.randomUUID) return crypto.randomUUID(); const a = new Uint32Array(4); crypto.getRandomValues(a); return Array.from(a, n => n.toString(16).padStart(8,'0')).join(''); }
-    const sessionId = makeSessionId();
-    let sessionStartedAt = null;
-    let attemptsInSession = 0;
-    let lastTrackedTimePlayedMs = 0;
-    let firstStartTracked = false;
-
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const BEST_KEY = 'focusBest_' + CLIENT_CONFIG.id;
-    let state = { running:false, score:0, boxCount:2, best:Number(localStorage.getItem(BEST_KEY)||0), phase:'idle', phaseStartedAt:0, selectedBoxId:null, correctBoxId:null, showBallTime:1400, swapsRemaining:0, activeSwap:null, breatherMs:300, lowestTop10:0 };
-    const boxes = [];
-    const eddie = { x:canvas.width/2, y:80, happyFlash:0 };
-    const imgEddieHead = new Image(); imgEddieHead.src = './eddie-main/eddie_head.png';
-    const imgEddieTongue = new Image(); imgEddieTongue.src = './eddie-main/eddie_tongue.png';
-    const imgBrand = new Image(); imgBrand.src = './eddie-main/unaufhaltsam_brand.png';
-
-    function initGameView() { auth.onAuthStateChanged(user => { if (user) renderLeaderboard(); }); auth.signInAnonymously().catch(console.error); }
-
-    async function trackStart(isRestart=false) {
-      try {
-        const payload = { updated_at: firebase.firestore.FieldValue.serverTimestamp() };
-        if (isRestart) payload.total_restarts = firebase.firestore.FieldValue.increment(1);
-        else if (!firstStartTracked) { payload.total_starts = firebase.firestore.FieldValue.increment(1); firstStartTracked = true; }
-        else return;
-        await statsRef.set(payload, { merge:true });
-      } catch(e) { console.warn('Tracking failed', e); }
-    }
-
-    function startGame(isRestart=false) { if (!sessionStartedAt) sessionStartedAt = Date.now(); attemptsInSession++; trackStart(isRestart); state.running = true; state.score = 0; buildRound(); }
-
-    async function saveScore() {
-      const name = (document.getElementById('nameInput').value.trim().toUpperCase() || 'ANONYMOUS').slice(0,12);
-      if (!auth.currentUser) await auth.signInAnonymously();
-      const uid = auth.currentUser.uid;
-      try {
-        const finalScoreValue = Math.min(29, state.score);
-        const timePlayedMs = sessionStartedAt ? Date.now() - sessionStartedAt : 0;
-        const timeDeltaMs = Math.max(0, timePlayedMs - lastTrackedTimePlayedMs);
-        const userRef = eddieDbRef.doc(uid);
-        const oldDoc = await userRef.get();
-        const oldScore = oldDoc.exists ? Number(oldDoc.data().score || 0) : -1;
-        const scorePayload = { name, last_saved_at:firebase.firestore.FieldValue.serverTimestamp(), time_played_ms:timePlayedMs, attempts_in_session:attemptsInSession };
-        if (finalScoreValue > oldScore) scorePayload.score = finalScoreValue;
-        await userRef.set(scorePayload, { merge:true });
-        await statsRef.set({ score_saves:firebase.firestore.FieldValue.increment(1), total_time_played_ms:firebase.firestore.FieldValue.increment(timeDeltaMs), updated_at:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true });
-        await sessionsRef.doc(`${uid}_${sessionId}`).set({ uid, sessionId, name, finalScore:finalScoreValue, attempts_in_session:attemptsInSession, time_played_ms:timePlayedMs, source:CLIENT_CONFIG.source, campaign:CLIENT_CONFIG.campaign, timestamp:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true });
-        lastTrackedTimePlayedMs = timePlayedMs;
-        document.getElementById('bestLine').textContent = 'RANK SAVED. LEVEL 30 WAITS.';
-        document.getElementById('nameOverlay').classList.add('hidden');
-        document.getElementById('gameOverOverlay').classList.remove('hidden');
-        renderLeaderboard();
-      } catch(e) { console.error(e); alert('Fehler beim Speichern!'); }
-    }
-
-    async function renderLeaderboard() {
-      try {
-        const snap = await eddieDbRef.orderBy('score','desc').limit(10).get();
-        const list = document.getElementById('leaderboardList'); list.innerHTML = '';
-        let count = 1, lastScore = 0;
-        snap.forEach(doc => { const d = doc.data(); const visible = Math.min(30, Number(d.score || 0) + 2); list.innerHTML += `<li class="leaderboard-entry"><span><span class="lb-rank">#${count}</span> ${(d.name || 'ANONYMOUS')}</span><span>${visible}</span></li>`; lastScore = visible; count++; });
-        state.lowestTop10 = lastScore; updateHud();
-      } catch(e) { console.error(e); }
-    }
-
-    function buildRound() {
-      if (state.score >= 29) { gameOver(true); return; }
-      boxes.length = 0; state.boxCount = Math.min(30, 2 + state.score);
-      const count = state.boxCount, cols = Math.ceil(Math.sqrt(count)), rows = Math.ceil(count/cols);
-      const gap = 24, boxW = Math.max(45, Math.min(92, (canvas.width - 160) / cols - gap));
-      const gridW = cols * boxW + (cols - 1) * gap, gridH = rows * boxW + (rows - 1) * gap;
-      const startX = (canvas.width - gridW) / 2, startY = 160 + ((canvas.height - 200) - gridH) / 2;
-      for (let i=0; i<count; i++) boxes.push({ id:i, x:startX + (i%cols)*(boxW+gap), y:startY + Math.floor(i/cols)*(boxW+gap), w:boxW, h:boxW, lift:0 });
-      state.correctBoxId = Math.floor(Math.random()*count); eddie.y = Math.max(65, startY - 95); state.swapsRemaining = Math.max(4, 3 + Math.floor(count*1.5)); state.showBallTime = state.score >= 14 ? 1000 : 1400; setPhase('show'); updateHud();
-    }
-
-    function startNextSwap() {
-      if (state.swapsRemaining <= 0) { state.activeSwap = null; setPhase('wait'); return; }
-      let a = Math.random() < .62 ? boxes.findIndex(b => b.id === state.correctBoxId) : Math.floor(Math.random()*boxes.length);
-      let b = Math.floor(Math.random()*boxes.length); while (b === a) b = Math.floor(Math.random()*boxes.length);
-      state.activeSwap = { aId:boxes[a].id, bId:boxes[b].id, aStartX:boxes[a].x, bStartX:boxes[b].x, aStartY:boxes[a].y, bStartY:boxes[b].y, aTargetX:boxes[b].x, bTargetX:boxes[a].x, aTargetY:boxes[b].y, bTargetY:boxes[a].y, start:performance.now(), duration:Math.max(140, (2200 - state.score*90) / 7.5) };
-      state.swapsRemaining--;
-    }
-
-    function updateBoxes(ts) {
-      if (state.phase === 'show' && ts - state.phaseStartedAt > state.showBallTime) { setPhase('shuffle'); startNextSwap(); }
-      else if (state.phase === 'shuffle') { if (!state.activeSwap) { startNextSwap(); return; } const s = state.activeSwap, p = Math.min(1,(ts-s.start)/s.duration), e = easeInOutQuad(p); const bA = boxes.find(b=>b.id===s.aId), bB = boxes.find(b=>b.id===s.bId); if (bA && bB) { bA.x=lerp(s.aStartX,s.aTargetX,e); bB.x=lerp(s.bStartX,s.bTargetX,e); bA.y=lerp(s.aStartY,s.aTargetY,e); bB.y=lerp(s.bStartY,s.bTargetY,e); if (p>=1) { bA.x=s.aTargetX; bA.y=s.aTargetY; bB.x=s.bTargetX; bB.y=s.bTargetY; state.activeSwap=null; } } }
-      else if (state.phase === 'wait' && ts - state.phaseStartedAt > state.breatherMs) setPhase('pick');
-      else if (state.phase === 'reveal') { const s = boxes.find(b=>b.id===state.selectedBoxId), c = boxes.find(b=>b.id===state.correctBoxId); if (s) s.lift = Math.min(s.h*.8, s.lift+5); if (c && c.id !== state.selectedBoxId) c.lift = Math.min(c.h*.8, c.lift+5); if (ts - state.phaseStartedAt > 1200) { if (state.selectedBoxId === state.correctBoxId) { state.score++; eddie.happyFlash=.5; buildRound(); } else gameOver(); } }
-      if (state.phase !== 'reveal') boxes.forEach(b => b.lift = Math.max(0, b.lift - 6)); if (eddie.happyFlash > 0) eddie.happyFlash = Math.max(0, eddie.happyFlash - .03);
-    }
-
-    function gameOver(victory=false) {
-      state.running = false; setPhase('gameover'); if (state.score > state.best) { state.best = state.score; localStorage.setItem(BEST_KEY, String(state.best)); }
-      document.getElementById('finalScore').textContent = Math.min(30, state.boxCount) + ' BOXEN'; document.getElementById('bestLine').textContent = `BEST: ${Math.min(30, state.best + 2)} BOXEN`; updateHud();
-      const won = state.boxCount >= 30 || victory; document.getElementById('eliteReward').style.display = won ? 'block' : 'none'; document.getElementById('promoBox').style.display = won ? 'block' : 'none';
-      if (state.score > 0) { document.getElementById('nameOverlay').classList.remove('hidden'); document.getElementById('gameOverOverlay').classList.add('hidden'); } else { document.getElementById('nameOverlay').classList.add('hidden'); document.getElementById('gameOverOverlay').classList.remove('hidden'); }
-    }
-
-    function updateHud() { const cur = Math.min(30, state.boxCount); document.getElementById('boxValue').textContent = cur; document.getElementById('bestValue').textContent = Math.min(30, state.best + 2); const myth = document.getElementById('uiMythTitle'); if (state.score < 15) myth.textContent = 'NIEMAND HAT DAS ENDE GESEHEN'; else if (state.score < 22) myth.textContent = 'DAS SYSTEM HAT LIMITS'; else myth.textContent = 'LEVEL 30: UNERREICHBAR'; const diff = (state.lowestTop10 - cur) + 1; document.getElementById('lbNeeded').textContent = diff > 0 ? `NOCH +${diff} FÜR TOP 10` : 'DU BIST ELITE.'; }
-    function setPhase(n) { state.phase = n; state.phaseStartedAt = performance.now(); }
-    function lerp(a,b,t) { return a + (b-a)*t; }
-    function easeInOutQuad(t) { return t < .5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
-
-    function drawBoxes() {
-      boxes.forEach(box => { const y = box.y - box.lift, cx = box.x + box.w/2, cy = y + box.h/2; ctx.save(); let tilt = 0; if (state.phase === 'shuffle' && state.activeSwap) { if (box.id === state.activeSwap.aId) tilt = -.06; if (box.id === state.activeSwap.bId) tilt = .06; } ctx.translate(cx,cy); ctx.rotate(tilt); ctx.translate(-cx,-cy); ctx.fillStyle='#fff'; ctx.strokeStyle='#000'; ctx.lineWidth=3; ctx.strokeRect(box.x,y,box.w,box.h); ctx.fillRect(box.x,y,box.w,box.h); if (imgEddieTongue.complete && imgEddieTongue.naturalWidth) ctx.drawImage(imgEddieTongue, box.x+box.w*.04, y+box.w*.04, box.w*.92, box.h*.92); if (state.phase==='show' && box.id===state.correctBoxId) { ctx.save(); const pulse = Math.sin(performance.now()/150)*.2+.8; ctx.globalAlpha=pulse; ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--brand-color').trim(); ctx.lineWidth=6; ctx.strokeRect(box.x-4,y-4,box.w+8,box.h+8); ctx.fillStyle='#000'; ctx.font=`900 ${Math.floor(box.w*.18)}px Arial`; ctx.textAlign='center'; ctx.fillText('FOKUS', cx, cy+(box.w*.06)); ctx.restore(); } if (state.phase==='reveal' && state.selectedBoxId===box.id) { ctx.strokeStyle = state.selectedBoxId===state.correctBoxId ? '#0f9d58' : '#d92d20'; ctx.lineWidth=5; ctx.strokeRect(box.x-4,y-4,box.w+8,box.h+8); } if (state.phase==='reveal' && box.id===state.correctBoxId && imgBrand.complete && imgBrand.naturalWidth) { const bW = Math.max(box.w*1.15,110), bH = bW * (imgBrand.height / imgBrand.width); ctx.drawImage(imgBrand, box.x+box.w/2-bW/2, y+box.h+10, bW, bH); } ctx.restore(); });
-    }
-
-    function handleInteraction(x,y) { if (state.phase === 'pick') boxes.forEach(b => { if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) { state.selectedBoxId = b.id; setPhase('reveal'); } }); }
-    canvas.onmousedown = e => { const r = canvas.getBoundingClientRect(); handleInteraction((e.clientX-r.left)*(canvas.width/r.width), (e.clientY-r.top)*(canvas.height/r.height)); };
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); const r = canvas.getBoundingClientRect(); handleInteraction((e.touches[0].clientX-r.left)*(canvas.width/r.width), (e.touches[0].clientY-r.top)*(canvas.height/r.height)); }, { passive:false });
-
-    function loop(ts) { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#eef9ee'; ctx.fillRect(0,400,canvas.width,140); if (state.running) updateBoxes(ts); drawBoxes(); ctx.save(); ctx.translate(eddie.x, eddie.y + Math.sin(ts/400)*2); ctx.scale(.85,.85); if (imgEddieHead.complete && imgEddieHead.naturalWidth) ctx.drawImage(imgEddieHead, -50, -50, 100, 100); if (eddie.happyFlash > 0 && imgEddieTongue.complete && imgEddieTongue.naturalWidth) { ctx.globalAlpha = Math.min(1, eddie.happyFlash + .3); ctx.drawImage(imgEddieTongue, -14, 4, 28, 34); } ctx.restore(); requestAnimationFrame(loop); }
-
-    document.getElementById('startBtn').onclick = () => { startGame(false); document.getElementById('startOverlay').classList.add('hidden'); };
-    document.getElementById('saveScoreBtn').onclick = saveScore;
-    document.getElementById('restartBtn').onclick = () => { startGame(true); document.getElementById('gameOverOverlay').classList.add('hidden'); };
-    requestAnimationFrame(loop);
+    function switchView(id){document.querySelectorAll('.view').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');scrollTo(0,0);if(id==='game')initGameView()}
+    const CLIENT_CONFIG={id:'eddie-v1',campaign:'level30_wall',source:'github_pages'};
+    const firebaseConfig={apiKey:'AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A',authDomain:'mg-challenge.firebaseapp.com',projectId:'mg-challenge',storageBucket:'mg-challenge.firebasestorage.app',messagingSenderId:'472289048663',appId:'1:472289048663:web:4d2cdb6f868ac9c32c4b12'};
+    if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);const db=firebase.firestore(),auth=firebase.auth(),FV=firebase.firestore.FieldValue;const eddieDbRef=db.collection(`leaderboard_${CLIENT_CONFIG.id}`),statsRef=db.collection(`stats_leaderboard_${CLIENT_CONFIG.id}`).doc('global'),sessionsRef=db.collection(`sessions_leaderboard_${CLIENT_CONFIG.id}`);
+    async function ensureAuth(){if(auth.currentUser)return auth.currentUser;try{return await auth.signInAnonymously()}catch(e){console.error('Auth failed',e);throw e}}
+    function makeSessionId(){try{return crypto.randomUUID()}catch(e){return String(Date.now())+'_'+Math.random().toString(16).slice(2)}}const sessionId=makeSessionId();let sessionStartedAt=null,attemptsInSession=0,lastTrackedTimePlayedMs=0,firstStartTracked=false,leaderboardLoaded=false;
+    const canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d'),BEST_KEY='focusBest_'+CLIENT_CONFIG.id;let state={running:false,score:0,boxCount:2,best:Number(localStorage.getItem(BEST_KEY)||0),phase:'idle',phaseStartedAt:0,selectedBoxId:null,correctBoxId:null,showBallTime:1400,swapsRemaining:0,activeSwap:null,breatherMs:300,lowestTop10:0};const boxes=[],eddie={x:canvas.width/2,y:80,happyFlash:0};const imgEddieHead=new Image();imgEddieHead.src='./eddie-main/eddie_head.png';const imgEddieTongue=new Image();imgEddieTongue.src='./eddie-main/eddie_tongue.png';const imgBrand=new Image();imgBrand.src='./eddie-main/unaufhaltsam_brand.png';
+    async function initGameView(){try{await ensureAuth();if(!leaderboardLoaded){leaderboardLoaded=true;await renderLeaderboard()}}catch(e){console.error(e)}}
+    async function trackStart(isRestart=false){try{await ensureAuth();const payload={updated_at:FV.serverTimestamp()};if(isRestart)payload.total_restarts=FV.increment(1);else if(!firstStartTracked){payload.total_starts=FV.increment(1);firstStartTracked=true}else return;await statsRef.set(payload,{merge:true})}catch(e){console.warn('Tracking failed',e)}}
+    async function startGame(isRestart=false){if(!sessionStartedAt)sessionStartedAt=Date.now();attemptsInSession++;await trackStart(isRestart);state.running=true;state.score=0;buildRound()}
+    async function saveScore(){const name=(document.getElementById('nameInput').value.trim().toUpperCase()||'ANONYMOUS').slice(0,12);try{const user=await ensureAuth(),uid=user.uid,finalScore=Math.min(29,state.score),timePlayedMs=sessionStartedAt?Date.now()-sessionStartedAt:0,timeDeltaMs=Math.max(0,timePlayedMs-lastTrackedTimePlayedMs),userRef=eddieDbRef.doc(uid),oldDoc=await userRef.get(),oldScore=oldDoc.exists?Number(oldDoc.data().score||0):-1;const payload={name,last_saved_at:FV.serverTimestamp(),time_played_ms:timePlayedMs,attempts_in_session:attemptsInSession};if(finalScore>oldScore)payload.score=finalScore;await userRef.set(payload,{merge:true});await statsRef.set({score_saves:FV.increment(1),total_time_played_ms:FV.increment(timeDeltaMs),updated_at:FV.serverTimestamp()},{merge:true});await sessionsRef.doc(`${uid}_${sessionId}`).set({uid,sessionId,name,finalScore,attempts_in_session:attemptsInSession,time_played_ms:timePlayedMs,source:CLIENT_CONFIG.source,campaign:CLIENT_CONFIG.campaign,timestamp:FV.serverTimestamp()},{merge:true});lastTrackedTimePlayedMs=timePlayedMs;document.getElementById('bestLine').textContent='RANK SAVED. LEVEL 30 WAITS.';document.getElementById('nameOverlay').classList.add('hidden');document.getElementById('gameOverOverlay').classList.remove('hidden');leaderboardLoaded=false;await renderLeaderboard()}catch(e){console.error(e);alert('Fehler beim Speichern. Prüfe Firestore Rules und Anonymous Auth.')}}
+    async function renderLeaderboard(){const snap=await eddieDbRef.orderBy('score','desc').limit(10).get(),list=document.getElementById('leaderboardList');list.innerHTML='';let count=1,lastScore=0;snap.forEach(doc=>{const d=doc.data(),visible=Math.min(30,Number(d.score||0)+2);list.innerHTML+=`<li class="entry"><span><span class="rank">#${count}</span> ${(d.name||'ANONYMOUS')}</span><span>${visible}</span></li>`;lastScore=visible;count++});state.lowestTop10=lastScore;updateHud()}
+    function buildRound(){if(state.score>=29){gameOver(true);return}boxes.length=0;state.boxCount=Math.min(30,2+state.score);const count=state.boxCount,cols=Math.ceil(Math.sqrt(count)),rows=Math.ceil(count/cols),gap=24,boxW=Math.max(45,Math.min(92,(canvas.width-160)/cols-gap)),gridW=cols*boxW+(cols-1)*gap,gridH=rows*boxW+(rows-1)*gap,startX=(canvas.width-gridW)/2,startY=160+((canvas.height-200)-gridH)/2;for(let i=0;i<count;i++)boxes.push({id:i,x:startX+(i%cols)*(boxW+gap),y:startY+Math.floor(i/cols)*(boxW+gap),w:boxW,h:boxW,lift:0});state.correctBoxId=Math.floor(Math.random()*count);eddie.y=Math.max(65,startY-95);state.swapsRemaining=Math.max(4,3+Math.floor(count*1.5));state.showBallTime=state.score>=14?1000:1400;setPhase('show');updateHud()}
+    function startNextSwap(){if(state.swapsRemaining<=0){state.activeSwap=null;setPhase('wait');return}let a=Math.random()<.62?boxes.findIndex(b=>b.id===state.correctBoxId):Math.floor(Math.random()*boxes.length),b=Math.floor(Math.random()*boxes.length);while(b===a)b=Math.floor(Math.random()*boxes.length);state.activeSwap={aId:boxes[a].id,bId:boxes[b].id,aStartX:boxes[a].x,bStartX:boxes[b].x,aStartY:boxes[a].y,bStartY:boxes[b].y,aTargetX:boxes[b].x,bTargetX:boxes[a].x,aTargetY:boxes[b].y,bTargetY:boxes[a].y,start:performance.now(),duration:Math.max(140,(2200-state.score*90)/7.5)};state.swapsRemaining--}
+    function updateBoxes(ts){if(state.phase==='show'&&ts-state.phaseStartedAt>state.showBallTime){setPhase('shuffle');startNextSwap()}else if(state.phase==='shuffle'){if(!state.activeSwap){startNextSwap();return}const s=state.activeSwap,p=Math.min(1,(ts-s.start)/s.duration),e=easeInOutQuad(p),bA=boxes.find(b=>b.id===s.aId),bB=boxes.find(b=>b.id===s.bId);if(bA&&bB){bA.x=lerp(s.aStartX,s.aTargetX,e);bB.x=lerp(s.bStartX,s.bTargetX,e);bA.y=lerp(s.aStartY,s.aTargetY,e);bB.y=lerp(s.bStartY,s.bTargetY,e);if(p>=1){bA.x=s.aTargetX;bA.y=s.aTargetY;bB.x=s.bTargetX;bB.y=s.bTargetY;state.activeSwap=null}}}else if(state.phase==='wait'&&ts-state.phaseStartedAt>state.breatherMs)setPhase('pick');else if(state.phase==='reveal'){const s=boxes.find(b=>b.id===state.selectedBoxId),c=boxes.find(b=>b.id===state.correctBoxId);if(s)s.lift=Math.min(s.h*.8,s.lift+5);if(c&&c.id!==state.selectedBoxId)c.lift=Math.min(c.h*.8,c.lift+5);if(ts-state.phaseStartedAt>1200){if(state.selectedBoxId===state.correctBoxId){state.score++;eddie.happyFlash=.5;buildRound()}else gameOver()}}if(state.phase!=='reveal')boxes.forEach(b=>b.lift=Math.max(0,b.lift-6));if(eddie.happyFlash>0)eddie.happyFlash=Math.max(0,eddie.happyFlash-.03)}
+    function gameOver(victory=false){state.running=false;setPhase('gameover');if(state.score>state.best){state.best=state.score;localStorage.setItem(BEST_KEY,String(state.best))}document.getElementById('finalScore').textContent=Math.min(30,state.boxCount)+' BOXEN';document.getElementById('bestLine').textContent=`BEST: ${Math.min(30,state.best+2)} BOXEN`;updateHud();const won=state.boxCount>=30||victory;document.getElementById('eliteReward').style.display=won?'block':'none';document.getElementById('promoBox').style.display=won?'block':'none';if(state.score>0){document.getElementById('nameOverlay').classList.remove('hidden');document.getElementById('gameOverOverlay').classList.add('hidden')}else{document.getElementById('nameOverlay').classList.add('hidden');document.getElementById('gameOverOverlay').classList.remove('hidden')}}
+    function updateHud(){const cur=Math.min(30,state.boxCount);document.getElementById('boxValue').textContent=cur;document.getElementById('bestValue').textContent=Math.min(30,state.best+2);const myth=document.getElementById('uiMythTitle');if(state.score<15)myth.textContent='NIEMAND HAT DAS ENDE GESEHEN';else if(state.score<22)myth.textContent='DAS SYSTEM HAT LIMITS';else myth.textContent='LEVEL 30: UNERREICHBAR';const diff=(state.lowestTop10-cur)+1;document.getElementById('lbNeeded').textContent=diff>0?`NOCH +${diff} FÜR TOP 10`:'DU BIST ELITE.'}
+    function setPhase(n){state.phase=n;state.phaseStartedAt=performance.now()}function lerp(a,b,t){return a+(b-a)*t}function easeInOutQuad(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+    function drawBoxes(){boxes.forEach(box=>{const y=box.y-box.lift,cx=box.x+box.w/2,cy=y+box.h/2;ctx.save();let tilt=0;if(state.phase==='shuffle'&&state.activeSwap){if(box.id===state.activeSwap.aId)tilt=-.06;if(box.id===state.activeSwap.bId)tilt=.06}ctx.translate(cx,cy);ctx.rotate(tilt);ctx.translate(-cx,-cy);ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=3;ctx.strokeRect(box.x,y,box.w,box.h);ctx.fillRect(box.x,y,box.w,box.h);if(imgEddieTongue.complete&&imgEddieTongue.naturalWidth)ctx.drawImage(imgEddieTongue,box.x+box.w*.04,y+box.w*.04,box.w*.92,box.h*.92);if(state.phase==='show'&&box.id===state.correctBoxId){ctx.save();ctx.globalAlpha=Math.sin(performance.now()/150)*.2+.8;ctx.strokeStyle='var(--brand)';ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--brand').trim();ctx.lineWidth=6;ctx.strokeRect(box.x-4,y-4,box.w+8,box.h+8);ctx.fillStyle='#000';ctx.font=`900 ${Math.floor(box.w*.18)}px Arial`;ctx.textAlign='center';ctx.fillText('FOKUS',cx,cy+box.w*.06);ctx.restore()}if(state.phase==='reveal'&&state.selectedBoxId===box.id){ctx.strokeStyle=state.selectedBoxId===state.correctBoxId?'#0f9d58':'#d92d20';ctx.lineWidth=5;ctx.strokeRect(box.x-4,y-4,box.w+8,box.h+8)}if(state.phase==='reveal'&&box.id===state.correctBoxId&&imgBrand.complete&&imgBrand.naturalWidth){const bW=Math.max(box.w*1.15,110),bH=bW*(imgBrand.height/imgBrand.width);ctx.drawImage(imgBrand,box.x+box.w/2-bW/2,y+box.h+10,bW,bH)}ctx.restore()})}
+    function handleInteraction(x,y){if(state.phase==='pick')boxes.forEach(b=>{if(x>=b.x&&x<=b.x+b.w&&y>=b.y-b.lift&&y<=b.y-b.lift+b.h){state.selectedBoxId=b.id;setPhase('reveal')}})}canvas.onmousedown=e=>{const r=canvas.getBoundingClientRect();handleInteraction((e.clientX-r.left)*(canvas.width/r.width),(e.clientY-r.top)*(canvas.height/r.height))};canvas.addEventListener('touchstart',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();handleInteraction((e.touches[0].clientX-r.left)*(canvas.width/r.width),(e.touches[0].clientY-r.top)*(canvas.height/r.height))},{passive:false});
+    function loop(ts){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#eef9ee';ctx.fillRect(0,400,canvas.width,140);if(state.running)updateBoxes(ts);drawBoxes();ctx.save();ctx.translate(eddie.x,eddie.y+Math.sin(ts/400)*2);ctx.scale(.85,.85);if(imgEddieHead.complete&&imgEddieHead.naturalWidth)ctx.drawImage(imgEddieHead,-50,-50,100,100);if(eddie.happyFlash>0&&imgEddieTongue.complete&&imgEddieTongue.naturalWidth){ctx.globalAlpha=Math.min(1,eddie.happyFlash+.3);ctx.drawImage(imgEddieTongue,-14,4,28,34)}ctx.restore();requestAnimationFrame(loop)}
+    document.getElementById('startBtn').onclick=async()=>{await startGame(false);document.getElementById('startOverlay').classList.add('hidden')};document.getElementById('saveScoreBtn').onclick=saveScore;document.getElementById('restartBtn').onclick=async()=>{await startGame(true);document.getElementById('gameOverOverlay').classList.add('hidden')};requestAnimationFrame(loop);
   </script>
 </body>
 </html>
