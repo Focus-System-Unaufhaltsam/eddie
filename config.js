@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-dedupe-display",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social-dedupe-foreach",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -48,17 +48,12 @@ window.UNAUFHALTSAM_CONFIG = {
   const SLOT_KEY = "unaufhaltsam_social_slot_" + collectionName;
   const PLATFORMS = ["TIKTOK", "INSTAGRAM", "YOUTUBE", "X", "LINKEDIN", "TWITCH", "OTHER"];
 
-  function cleanName(raw) {
-    return String(raw || "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "").slice(0, 15) || "PLAYER";
-  }
-
-  function cleanSocialHandle(raw) {
-    return String(raw || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\?.*$/, "").replace(/#.*$/, "").replace(/^@+/, "").split("/").filter(Boolean).pop().replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
-  }
-
-  function normalizeHandle(raw) {
-    return cleanSocialHandle(raw).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 40);
-  }
+  function cleanName(raw) { return String(raw || "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "").slice(0, 15) || "PLAYER"; }
+  function cleanSocialHandle(raw) { return String(raw || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\?.*$/, "").replace(/#.*$/, "").replace(/^@+/, "").split("/").filter(Boolean).pop().replace(/[^A-Za-z0-9._]/g, "").slice(0, 30); }
+  function normalizeHandle(raw) { return cleanSocialHandle(raw).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 40); }
+  function scoreOf(d) { return Number(d && d.score || 0); }
+  function timeOf(d) { const t = Number(d && d.time); return Number.isFinite(t) ? t : 999999999; }
+  function rowKeyFromData(d) { const norm = normalizeHandle(d && (d.socialHandle || d.socialDisplay || d.handle || "")); return norm ? "H_" + norm : "N_" + cleanName(d && d.name); }
 
   function detectPlatform(raw, selected) {
     if (selected && selected !== "AUTO") return selected;
@@ -72,21 +67,7 @@ window.UNAUFHALTSAM_CONFIG = {
     return "OTHER";
   }
 
-  function docIdForHandle(handle) {
-    const normalized = normalizeHandle(handle);
-    return normalized ? "SOCIAL_" + normalized : null;
-  }
-
-  function rowKeyFromData(d) {
-    const handle = d && (d.socialHandle || d.socialDisplay || d.handle || "");
-    const norm = normalizeHandle(handle);
-    if (norm) return "H_" + norm;
-    const name = cleanName(d && d.name);
-    return "N_" + name;
-  }
-
-  function scoreOf(d) { return Number(d && d.score || 0); }
-  function timeOf(d) { const t = Number(d && d.time); return Number.isFinite(t) ? t : 999999999; }
+  function docIdForHandle(handle) { const normalized = normalizeHandle(handle); return normalized ? "SOCIAL_" + normalized : null; }
 
   function readInputs() {
     const nameInput = document.getElementById("nameInput");
@@ -128,6 +109,27 @@ window.UNAUFHALTSAM_CONFIG = {
     if (hint) hint.textContent = cfg.slotLockedText || "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden.";
   }
 
+  function dedupeDocs(docs) {
+    try {
+      const map = new Map();
+      docs.forEach(doc => {
+        const d = doc.data ? doc.data() : {};
+        const key = rowKeyFromData(d);
+        const prev = map.get(key);
+        if (!prev) map.set(key, doc);
+        else {
+          const pd = prev.data ? prev.data() : {};
+          if (scoreOf(d) > scoreOf(pd) || (scoreOf(d) === scoreOf(pd) && timeOf(d) < timeOf(pd))) map.set(key, doc);
+        }
+      });
+      return Array.from(map.values()).sort((a, b) => {
+        const da = a.data ? a.data() : {};
+        const db = b.data ? b.data() : {};
+        return scoreOf(db) - scoreOf(da) || timeOf(da) - timeOf(db);
+      }).slice(0, cfg.maxLeaderboardEntries || 10);
+    } catch (e) { return docs; }
+  }
+
   function installDocInterceptor() {
     if (!window.firebase || !firebase.firestore) return false;
     const proto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
@@ -144,6 +146,22 @@ window.UNAUFHALTSAM_CONFIG = {
       return originalDoc.apply(this, arguments);
     };
     proto.__unaufhaltsamSocialHandleLock = true;
+    return true;
+  }
+
+  function installQueryDedupe() {
+    if (!window.firebase || !firebase.firestore) return false;
+    const proto = firebase.firestore.QuerySnapshot && firebase.firestore.QuerySnapshot.prototype;
+    if (!proto || proto.__unaufhaltsamDedupeDisplay) return !!proto;
+    const docsGetter = Object.getOwnPropertyDescriptor(proto, "docs");
+    const originalForEach = proto.forEach;
+    if (docsGetter && typeof docsGetter.get === "function") {
+      Object.defineProperty(proto, "docs", { configurable: true, enumerable: true, get: function() { return dedupeDocs(docsGetter.get.call(this)); } });
+    }
+    if (typeof originalForEach === "function") {
+      proto.forEach = function(callback, thisArg) { dedupeDocs(docsGetter && docsGetter.get ? docsGetter.get.call(this) : []).forEach(doc => callback.call(thisArg, doc)); };
+    }
+    proto.__unaufhaltsamDedupeDisplay = true;
     return true;
   }
 
@@ -167,41 +185,6 @@ window.UNAUFHALTSAM_CONFIG = {
       }, 250);
     };
     applySlot(getSlot());
-    return true;
-  }
-
-  function installQueryDedupe() {
-    if (!window.firebase || !firebase.firestore) return false;
-    const proto = firebase.firestore.QuerySnapshot && firebase.firestore.QuerySnapshot.prototype;
-    if (!proto || proto.__unaufhaltsamDedupeDisplay) return !!proto;
-    const docsGetter = Object.getOwnPropertyDescriptor(proto, "docs");
-    if (!docsGetter || typeof docsGetter.get !== "function") return false;
-    Object.defineProperty(proto, "docs", {
-      configurable: true,
-      enumerable: true,
-      get: function dedupedDocs() {
-        const docs = docsGetter.get.call(this);
-        try {
-          const map = new Map();
-          docs.forEach(doc => {
-            const d = doc.data ? doc.data() : {};
-            const key = rowKeyFromData(d);
-            const prev = map.get(key);
-            if (!prev) map.set(key, doc);
-            else {
-              const pd = prev.data ? prev.data() : {};
-              if (scoreOf(d) > scoreOf(pd) || (scoreOf(d) === scoreOf(pd) && timeOf(d) < timeOf(pd))) map.set(key, doc);
-            }
-          });
-          return Array.from(map.values()).sort((a, b) => {
-            const da = a.data ? a.data() : {};
-            const db = b.data ? b.data() : {};
-            return scoreOf(db) - scoreOf(da) || timeOf(da) - timeOf(db);
-          }).slice(0, cfg.maxLeaderboardEntries || 10);
-        } catch (e) { return docs; }
-      }
-    });
-    proto.__unaufhaltsamDedupeDisplay = true;
     return true;
   }
 
