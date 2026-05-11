@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-one-slot",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social-one-slot-hard",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -18,8 +18,8 @@ window.UNAUFHALTSAM_CONFIG = {
   logoFileName: "eddie_head",
   logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
 
-  minScoreToSave: 4,       // score 4 = 6 sichtbare Boxes. Hält Spam aus dem Ranking.
-  easterEggScore: 29,      // Nach gelöstem 30-Box-Level wird das System beendet.
+  minScoreToSave: 4,
+  easterEggScore: 29,
   maxLeaderboardEntries: 10,
 
   quotes: [
@@ -43,8 +43,53 @@ window.UNAUFHALTSAM_CONFIG = {
 };
 
 // ==========================================
-// ONE PLAYER / ONE RANKING SLOT PER BROWSER
-// Prevents one person from filling the leaderboard with multiple handles.
+// HARD ONE-SLOT GUARD
+// Forces every write to the leaderboard collection into one stable auth-user document.
+// ==========================================
+(function installHardOneSlotGuard() {
+  const cfg = window.UNAUFHALTSAM_CONFIG || {};
+  const collectionName = cfg.id || "leaderboard_eddie-v1";
+  let installed = false;
+
+  function stableDocId() {
+    try {
+      if (window.firebase && firebase.auth && firebase.auth().currentUser) {
+        return "PLAYER_" + firebase.auth().currentUser.uid.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 80);
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function tryInstall() {
+    if (installed) return true;
+    if (!window.firebase || !firebase.firestore) return false;
+    const proto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
+    if (!proto || typeof proto.doc !== "function") return false;
+    if (proto.__unaufhaltsamOneSlotHard) { installed = true; return true; }
+
+    const originalDoc = proto.doc;
+    proto.doc = function guardedDoc(path) {
+      try {
+        if (this && this.path === collectionName) {
+          const fixed = stableDocId();
+          if (fixed) return originalDoc.call(this, fixed);
+        }
+      } catch (e) {}
+      return originalDoc.apply(this, arguments);
+    };
+    proto.__unaufhaltsamOneSlotHard = true;
+    installed = true;
+    return true;
+  }
+
+  const timer = window.setInterval(() => {
+    if (tryInstall()) window.clearInterval(timer);
+  }, 100);
+})();
+
+// ==========================================
+// UI ONE-SLOT GUARD
+// Locks displayed handle after the first successful save in this browser.
 // ==========================================
 (function installOneSlotGuard() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
@@ -56,18 +101,7 @@ window.UNAUFHALTSAM_CONFIG = {
   }
 
   function cleanSocialHandle(raw) {
-    return String(raw || "")
-      .trim()
-      .replace(/^https?:\/\//i, "")
-      .replace(/^www\./i, "")
-      .replace(/\?.*$/, "")
-      .replace(/#.*$/, "")
-      .replace(/^@+/, "")
-      .split("/")
-      .filter(Boolean)
-      .pop()
-      .replace(/[^A-Za-z0-9._]/g, "")
-      .slice(0, 30);
+    return String(raw || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\?.*$/, "").replace(/#.*$/, "").replace(/^@+/, "").split("/").filter(Boolean).pop().replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
   }
 
   function detectPlatform(raw, selected) {
@@ -92,26 +126,13 @@ window.UNAUFHALTSAM_CONFIG = {
       if (!raw) return null;
       const slot = JSON.parse(raw);
       if (!slot || !slot.docId || !slot.socialHandle || !slot.name) return null;
-      return {
-        docId: String(slot.docId).slice(0, 60),
-        name: cleanName(slot.name),
-        platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER",
-        socialHandle: cleanSocialHandle(slot.socialHandle)
-      };
-    } catch (e) {
-      return null;
-    }
+      return { docId: String(slot.docId).slice(0, 60), name: cleanName(slot.name), platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER", socialHandle: cleanSocialHandle(slot.socialHandle) };
+    } catch (e) { return null; }
   }
 
   function setSlot(slot) {
     if (!slot || !slot.docId || !slot.socialHandle) return;
-    localStorage.setItem(SLOT_KEY, JSON.stringify({
-      docId: slot.docId,
-      name: slot.name,
-      platform: slot.platform,
-      socialHandle: slot.socialHandle,
-      lockedAt: new Date().toISOString()
-    }));
+    localStorage.setItem(SLOT_KEY, JSON.stringify({ docId: slot.docId, name: slot.name, platform: slot.platform, socialHandle: slot.socialHandle, lockedAt: new Date().toISOString() }));
   }
 
   function captureSlotFromInputs() {
@@ -133,11 +154,9 @@ window.UNAUFHALTSAM_CONFIG = {
     const socialInput = document.getElementById("socialInput");
     const hint = document.querySelector(".social-hint");
     if (!nameInput || !platformSelect || !socialInput) return;
-
     nameInput.value = slot.name;
     socialInput.value = "@" + slot.socialHandle;
     platformSelect.value = PLATFORMS.includes(slot.platform) ? slot.platform : "OTHER";
-
     nameInput.readOnly = true;
     socialInput.readOnly = true;
     platformSelect.disabled = true;
@@ -148,17 +167,13 @@ window.UNAUFHALTSAM_CONFIG = {
     const saveBtn = document.getElementById("saveScoreBtn");
     if (!saveBtn || saveBtn.dataset.oneSlotGuard === "1") return false;
     if (typeof saveBtn.onclick !== "function") return false;
-
     const originalSave = saveBtn.onclick;
     saveBtn.dataset.oneSlotGuard = "1";
-
     saveBtn.onclick = async function guardedSave(event) {
       const lockedSlot = getSlot();
       if (lockedSlot) applySlot(lockedSlot);
       const slotBeforeSave = lockedSlot || captureSlotFromInputs();
-
       await originalSave.call(this, event);
-
       window.setTimeout(() => {
         const errorEl = document.getElementById("errorMsg");
         const saveMsg = document.getElementById("saveMsg");
@@ -166,14 +181,10 @@ window.UNAUFHALTSAM_CONFIG = {
         const hasSaved = saveMsg && saveMsg.style.display !== "none" && saveMsg.textContent.trim();
         if (!hasError && hasSaved) {
           const finalSlot = slotBeforeSave || captureSlotFromInputs();
-          if (finalSlot) {
-            setSlot(finalSlot);
-            applySlot(finalSlot);
-          }
+          if (finalSlot) { setSlot(finalSlot); applySlot(finalSlot); }
         }
       }, 250);
     };
-
     applySlot(getSlot());
     return true;
   }
