@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-dedupe-foreach",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social-socialkey-rules-ready",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -42,7 +42,7 @@ window.UNAUFHALTSAM_CONFIG = {
   slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
 };
 
-(function installSocialHandleLockAndDedupe() {
+(function installSocialKeyRulesAdapter() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
   const collectionName = cfg.id || "leaderboard_eddie-v1";
   const SLOT_KEY = "unaufhaltsam_social_slot_" + collectionName;
@@ -51,6 +51,7 @@ window.UNAUFHALTSAM_CONFIG = {
   function cleanName(raw) { return String(raw || "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "").slice(0, 15) || "PLAYER"; }
   function cleanSocialHandle(raw) { return String(raw || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\?.*$/, "").replace(/#.*$/, "").replace(/^@+/, "").split("/").filter(Boolean).pop().replace(/[^A-Za-z0-9._]/g, "").slice(0, 30); }
   function normalizeHandle(raw) { return cleanSocialHandle(raw).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 40); }
+  function docIdForHandle(handle) { const n = normalizeHandle(handle); return n ? "SOCIAL_" + n : null; }
   function scoreOf(d) { return Number(d && d.score || 0); }
   function timeOf(d) { const t = Number(d && d.time); return Number.isFinite(t) ? t : 999999999; }
   function rowKeyFromData(d) { const norm = normalizeHandle(d && (d.socialHandle || d.socialDisplay || d.handle || "")); return norm ? "H_" + norm : "N_" + cleanName(d && d.name); }
@@ -67,8 +68,6 @@ window.UNAUFHALTSAM_CONFIG = {
     return "OTHER";
   }
 
-  function docIdForHandle(handle) { const normalized = normalizeHandle(handle); return normalized ? "SOCIAL_" + normalized : null; }
-
   function readInputs() {
     const nameInput = document.getElementById("nameInput");
     const platformSelect = document.getElementById("platformSelect");
@@ -77,20 +76,21 @@ window.UNAUFHALTSAM_CONFIG = {
     const socialHandle = cleanSocialHandle(socialInput.value);
     const docId = docIdForHandle(socialHandle);
     if (!docId) return null;
-    return { docId, name: cleanName(nameInput.value), platform: detectPlatform(socialInput.value, platformSelect.value), socialHandle, normalizedHandle: normalizeHandle(socialHandle) };
+    return { docId, socialKey: docId, name: cleanName(nameInput.value), platform: detectPlatform(socialInput.value, platformSelect.value), socialHandle, normalizedHandle: normalizeHandle(socialHandle) };
   }
 
   function getSlot() {
     try {
       const slot = JSON.parse(localStorage.getItem(SLOT_KEY) || "null");
       if (!slot || !slot.docId || !slot.socialHandle) return null;
-      return { docId: String(slot.docId).slice(0, 80), name: cleanName(slot.name), platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER", socialHandle: cleanSocialHandle(slot.socialHandle), normalizedHandle: normalizeHandle(slot.socialHandle) };
+      const docId = docIdForHandle(slot.socialHandle) || String(slot.docId).slice(0, 80);
+      return { docId, socialKey: docId, name: cleanName(slot.name), platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER", socialHandle: cleanSocialHandle(slot.socialHandle), normalizedHandle: normalizeHandle(slot.socialHandle) };
     } catch (e) { return null; }
   }
 
   function setSlot(slot) {
     if (!slot || !slot.docId || !slot.socialHandle) return;
-    localStorage.setItem(SLOT_KEY, JSON.stringify({ docId: slot.docId, name: slot.name, platform: slot.platform, socialHandle: slot.socialHandle, normalizedHandle: slot.normalizedHandle, lockedAt: new Date().toISOString() }));
+    localStorage.setItem(SLOT_KEY, JSON.stringify({ docId: slot.docId, socialKey: slot.docId, name: slot.name, platform: slot.platform, socialHandle: slot.socialHandle, normalizedHandle: slot.normalizedHandle, lockedAt: new Date().toISOString() }));
   }
 
   function applySlot(slot) {
@@ -130,22 +130,53 @@ window.UNAUFHALTSAM_CONFIG = {
     } catch (e) { return docs; }
   }
 
+  function enrichPayload(data, docId) {
+    const slot = getSlot() || readInputs();
+    const finalDocId = (slot && slot.docId) || docId;
+    return Object.assign({}, data || {}, {
+      docId: finalDocId,
+      socialKey: finalDocId,
+      clientVersion: cfg.clientVersion || "eddie-unaufhaltsam",
+      name: cleanName((data && data.name) || (slot && slot.name)),
+      platform: (slot && slot.platform) || (data && data.platform) || "OTHER",
+      socialHandle: (slot && slot.socialHandle) || cleanSocialHandle(data && (data.socialHandle || data.socialDisplay || data.handle)),
+      socialDisplay: "@" + ((slot && slot.socialHandle) || cleanSocialHandle(data && (data.socialHandle || data.socialDisplay || data.handle)))
+    });
+  }
+
   function installDocInterceptor() {
     if (!window.firebase || !firebase.firestore) return false;
-    const proto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
-    if (!proto || typeof proto.doc !== "function") return false;
-    if (proto.__unaufhaltsamSocialHandleLock) return true;
-    const originalDoc = proto.doc;
-    proto.doc = function guardedDoc(path) {
-      try {
-        if (this && this.path === collectionName) {
-          const slot = getSlot() || readInputs();
-          if (slot && slot.docId) return originalDoc.call(this, slot.docId);
-        }
-      } catch (e) {}
-      return originalDoc.apply(this, arguments);
-    };
-    proto.__unaufhaltsamSocialHandleLock = true;
+    const colProto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
+    const docProto = firebase.firestore.DocumentReference && firebase.firestore.DocumentReference.prototype;
+    if (!colProto || !docProto || typeof colProto.doc !== "function" || typeof docProto.set !== "function") return false;
+
+    if (!colProto.__unaufhaltsamSocialKeyDoc) {
+      const originalDoc = colProto.doc;
+      colProto.doc = function guardedDoc(path) {
+        try {
+          if (this && this.path === collectionName) {
+            const slot = getSlot() || readInputs();
+            if (slot && slot.docId) return originalDoc.call(this, slot.docId);
+          }
+        } catch (e) {}
+        return originalDoc.apply(this, arguments);
+      };
+      colProto.__unaufhaltsamSocialKeyDoc = true;
+    }
+
+    if (!docProto.__unaufhaltsamSocialKeySet) {
+      const originalSet = docProto.set;
+      docProto.set = function guardedSet(data, options) {
+        try {
+          if (this && this.parent && this.parent.path === collectionName) {
+            return originalSet.call(this, enrichPayload(data, this.id), options);
+          }
+        } catch (e) {}
+        return originalSet.apply(this, arguments);
+      };
+      docProto.__unaufhaltsamSocialKeySet = true;
+    }
+
     return true;
   }
 
@@ -167,10 +198,10 @@ window.UNAUFHALTSAM_CONFIG = {
 
   function wrapSaveButton() {
     const saveBtn = document.getElementById("saveScoreBtn");
-    if (!saveBtn || saveBtn.dataset.socialHandleLock === "1") return false;
+    if (!saveBtn || saveBtn.dataset.socialKeyAdapter === "1") return false;
     if (typeof saveBtn.onclick !== "function") return false;
     const originalSave = saveBtn.onclick;
-    saveBtn.dataset.socialHandleLock = "1";
+    saveBtn.dataset.socialKeyAdapter = "1";
     saveBtn.onclick = async function guardedSave(event) {
       const locked = getSlot();
       if (locked) applySlot(locked);
@@ -196,7 +227,7 @@ window.UNAUFHALTSAM_CONFIG = {
       installQueryDedupe();
       wrapSaveButton();
       applySlot(getSlot());
-      if (tries > 80) window.clearInterval(timer);
+      if (tries > 100) window.clearInterval(timer);
     }, 100);
   }
 
