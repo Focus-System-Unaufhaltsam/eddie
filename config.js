@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-mobile-start-fix",
+  clientVersion: "eddie-unaufhaltsam-v2.1-mobile-hard-start-dock",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -42,44 +42,79 @@ window.UNAUFHALTSAM_CONFIG = {
   slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
 };
 
-(function installMobileStartFix() {
+// ==========================================
+// HARD MOBILE START FIX
+// If the original start button is buried inside the card, this adds a fixed mobile start dock.
+// ==========================================
+(function installMobileHardStartDock() {
   const css = `
     @media (max-width: 760px) {
-      html, body { overflow-x: hidden; }
-      body { -webkit-text-size-adjust: 100%; }
-      .wrap, main, .app, .container { width: 100% !important; max-width: 100% !important; padding-left: 10px !important; padding-right: 10px !important; }
-      header, .topbar { gap: 10px !important; }
-      header h1, .brand-title, h1 { font-size: clamp(30px, 9vw, 44px) !important; line-height: .95 !important; }
-      .reset-btn, #resetBtn, button[aria-label="Reset"] { min-height: 46px !important; padding: 12px 18px !important; }
-      .hud, .stats { gap: 10px !important; }
-      .stat { min-width: 0 !important; padding: 12px 8px !important; border-radius: 18px !important; }
+      html, body { overflow-x: hidden !important; -webkit-text-size-adjust: 100%; }
+      body { padding-left: 8px !important; padding-right: 8px !important; }
+      .wrap, main, .app, .container { width: 100% !important; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+      header, .topbar { gap: 10px !important; align-items: center !important; }
+      header h1, .brand-title, h1 { font-size: clamp(28px, 8vw, 42px) !important; line-height: .95 !important; }
+      .hud, .stats { gap: 8px !important; }
+      .stat { min-width: 0 !important; padding: 10px 6px !important; border-radius: 16px !important; }
       .game-shell, .game-frame, .screen, .canvas-wrap { max-height: none !important; overflow: visible !important; }
-      .overlay { align-items: flex-start !important; justify-content: center !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; padding: 12px !important; }
-      .overlay .card, .modal, .game-over-card, .start-card { max-height: calc(100vh - 120px) !important; overflow-y: auto !important; padding: 18px 14px !important; }
-      #startBtn, #saveScoreBtn, #restartBtn, .start-button, .save-button, .reboot-button { min-height: 56px !important; font-size: 18px !important; display: flex !important; visibility: visible !important; opacity: 1 !important; }
-      #startOverlay #startBtn, #startOverlay button { position: sticky !important; bottom: 8px !important; z-index: 999 !important; width: 100% !important; }
-      canvas { max-height: 58vh !important; object-fit: contain !important; }
+      canvas { max-height: 56vh !important; object-fit: contain !important; touch-action: manipulation !important; }
+      .overlay { align-items: flex-start !important; justify-content: center !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; padding: 10px !important; }
+      .overlay .card, .modal, .game-over-card, .start-card { max-height: calc(100dvh - 105px) !important; overflow-y: auto !important; padding: 14px 12px 76px !important; }
+      #startOverlay .card { display: flex !important; flex-direction: column !important; gap: 10px !important; }
+      #startBtn { order: -999 !important; margin: 0 0 10px 0 !important; }
+      #startBtn, #saveScoreBtn, #restartBtn, .start-button, .save-button, .reboot-button { min-height: 56px !important; font-size: 18px !important; display: flex !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; pointer-events: auto !important; }
+      #mobileStartDock { position: fixed !important; left: 12px !important; right: 12px !important; bottom: max(12px, env(safe-area-inset-bottom)) !important; z-index: 2147483000 !important; min-height: 62px !important; border-radius: 16px !important; border: 2px solid #000 !important; background: #7C3AED !important; color: #fff !important; font-size: 19px !important; font-weight: 900 !important; text-transform: uppercase !important; box-shadow: 0 8px 24px rgba(0,0,0,.35) !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+      #mobileStartDock.hidden { display: none !important; }
     }
+    @media (min-width: 761px) { #mobileStartDock { display:none !important; } }
   `;
   const style = document.createElement("style");
-  style.id = "unaufhaltsam-mobile-start-fix";
+  style.id = "unaufhaltsam-mobile-hard-start-dock";
   style.textContent = css;
   document.head.appendChild(style);
 
-  function exposeStartButton() {
-    const startBtn = document.getElementById("startBtn");
-    const overlay = document.getElementById("startOverlay");
-    if (!startBtn || !overlay || overlay.classList.contains("hidden")) return;
-    startBtn.style.display = "flex";
-    startBtn.style.visibility = "visible";
-    startBtn.style.opacity = "1";
+  function isMobile() { return window.matchMedia && window.matchMedia("(max-width: 760px)").matches; }
+
+  function ensureDock() {
+    let dock = document.getElementById("mobileStartDock");
+    if (!dock) {
+      dock = document.createElement("button");
+      dock.id = "mobileStartDock";
+      dock.type = "button";
+      dock.textContent = "START SYSTEM";
+      dock.addEventListener("click", function () {
+        const startBtn = document.getElementById("startBtn");
+        if (startBtn) startBtn.click();
+      });
+      document.body.appendChild(dock);
+    }
+    return dock;
   }
 
-  window.addEventListener("resize", exposeStartButton);
-  document.addEventListener("DOMContentLoaded", exposeStartButton);
-  window.setInterval(exposeStartButton, 500);
+  function syncDock() {
+    const dock = ensureDock();
+    const overlay = document.getElementById("startOverlay");
+    const startBtn = document.getElementById("startBtn");
+    const visible = isMobile() && overlay && startBtn && !overlay.classList.contains("hidden") && getComputedStyle(overlay).display !== "none";
+    dock.classList.toggle("hidden", !visible);
+    if (startBtn) {
+      startBtn.style.display = "flex";
+      startBtn.style.visibility = "visible";
+      startBtn.style.opacity = "1";
+      startBtn.style.pointerEvents = "auto";
+    }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", syncDock);
+  else syncDock();
+  window.addEventListener("resize", syncDock);
+  window.setInterval(syncDock, 250);
 })();
 
+// ==========================================
+// SOCIAL KEY RULES ADAPTER
+// Keeps Firestore writes compatible with strict socialKey == docId rules.
+// ==========================================
 (function installSocialKeyRulesAdapter() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
   const collectionName = cfg.id || "leaderboard_eddie-v1";
@@ -171,14 +206,15 @@ window.UNAUFHALTSAM_CONFIG = {
   function enrichPayload(data, docId) {
     const slot = getSlot() || readInputs();
     const finalDocId = (slot && slot.docId) || docId;
+    const handle = (slot && slot.socialHandle) || cleanSocialHandle(data && (data.socialHandle || data.socialDisplay || data.handle));
     return Object.assign({}, data || {}, {
       docId: finalDocId,
       socialKey: finalDocId,
       clientVersion: cfg.clientVersion || "eddie-unaufhaltsam",
       name: cleanName((data && data.name) || (slot && slot.name)),
       platform: (slot && slot.platform) || (data && data.platform) || "OTHER",
-      socialHandle: (slot && slot.socialHandle) || cleanSocialHandle(data && (data.socialHandle || data.socialDisplay || data.handle)),
-      socialDisplay: "@" + ((slot && slot.socialHandle) || cleanSocialHandle(data && (data.socialHandle || data.socialDisplay || data.handle)))
+      socialHandle: handle,
+      socialDisplay: "@" + handle
     });
   }
 
@@ -206,15 +242,12 @@ window.UNAUFHALTSAM_CONFIG = {
       const originalSet = docProto.set;
       docProto.set = function guardedSet(data, options) {
         try {
-          if (this && this.parent && this.parent.path === collectionName) {
-            return originalSet.call(this, enrichPayload(data, this.id), options);
-          }
+          if (this && this.parent && this.parent.path === collectionName) return originalSet.call(this, enrichPayload(data, this.id), options);
         } catch (e) {}
         return originalSet.apply(this, arguments);
       };
       docProto.__unaufhaltsamSocialKeySet = true;
     }
-
     return true;
   }
 
@@ -224,12 +257,8 @@ window.UNAUFHALTSAM_CONFIG = {
     if (!proto || proto.__unaufhaltsamDedupeDisplay) return !!proto;
     const docsGetter = Object.getOwnPropertyDescriptor(proto, "docs");
     const originalForEach = proto.forEach;
-    if (docsGetter && typeof docsGetter.get === "function") {
-      Object.defineProperty(proto, "docs", { configurable: true, enumerable: true, get: function() { return dedupeDocs(docsGetter.get.call(this)); } });
-    }
-    if (typeof originalForEach === "function") {
-      proto.forEach = function(callback, thisArg) { dedupeDocs(docsGetter && docsGetter.get ? docsGetter.get.call(this) : []).forEach(doc => callback.call(thisArg, doc)); };
-    }
+    if (docsGetter && typeof docsGetter.get === "function") Object.defineProperty(proto, "docs", { configurable: true, enumerable: true, get: function() { return dedupeDocs(docsGetter.get.call(this)); } });
+    if (typeof originalForEach === "function") proto.forEach = function(callback, thisArg) { dedupeDocs(docsGetter && docsGetter.get ? docsGetter.get.call(this) : []).forEach(doc => callback.call(thisArg, doc)); };
     proto.__unaufhaltsamDedupeDisplay = true;
     return true;
   }
