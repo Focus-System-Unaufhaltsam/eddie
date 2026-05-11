@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-one-slot-hard",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social-handle-lock",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -39,61 +39,17 @@ window.UNAUFHALTSAM_CONFIG = {
   networkErrorText: "Netzwerkfehler. Versuch es erneut.",
   socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
   socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional.",
-  slotLockedText: "Ranking-Slot gesperrt. Nur dein bestehender Platz kann verbessert werden."
+  slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
 };
 
 // ==========================================
-// HARD ONE-SLOT GUARD
-// Forces every write to the leaderboard collection into one stable auth-user document.
+// SOCIAL HANDLE LOCK
+// A social handle is the identity. Name/platform can change, but the normalized handle owns one slot.
 // ==========================================
-(function installHardOneSlotGuard() {
+(function installSocialHandleLock() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
   const collectionName = cfg.id || "leaderboard_eddie-v1";
-  let installed = false;
-
-  function stableDocId() {
-    try {
-      if (window.firebase && firebase.auth && firebase.auth().currentUser) {
-        return "PLAYER_" + firebase.auth().currentUser.uid.replace(/[^A-Za-z0-9_]/g, "_").slice(0, 80);
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  function tryInstall() {
-    if (installed) return true;
-    if (!window.firebase || !firebase.firestore) return false;
-    const proto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
-    if (!proto || typeof proto.doc !== "function") return false;
-    if (proto.__unaufhaltsamOneSlotHard) { installed = true; return true; }
-
-    const originalDoc = proto.doc;
-    proto.doc = function guardedDoc(path) {
-      try {
-        if (this && this.path === collectionName) {
-          const fixed = stableDocId();
-          if (fixed) return originalDoc.call(this, fixed);
-        }
-      } catch (e) {}
-      return originalDoc.apply(this, arguments);
-    };
-    proto.__unaufhaltsamOneSlotHard = true;
-    installed = true;
-    return true;
-  }
-
-  const timer = window.setInterval(() => {
-    if (tryInstall()) window.clearInterval(timer);
-  }, 100);
-})();
-
-// ==========================================
-// UI ONE-SLOT GUARD
-// Locks displayed handle after the first successful save in this browser.
-// ==========================================
-(function installOneSlotGuard() {
-  const cfg = window.UNAUFHALTSAM_CONFIG || {};
-  const SLOT_KEY = "unaufhaltsam_player_slot_" + (cfg.id || "leaderboard_eddie-v1");
+  const SLOT_KEY = "unaufhaltsam_social_slot_" + collectionName;
   const PLATFORMS = ["TIKTOK", "INSTAGRAM", "YOUTUBE", "X", "LINKEDIN", "TWITCH", "OTHER"];
 
   function cleanName(raw) {
@@ -102,6 +58,10 @@ window.UNAUFHALTSAM_CONFIG = {
 
   function cleanSocialHandle(raw) {
     return String(raw || "").trim().replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\?.*$/, "").replace(/#.*$/, "").replace(/^@+/, "").split("/").filter(Boolean).pop().replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
+  }
+
+  function normalizeHandle(raw) {
+    return cleanSocialHandle(raw).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 40);
   }
 
   function detectPlatform(raw, selected) {
@@ -116,35 +76,52 @@ window.UNAUFHALTSAM_CONFIG = {
     return "OTHER";
   }
 
-  function makeDocId(platform, handle) {
-    return `${platform}_${handle}`.toUpperCase().replace(/[^A-Z0-9_]/g, "_").slice(0, 60);
+  function docIdForHandle(handle) {
+    const normalized = normalizeHandle(handle);
+    return normalized ? "SOCIAL_" + normalized : null;
+  }
+
+  function readInputs() {
+    const nameInput = document.getElementById("nameInput");
+    const platformSelect = document.getElementById("platformSelect");
+    const socialInput = document.getElementById("socialInput");
+    if (!nameInput || !platformSelect || !socialInput) return null;
+    const socialHandle = cleanSocialHandle(socialInput.value);
+    const docId = docIdForHandle(socialHandle);
+    if (!docId) return null;
+    return {
+      docId,
+      name: cleanName(nameInput.value),
+      platform: detectPlatform(socialInput.value, platformSelect.value),
+      socialHandle,
+      normalizedHandle: normalizeHandle(socialHandle)
+    };
   }
 
   function getSlot() {
     try {
-      const raw = localStorage.getItem(SLOT_KEY);
-      if (!raw) return null;
-      const slot = JSON.parse(raw);
-      if (!slot || !slot.docId || !slot.socialHandle || !slot.name) return null;
-      return { docId: String(slot.docId).slice(0, 60), name: cleanName(slot.name), platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER", socialHandle: cleanSocialHandle(slot.socialHandle) };
+      const slot = JSON.parse(localStorage.getItem(SLOT_KEY) || "null");
+      if (!slot || !slot.docId || !slot.socialHandle) return null;
+      return {
+        docId: String(slot.docId).slice(0, 80),
+        name: cleanName(slot.name),
+        platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER",
+        socialHandle: cleanSocialHandle(slot.socialHandle),
+        normalizedHandle: normalizeHandle(slot.socialHandle)
+      };
     } catch (e) { return null; }
   }
 
   function setSlot(slot) {
     if (!slot || !slot.docId || !slot.socialHandle) return;
-    localStorage.setItem(SLOT_KEY, JSON.stringify({ docId: slot.docId, name: slot.name, platform: slot.platform, socialHandle: slot.socialHandle, lockedAt: new Date().toISOString() }));
-  }
-
-  function captureSlotFromInputs() {
-    const nameInput = document.getElementById("nameInput");
-    const platformSelect = document.getElementById("platformSelect");
-    const socialInput = document.getElementById("socialInput");
-    if (!nameInput || !platformSelect || !socialInput) return null;
-    const name = cleanName(nameInput.value);
-    const platform = detectPlatform(socialInput.value, platformSelect.value);
-    const socialHandle = cleanSocialHandle(socialInput.value);
-    if (socialHandle.length < 2) return null;
-    return { name, platform, socialHandle, docId: makeDocId(platform, socialHandle) };
+    localStorage.setItem(SLOT_KEY, JSON.stringify({
+      docId: slot.docId,
+      name: slot.name,
+      platform: slot.platform,
+      socialHandle: slot.socialHandle,
+      normalizedHandle: slot.normalizedHandle,
+      lockedAt: new Date().toISOString()
+    }));
   }
 
   function applySlot(slot) {
@@ -160,28 +137,47 @@ window.UNAUFHALTSAM_CONFIG = {
     nameInput.readOnly = true;
     socialInput.readOnly = true;
     platformSelect.disabled = true;
-    if (hint) hint.textContent = cfg.slotLockedText || "Ranking-Slot gesperrt. Nur dein bestehender Platz kann verbessert werden.";
+    if (hint) hint.textContent = cfg.slotLockedText || "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden.";
+  }
+
+  function installDocInterceptor() {
+    if (!window.firebase || !firebase.firestore) return false;
+    const proto = firebase.firestore.CollectionReference && firebase.firestore.CollectionReference.prototype;
+    if (!proto || typeof proto.doc !== "function") return false;
+    if (proto.__unaufhaltsamSocialHandleLock) return true;
+    const originalDoc = proto.doc;
+    proto.doc = function guardedDoc(path) {
+      try {
+        if (this && this.path === collectionName) {
+          const slot = getSlot() || readInputs();
+          if (slot && slot.docId) return originalDoc.call(this, slot.docId);
+        }
+      } catch (e) {}
+      return originalDoc.apply(this, arguments);
+    };
+    proto.__unaufhaltsamSocialHandleLock = true;
+    return true;
   }
 
   function wrapSaveButton() {
     const saveBtn = document.getElementById("saveScoreBtn");
-    if (!saveBtn || saveBtn.dataset.oneSlotGuard === "1") return false;
+    if (!saveBtn || saveBtn.dataset.socialHandleLock === "1") return false;
     if (typeof saveBtn.onclick !== "function") return false;
     const originalSave = saveBtn.onclick;
-    saveBtn.dataset.oneSlotGuard = "1";
+    saveBtn.dataset.socialHandleLock = "1";
     saveBtn.onclick = async function guardedSave(event) {
-      const lockedSlot = getSlot();
-      if (lockedSlot) applySlot(lockedSlot);
-      const slotBeforeSave = lockedSlot || captureSlotFromInputs();
+      const locked = getSlot();
+      if (locked) applySlot(locked);
+      const intended = locked || readInputs();
       await originalSave.call(this, event);
       window.setTimeout(() => {
         const errorEl = document.getElementById("errorMsg");
         const saveMsg = document.getElementById("saveMsg");
         const hasError = errorEl && errorEl.style.display !== "none" && errorEl.textContent.trim();
         const hasSaved = saveMsg && saveMsg.style.display !== "none" && saveMsg.textContent.trim();
-        if (!hasError && hasSaved) {
-          const finalSlot = slotBeforeSave || captureSlotFromInputs();
-          if (finalSlot) { setSlot(finalSlot); applySlot(finalSlot); }
+        if (!hasError && hasSaved && intended) {
+          setSlot(intended);
+          applySlot(intended);
         }
       }, 250);
     };
@@ -189,16 +185,17 @@ window.UNAUFHALTSAM_CONFIG = {
     return true;
   }
 
-  function bootGuard() {
+  function boot() {
     let tries = 0;
     const timer = window.setInterval(() => {
       tries += 1;
-      const done = wrapSaveButton();
-      if (done || tries > 40) window.clearInterval(timer);
+      installDocInterceptor();
+      wrapSaveButton();
       applySlot(getSlot());
-    }, 250);
+      if (tries > 60) window.clearInterval(timer);
+    }, 100);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootGuard);
-  else bootGuard();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();
