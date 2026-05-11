@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-handle-lock",
+  clientVersion: "eddie-unaufhaltsam-v2.1-social-dedupe-display",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -42,11 +42,7 @@ window.UNAUFHALTSAM_CONFIG = {
   slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
 };
 
-// ==========================================
-// SOCIAL HANDLE LOCK
-// A social handle is the identity. Name/platform can change, but the normalized handle owns one slot.
-// ==========================================
-(function installSocialHandleLock() {
+(function installSocialHandleLockAndDedupe() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
   const collectionName = cfg.id || "leaderboard_eddie-v1";
   const SLOT_KEY = "unaufhaltsam_social_slot_" + collectionName;
@@ -81,6 +77,17 @@ window.UNAUFHALTSAM_CONFIG = {
     return normalized ? "SOCIAL_" + normalized : null;
   }
 
+  function rowKeyFromData(d) {
+    const handle = d && (d.socialHandle || d.socialDisplay || d.handle || "");
+    const norm = normalizeHandle(handle);
+    if (norm) return "H_" + norm;
+    const name = cleanName(d && d.name);
+    return "N_" + name;
+  }
+
+  function scoreOf(d) { return Number(d && d.score || 0); }
+  function timeOf(d) { const t = Number(d && d.time); return Number.isFinite(t) ? t : 999999999; }
+
   function readInputs() {
     const nameInput = document.getElementById("nameInput");
     const platformSelect = document.getElementById("platformSelect");
@@ -89,39 +96,20 @@ window.UNAUFHALTSAM_CONFIG = {
     const socialHandle = cleanSocialHandle(socialInput.value);
     const docId = docIdForHandle(socialHandle);
     if (!docId) return null;
-    return {
-      docId,
-      name: cleanName(nameInput.value),
-      platform: detectPlatform(socialInput.value, platformSelect.value),
-      socialHandle,
-      normalizedHandle: normalizeHandle(socialHandle)
-    };
+    return { docId, name: cleanName(nameInput.value), platform: detectPlatform(socialInput.value, platformSelect.value), socialHandle, normalizedHandle: normalizeHandle(socialHandle) };
   }
 
   function getSlot() {
     try {
       const slot = JSON.parse(localStorage.getItem(SLOT_KEY) || "null");
       if (!slot || !slot.docId || !slot.socialHandle) return null;
-      return {
-        docId: String(slot.docId).slice(0, 80),
-        name: cleanName(slot.name),
-        platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER",
-        socialHandle: cleanSocialHandle(slot.socialHandle),
-        normalizedHandle: normalizeHandle(slot.socialHandle)
-      };
+      return { docId: String(slot.docId).slice(0, 80), name: cleanName(slot.name), platform: PLATFORMS.includes(String(slot.platform)) ? String(slot.platform) : "OTHER", socialHandle: cleanSocialHandle(slot.socialHandle), normalizedHandle: normalizeHandle(slot.socialHandle) };
     } catch (e) { return null; }
   }
 
   function setSlot(slot) {
     if (!slot || !slot.docId || !slot.socialHandle) return;
-    localStorage.setItem(SLOT_KEY, JSON.stringify({
-      docId: slot.docId,
-      name: slot.name,
-      platform: slot.platform,
-      socialHandle: slot.socialHandle,
-      normalizedHandle: slot.normalizedHandle,
-      lockedAt: new Date().toISOString()
-    }));
+    localStorage.setItem(SLOT_KEY, JSON.stringify({ docId: slot.docId, name: slot.name, platform: slot.platform, socialHandle: slot.socialHandle, normalizedHandle: slot.normalizedHandle, lockedAt: new Date().toISOString() }));
   }
 
   function applySlot(slot) {
@@ -175,13 +163,45 @@ window.UNAUFHALTSAM_CONFIG = {
         const saveMsg = document.getElementById("saveMsg");
         const hasError = errorEl && errorEl.style.display !== "none" && errorEl.textContent.trim();
         const hasSaved = saveMsg && saveMsg.style.display !== "none" && saveMsg.textContent.trim();
-        if (!hasError && hasSaved && intended) {
-          setSlot(intended);
-          applySlot(intended);
-        }
+        if (!hasError && hasSaved && intended) { setSlot(intended); applySlot(intended); }
       }, 250);
     };
     applySlot(getSlot());
+    return true;
+  }
+
+  function installQueryDedupe() {
+    if (!window.firebase || !firebase.firestore) return false;
+    const proto = firebase.firestore.QuerySnapshot && firebase.firestore.QuerySnapshot.prototype;
+    if (!proto || proto.__unaufhaltsamDedupeDisplay) return !!proto;
+    const docsGetter = Object.getOwnPropertyDescriptor(proto, "docs");
+    if (!docsGetter || typeof docsGetter.get !== "function") return false;
+    Object.defineProperty(proto, "docs", {
+      configurable: true,
+      enumerable: true,
+      get: function dedupedDocs() {
+        const docs = docsGetter.get.call(this);
+        try {
+          const map = new Map();
+          docs.forEach(doc => {
+            const d = doc.data ? doc.data() : {};
+            const key = rowKeyFromData(d);
+            const prev = map.get(key);
+            if (!prev) map.set(key, doc);
+            else {
+              const pd = prev.data ? prev.data() : {};
+              if (scoreOf(d) > scoreOf(pd) || (scoreOf(d) === scoreOf(pd) && timeOf(d) < timeOf(pd))) map.set(key, doc);
+            }
+          });
+          return Array.from(map.values()).sort((a, b) => {
+            const da = a.data ? a.data() : {};
+            const db = b.data ? b.data() : {};
+            return scoreOf(db) - scoreOf(da) || timeOf(da) - timeOf(db);
+          }).slice(0, cfg.maxLeaderboardEntries || 10);
+        } catch (e) { return docs; }
+      }
+    });
+    proto.__unaufhaltsamDedupeDisplay = true;
     return true;
   }
 
@@ -190,9 +210,10 @@ window.UNAUFHALTSAM_CONFIG = {
     const timer = window.setInterval(() => {
       tries += 1;
       installDocInterceptor();
+      installQueryDedupe();
       wrapSaveButton();
       applySlot(getSlot());
-      if (tries > 60) window.clearInterval(timer);
+      if (tries > 80) window.clearInterval(timer);
     }, 100);
   }
 
