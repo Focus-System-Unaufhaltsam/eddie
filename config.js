@@ -4,7 +4,7 @@
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-social-socialkey-rules-ready",
+  clientVersion: "eddie-unaufhaltsam-v2.1-mobile-start-fix",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
@@ -41,6 +41,44 @@ window.UNAUFHALTSAM_CONFIG = {
   socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional.",
   slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
 };
+
+(function installMobileStartFix() {
+  const css = `
+    @media (max-width: 760px) {
+      html, body { overflow-x: hidden; }
+      body { -webkit-text-size-adjust: 100%; }
+      .wrap, main, .app, .container { width: 100% !important; max-width: 100% !important; padding-left: 10px !important; padding-right: 10px !important; }
+      header, .topbar { gap: 10px !important; }
+      header h1, .brand-title, h1 { font-size: clamp(30px, 9vw, 44px) !important; line-height: .95 !important; }
+      .reset-btn, #resetBtn, button[aria-label="Reset"] { min-height: 46px !important; padding: 12px 18px !important; }
+      .hud, .stats { gap: 10px !important; }
+      .stat { min-width: 0 !important; padding: 12px 8px !important; border-radius: 18px !important; }
+      .game-shell, .game-frame, .screen, .canvas-wrap { max-height: none !important; overflow: visible !important; }
+      .overlay { align-items: flex-start !important; justify-content: center !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; padding: 12px !important; }
+      .overlay .card, .modal, .game-over-card, .start-card { max-height: calc(100vh - 120px) !important; overflow-y: auto !important; padding: 18px 14px !important; }
+      #startBtn, #saveScoreBtn, #restartBtn, .start-button, .save-button, .reboot-button { min-height: 56px !important; font-size: 18px !important; display: flex !important; visibility: visible !important; opacity: 1 !important; }
+      #startOverlay #startBtn, #startOverlay button { position: sticky !important; bottom: 8px !important; z-index: 999 !important; width: 100% !important; }
+      canvas { max-height: 58vh !important; object-fit: contain !important; }
+    }
+  `;
+  const style = document.createElement("style");
+  style.id = "unaufhaltsam-mobile-start-fix";
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  function exposeStartButton() {
+    const startBtn = document.getElementById("startBtn");
+    const overlay = document.getElementById("startOverlay");
+    if (!startBtn || !overlay || overlay.classList.contains("hidden")) return;
+    startBtn.style.display = "flex";
+    startBtn.style.visibility = "visible";
+    startBtn.style.opacity = "1";
+  }
+
+  window.addEventListener("resize", exposeStartButton);
+  document.addEventListener("DOMContentLoaded", exposeStartButton);
+  window.setInterval(exposeStartButton, 500);
+})();
 
 (function installSocialKeyRulesAdapter() {
   const cfg = window.UNAUFHALTSAM_CONFIG || {};
