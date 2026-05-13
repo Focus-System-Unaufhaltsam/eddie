@@ -303,3 +303,81 @@ window.UNAUFHALTSAM_CONFIG = {
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 })();
+
+// ==========================================
+// PUBLIC COPY GUARD
+// Cleans hardcoded legacy text from index.html without changing game logic.
+// ==========================================
+(function installPublicCopyGuard() {
+  const cfg = window.UNAUFHALTSAM_CONFIG || {};
+  const replacements = [
+    [/SCHEITERN AN/g, "FAIL AT"],
+    [/Der Hund ist roh\. Der Fokus bist du\. Ein Fehler beendet das System\./g, "The dog stays raw. The focus is yours. One mistake ends the system."],
+    [/Fehler/g, "Mistake"],
+    [/Ausreden/g, "Excuses"],
+    [/Sichere deinen Platz im Ranking:?/g, "Lock your rank:"],
+    [/Lade Ranking\.\.\./g, "Loading ranking..."],
+    [/Noch kein Rank gesetzt\./g, "No rank locked yet."],
+    [/Ranking aktuell nicht erreichbar\./g, "Ranking unavailable right now."],
+    [/Firebase Auth blockiert\. Ranking nicht erreichbar\./g, "Firebase Auth blocked. Ranking unavailable."],
+    [/Name braucht mindestens 2 Zeichen\./g, "Name needs at least 2 characters."],
+    [/30er-Wand erreicht\. Jetzt Ranking sichern\./g, "Level 30 wall reached. Lock your rank."],
+    [/([0-9]+) Boxes bis zur Wall\./g, "$1 boxes to the wall."],
+    [/CHALLENGE TEILEN/g, "SHARE CHALLENGE"],
+    [/KOPIERT/g, "COPIED"],
+    [/ANZEIGENAME/g, "DISPLAY NAME"],
+    [/@deinhandle/g, "@yourhandle"],
+    [/Plattform egal\. Ein @ reicht\. Beispiel: @eddie_unaufhaltsam/g, "Any platform. One @ is enough. Example: @eddie_unaufhaltsam"],
+    [/NOCH NICHTS FÜR TOURISTEN/g, "NOT FOR TOURISTS"],
+    [/scheitern an/g, "fail at"],
+    [/Ein Fehler beendet das System\./g, "One mistake ends the system."],
+    [/ist die Wall/g, "is the wall"]
+  ];
+
+  function cleanText(value) {
+    let out = String(value || "");
+    replacements.forEach(([from, to]) => { out = out.replace(from, to); });
+    return out;
+  }
+
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  function run() {
+    document.documentElement.lang = "en";
+    const desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute("content", "Eddie UNAUFHALTSAM Focus System. Real life. No staging. Level 30 is the wall.");
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute("content", "99% fail at Level 30. One mistake ends the system.");
+    setText("uiBrandSub", cfg.brandSub || "99% FAIL AT LEVEL 30");
+    setText("uiStartDesc", cfg.startDesc || "Real life. No staging. The dog stays raw. The focus is yours. One mistake ends the system.");
+    setText("uiMyth", cfg.mythText || "LEVEL 30 WALL: NOT FOR TOURISTS");
+    setText("savePrompt", cfg.savePrompt || "Lock your rank with your social @:");
+    const shareBtn = document.getElementById("shareBtn");
+    if (shareBtn && shareBtn.textContent.trim() === "CHALLENGE TEILEN") shareBtn.textContent = "SHARE CHALLENGE";
+    const nameInput = document.getElementById("nameInput");
+    if (nameInput) nameInput.placeholder = "DISPLAY NAME";
+    const socialInput = document.getElementById("socialInput");
+    if (socialInput) socialInput.placeholder = "@yourhandle";
+    const canvas = document.getElementById("gameCanvas");
+    if (canvas) canvas.setAttribute("aria-label", "UNAUFHALTSAM Focus Game");
+    const hud = document.querySelector("section.hud");
+    if (hud) hud.setAttribute("aria-label", "Game status");
+    const hint = document.querySelector(".social-hint");
+    if (hint) hint.textContent = cleanText(hint.textContent);
+
+    document.querySelectorAll("body *").forEach(el => {
+      if (el.childNodes.length === 1 && el.childNodes[0].nodeType === Node.TEXT_NODE) {
+        const cleaned = cleanText(el.textContent);
+        if (cleaned !== el.textContent) el.textContent = cleaned;
+      }
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run);
+  else run();
+  const observer = new MutationObserver(run);
+  if (document.documentElement) observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+})();
