@@ -1,18 +1,19 @@
 // ==========================================
 // UNAUFHALTSAM CONFIG
 // Change only this file for brand/copy/difficulty tuning.
+// Public UI copy is English. UNAUFHALTSAM remains the only German public word.
 // ==========================================
 window.UNAUFHALTSAM_CONFIG = {
   id: "leaderboard_eddie-v1",
-  clientVersion: "eddie-unaufhaltsam-v2.1-mobile-hard-start-dock",
+  clientVersion: "eddie-v2.2-story-rank",
 
   pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
   brandTitle: "EDDIE UNAUFHALTSAM",
-  brandSub: "99% SCHEITERN AN LEVEL 30",
-  startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+  brandSub: "99% FAIL AT LEVEL 30",
+  startDesc: "Real life. No staging. The dog stays raw. The focus is yours. One mistake ends the system.",
   startButton: "START SYSTEM",
   boxOverlayText: "FOCUS",
-  mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
+  mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
 
   brandColor: "#7C3AED",
   logoFileName: "eddie_head",
@@ -23,23 +24,24 @@ window.UNAUFHALTSAM_CONFIG = {
   maxLeaderboardEntries: 10,
 
   quotes: [
-    '"Eddie hat nicht geblinzelt. Du schon."',
-    '"Netter Start. Aber Level 30 ist keine Komfortzone."',
-    '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
-    '"Stark. Macher-Instinkt ist sichtbar."',
-    '"Elite-Bereich. Du kontrollierst das System."',
-    '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+    '"Eddie did not blink. You did."',
+    '"Nice start. Level 30 is not comfort."',
+    '"Now the mental part begins. Do not rush."',
+    '"Strong. Maker instinct is visible."',
+    '"Elite zone. You control the system."',
+    '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
   ],
 
-  shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
-  savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
-  tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
-  savedText: "RANK GESICHERT.",
-  noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
-  networkErrorText: "Netzwerkfehler. Versuch es erneut.",
-  socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
-  socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional.",
-  slotLockedText: "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden."
+  shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall. Screenshot your run. Tag @eddie_unaufhaltsam.",
+  storyShoutoutText: "Screenshot your run. Tag @eddie_unaufhaltsam. Eddie sees your focus.",
+  savePrompt: "Lock your rank with your social @:",
+  tooWeakText: "Not rank-ready. Deliver first.",
+  savedText: "RANK LOCKED. Screenshot your run. Tag @eddie_unaufhaltsam.",
+  noImprovementText: "No improvement. Only your best run counts.",
+  networkErrorText: "Network error. Try again.",
+  socialRequiredText: "Social @ needs 2 to 30 characters.",
+  socialInvalidText: "Letters, numbers, dots and underscores only. @ optional.",
+  slotLockedText: "Social slot locked. This handle can only be improved."
 };
 
 // ==========================================
@@ -179,7 +181,7 @@ window.UNAUFHALTSAM_CONFIG = {
     nameInput.readOnly = true;
     socialInput.readOnly = true;
     platformSelect.disabled = true;
-    if (hint) hint.textContent = cfg.slotLockedText || "Social-Slot gesperrt. Dieser Handle kann nur noch verbessert werden.";
+    if (hint) hint.textContent = cfg.slotLockedText || "Social slot locked. This handle can only be improved.";
   }
 
   function dedupeDocs(docs) {
