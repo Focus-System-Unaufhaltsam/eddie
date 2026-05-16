@@ -166,55 +166,18 @@
     </section>
   </main>
 
-  <script>
-    // ======================================================
-    // 1. CONFIGURATION
-    // ======================================================
-    const DEFAULT_CONFIG = {
-      id: "leaderboard_eddie-v1",
-      clientVersion: "eddie-v2.2-story-rank",
-      pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
-      brandTitle: "EDDIE UNAUFHALTSAM",
-      brandSub: "99% FAIL AT LEVEL 30",
-      startDesc: "Real life. No staging. The dog stays raw. The focus is yours. One mistake ends the system.",
-      startButton: "START SYSTEM",
-      boxOverlayText: "FOCUS",
-      mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
-      brandColor: "#7C3AED",
-      logoFileName: "eddie_head",
-      logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
-      minScoreToSave: 4,
-      easterEggScore: 29,
-      maxLeaderboardEntries: 10,
-      quotes: [
-        '"Eddie did not blink. You did."',
-        '"Nice start. Level 30 is not comfort."',
-        '"Now the mental part begins. Do not rush."',
-        '"Strong. Maker instinct is visible."',
-        '"Elite zone. You control the system."',
-        '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
-      ],
-      shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall. Screenshot your run. Tag @eddie_unaufhaltsam.",
-      storyShoutoutText: "Screenshot your run. Tag @eddie_unaufhaltsam. Eddie sees your focus.",
-      savePrompt: "Lock your rank with your social @:",
-      tooWeakText: "Not rank-ready. Deliver first.",
-      savedText: "RANK LOCKED. Screenshot your run. Tag @eddie_unaufhaltsam.",
-      noImprovementText: "No improvement. Only your best run counts.",
-      networkErrorText: "Network error. Try again.",
-      socialRequiredText: "Social @ needs 2 to 30 characters.",
-      socialInvalidText: "Letters, numbers, dots and underscores only. @ optional.",
-      slotLockedText: "Social slot locked. This handle can only be improved."
+ const setElemText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
     };
-    const CLIENT_CONFIG = Object.assign({}, DEFAULT_CONFIG, window.UNAUFHALTSAM_CONFIG || {});
-    document.title = CLIENT_CONFIG.pageTitle;
-    document.documentElement.style.setProperty("--brand-color", CLIENT_CONFIG.brandColor);
-    document.getElementById("uiBrandTitle").textContent = CLIENT_CONFIG.brandTitle;
-    document.getElementById("uiBrandSubTop").textContent = CLIENT_CONFIG.brandSub;
-    document.getElementById("uiBrandSub").textContent = CLIENT_CONFIG.brandSub;
-    document.getElementById("uiStartDesc").textContent = CLIENT_CONFIG.startDesc;
-    document.getElementById("startBtn").textContent = CLIENT_CONFIG.startButton;
-    document.getElementById("uiMyth").textContent = CLIENT_CONFIG.mythText;
-    document.getElementById("savePrompt").textContent = CLIENT_CONFIG.savePrompt;
+
+    setElemText("uiBrandTitle", CLIENT_CONFIG.brandTitle);
+    setElemText("uiBrandSubTop", CLIENT_CONFIG.brandSub);
+    setElemText("uiBrandSub", CLIENT_CONFIG.brandSub);
+    setElemText("uiStartDesc", CLIENT_CONFIG.startDesc);
+    setElemText("startBtn", CLIENT_CONFIG.startButton);
+    setElemText("uiMyth", CLIENT_CONFIG.mythText);
+    setElemText("savePrompt", CLIENT_CONFIG.savePrompt);
 
     // ======================================================
     // 2. FIREBASE ENGINE — optional, never blocks the game
