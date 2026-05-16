@@ -11,9 +11,6 @@
   <meta name="theme-color" content="#7C3AED" />
 
   <script src="config.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
   <style>
     :root {
@@ -78,26 +75,31 @@
     .legal-links a { font-size:11px; color:#777; text-decoration:none; font-weight:900; text-transform:uppercase; }
 
     @media (max-width:720px) {
-      .btn { width:100%; }
-      .result-actions, .social-grid { grid-template-columns:1fr; }
+      body { padding:10px; }
+      .topbar { flex-direction:column; align-items:stretch; }
+      .hud { grid-template-columns:repeat(3,1fr); gap:7px; }
+      .stat { padding:9px 5px; }
+      .card { padding:20px 12px; }
       .micro-grid { grid-template-columns:1fr; }
+      .social-grid, .result-actions { grid-template-columns:1fr; }
+      .leaderboard-entry { font-size:13px; flex-direction:column; }
     }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <div class="topbar">
+    <header class="topbar">
       <div class="title">
         <h1 id="uiBrandTitle">EDDIE UNAUFHALTSAM</h1>
-        <p id="uiBrandSubLine">Real life. No staging.</p>
+        <p id="uiBrandSubTop">99% FAIL AT LEVEL 30</p>
       </div>
-      <button class="btn" id="resetBtn" type="button">RESET</button>
-    </div>
+      <button class="btn" id="resetBtn" type="button">Reset</button>
+    </header>
 
-    <section class="hud" aria-label="Spielstand">
+    <section class="hud" aria-label="Game Status">
       <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
       <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
-      <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">30</div></div>
+      <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">28</div></div>
     </section>
 
     <section class="game-shell">
@@ -108,11 +110,11 @@
           <h2 id="uiBrandSub">99% SCHEITERN AN LEVEL 30</h2>
           <p id="uiStartDesc">Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.</p>
           <div class="micro-grid" aria-hidden="true">
-            <div class="micro"><strong>30</strong>Wall</div>
-            <div class="micro"><strong>1</strong>Fehler</div>
-            <div class="micro"><strong>0</strong>Ausreden</div>
+            <div class="micro"><strong>1</strong>Merken</div>
+            <div class="micro"><strong>2</strong>Mischen</div>
+            <div class="micro"><strong>3</strong>Treffen</div>
           </div>
-          <button class="btn btn-brand" id="startBtn" type="button" style="margin-top:18px; width:100%;">START SYSTEM</button>
+          <button class="btn btn-brand" id="startBtn" type="button" style="width:100%; margin-top:18px;">START SYSTEM</button>
           <div class="legal-links">
             <a href="impressum.html">Impressum</a>
             <a href="datenschutz.html">Datenschutz</a>
@@ -120,26 +122,23 @@
         </div>
       </div>
 
-      <div class="overlay hidden" id="gameOverOverlay">
+      <div class="overlay hidden" id="resultOverlay">
         <div class="card">
-          <h2 id="uiGameOverFail" style="color:var(--danger)">SYSTEM FAILED</h2>
-          <p id="aiText" style="font-size:13px; font-weight:900; font-style:italic; margin:15px 0; min-height:40px; color:#555;"></p>
-          <div id="finalScore" style="font-size:60px; font-weight:900; margin:10px 0; color:#000;">0 BOXES</div>
-          <p id="finalTime" style="font-size:16px; font-weight:900; color:var(--brand-color); margin-bottom:8px;">TIME: 0.00s</p>
-          <p id="resultHint" class="muted-line" style="margin-bottom:18px;"></p>
+          <h2 id="resultTitle">SYSTEM STOPPED</h2>
+          <p id="resultScore">Score: 0</p>
+          <p id="resultHint" style="margin-top:8px; font-weight:900;"></p>
+          <p id="aiText" style="margin-top:14px; font-style:italic;"></p>
 
-          <div id="leaderboardEntrySection" style="display:none; margin-bottom:16px; padding-top:15px; border-top:2px solid #000;">
-            <p id="savePrompt" style="font-size:12px; font-weight:900; margin-bottom:10px; text-transform:uppercase; color:#000;">Sichere deinen Platz im Ranking:</p>
-            <div id="errorMsg"></div>
-            <div id="saveMsg"></div>
-            <input type="text" id="nameInput" placeholder="ANZEIGENAME" maxlength="15" autocomplete="nickname" />
+          <div id="leaderboardEntrySection" style="display:none; margin-top:18px;">
+            <p id="savePrompt" style="font-weight:900; margin-bottom:10px;">Lock your rank with your social @:</p>
+            <input type="text" id="nameInput" placeholder="NAME" maxlength="15" autocomplete="off" inputmode="text" />
             <div class="social-grid">
-              <select id="platformSelect" aria-label="Social Plattform">
+              <select id="platformSelect" aria-label="Plattform">
                 <option value="AUTO">AUTO</option>
                 <option value="TIKTOK">TIKTOK</option>
                 <option value="INSTAGRAM">INSTAGRAM</option>
                 <option value="YOUTUBE">YOUTUBE</option>
-                <option value="X">X / TWITTER</option>
+                <option value="X">X</option>
                 <option value="LINKEDIN">LINKEDIN</option>
                 <option value="TWITCH">TWITCH</option>
                 <option value="OTHER">OTHER</option>
@@ -165,20 +164,24 @@
     </section>
   </main>
 
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
   <script>
     // ======================================================
     // 1. CONFIGURATION
     // ======================================================
     const DEFAULT_CONFIG = {
       id: "leaderboard_eddie-v1",
-      clientVersion: "eddie-unaufhaltsam-v2.1-social",
+      clientVersion: "eddie-v2.2-story-rank",
       pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
       brandTitle: "EDDIE UNAUFHALTSAM",
-      brandSub: "99% SCHEITERN AN LEVEL 30",
-      startDesc: "Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.",
+      brandSub: "99% FAIL AT LEVEL 30",
+      startDesc: "Real life. No staging. The dog stays raw. The focus is yours. One mistake ends the system.",
       startButton: "START SYSTEM",
       boxOverlayText: "FOCUS",
-      mythText: "LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN",
+      mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
       brandColor: "#7C3AED",
       logoFileName: "eddie_head",
       logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
@@ -186,28 +189,29 @@
       easterEggScore: 29,
       maxLeaderboardEntries: 10,
       quotes: [
-        '"Eddie hat nicht geblinzelt. Du schon."',
-        '"Netter Start. Aber Level 30 ist keine Komfortzone."',
-        '"Jetzt beginnt der mentale Teil. Nicht hektisch werden."',
-        '"Stark. Macher-Instinkt ist sichtbar."',
-        '"Elite-Bereich. Du kontrollierst das System."',
-        '"UNAUFHALTSAM. Du hast die 30er-Wand gebrochen. Respekt."'
+        '"Eddie did not blink. You did."',
+        '"Nice start. Level 30 is not comfort."',
+        '"Now the mental part begins. Do not rush."',
+        '"Strong. Maker instinct is visible."',
+        '"Elite zone. You control the system."',
+        '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
       ],
-      shareText: "Ich habe die Eddie UNAUFHALTSAM Challenge gespielt. Level 30 ist die Wall.",
-      savePrompt: "Sichere deinen Platz im Ranking mit deinem Social @:",
-      tooWeakText: "Noch nicht rankingfähig. Erst liefern, dann Namen setzen.",
-      savedText: "RANK GESICHERT.",
-      noImprovementText: "Keine Verbesserung. Nur dein Bestwert zählt.",
-      networkErrorText: "Netzwerkfehler. Versuch es erneut.",
-      socialRequiredText: "Social @ braucht 2 bis 30 Zeichen.",
-      socialInvalidText: "Nur Buchstaben, Zahlen, Punkt, Unterstrich. @ optional."
+      shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall. Screenshot your run. Tag @eddie_unaufhaltsam.",
+      storyShoutoutText: "Screenshot your run. Tag @eddie_unaufhaltsam. Eddie sees your focus.",
+      savePrompt: "Lock your rank with your social @:",
+      tooWeakText: "Not rank-ready. Deliver first.",
+      savedText: "RANK LOCKED. Screenshot your run. Tag @eddie_unaufhaltsam.",
+      noImprovementText: "No improvement. Only your best run counts.",
+      networkErrorText: "Network error. Try again.",
+      socialRequiredText: "Social @ needs 2 to 30 characters.",
+      socialInvalidText: "Letters, numbers, dots and underscores only. @ optional.",
+      slotLockedText: "Social slot locked. This handle can only be improved."
     };
-
-    const CLIENT_CONFIG = Object.freeze({ ...DEFAULT_CONFIG, ...(window.UNAUFHALTSAM_CONFIG || {}) });
+    const CLIENT_CONFIG = Object.assign({}, DEFAULT_CONFIG, window.UNAUFHALTSAM_CONFIG || {});
     document.title = CLIENT_CONFIG.pageTitle;
     document.documentElement.style.setProperty("--brand-color", CLIENT_CONFIG.brandColor);
-    document.querySelector('meta[name="theme-color"]').setAttribute("content", CLIENT_CONFIG.brandColor);
     document.getElementById("uiBrandTitle").textContent = CLIENT_CONFIG.brandTitle;
+    document.getElementById("uiBrandSubTop").textContent = CLIENT_CONFIG.brandSub;
     document.getElementById("uiBrandSub").textContent = CLIENT_CONFIG.brandSub;
     document.getElementById("uiStartDesc").textContent = CLIENT_CONFIG.startDesc;
     document.getElementById("startBtn").textContent = CLIENT_CONFIG.startButton;
@@ -247,261 +251,201 @@
 
     function loadNextFallback() {
       if (fallbackIndex < fallbacks.length) {
-        imgLogo.src = fallbacks[fallbackIndex];
+        imgLogo.src = fallbacks[fallbackIndex++];
       } else {
-        logoStatus = "ERROR";
+        logoStatus = "FAILED";
       }
     }
-
-    imgLogo.onload = () => { logoStatus = "OK"; };
-    imgLogo.onerror = () => { fallbackIndex += 1; loadNextFallback(); };
+    imgLogo.onload = () => { logoStatus = "READY"; };
+    imgLogo.onerror = loadNextFallback;
     loadNextFallback();
 
-    function createSessionId() {
-      const arr = new Uint32Array(4);
-      if (window.crypto && window.crypto.getRandomValues) window.crypto.getRandomValues(arr);
-      else for (let i = 0; i < arr.length; i += 1) arr[i] = Math.floor(Math.random() * 2 ** 32);
-      return Array.from(arr, n => n.toString(16).padStart(8, "0")).join("");
-    }
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const rand = (a,b) => a + Math.random() * (b-a);
+    const nowId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-    const session = { id: createSessionId(), saved: false };
-
-    let state = {
-      running: false,
-      score: 0,
-      startTime: 0,
-      totalTime: 0,
-      phase: "idle",
-      phaseStartedAt: 0,
-      boxes: [],
-      correctId: null,
-      selectedId: null,
-      swapsRemaining: 0,
-      activeSwap: null,
-      showBallTime: 1400,
-      breatherMs: 300,
-      swapDuration: 280,
-      correctPressure: .6
+    const session = { id: nowId(), saved: false };
+    const state = {
+      running:false,
+      score:0,
+      phase:"idle",
+      phaseStartedAt:0,
+      boxes:[],
+      targetId:null,
+      selectedId:null,
+      startTime:0,
+      totalTime:0,
+      shuffleMoves:[]
     };
 
-    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+    function displayBoxesFromScore(score) { return score + 2; }
 
-    function getAIQuote(score) {
-      if (score <= 5) return CLIENT_CONFIG.quotes[0];
-      if (score <= 10) return CLIENT_CONFIG.quotes[1];
-      if (score <= 15) return CLIENT_CONFIG.quotes[2];
-      if (score <= 20) return CLIENT_CONFIG.quotes[3];
-      if (score <= 25) return CLIENT_CONFIG.quotes[4];
-      return CLIENT_CONFIG.quotes[5];
-    }
-
-    function getDifficulty(score, count) {
-      const phaseBoost = score < 10 ? 1.12 : score < 20 ? 1.34 : 1.56;
-      return {
-        swaps: clamp(Math.round(3 + count * phaseBoost + score * .25), 4, 64),
-        duration: clamp(340 - score * 7.5 - count * 2.8, 125, 340),
-        showMs: clamp(1550 - score * 22, 780, 1550),
-        breatherMs: clamp(320 - score * 5, 120, 320),
-        correctPressure: score < 10 ? .55 : score < 20 ? .66 : .76
-      };
+    function difficulty(score) {
+      const boxes = clamp(score + 2, 2, 30);
+      const gridCols = Math.ceil(Math.sqrt(boxes));
+      const showMs = clamp(1050 - score * 18, 420, 1050);
+      const shuffleSteps = clamp(6 + score * 2, 8, 72);
+      const shuffleMs = clamp(720 + score * 28, 760, 2100);
+      return { boxes, gridCols, showMs, shuffleSteps, shuffleMs };
     }
 
     function buildRound() {
-      if (state.score >= CLIENT_CONFIG.easterEggScore) { finish(true); return; }
-
+      const d = difficulty(state.score);
       state.boxes = [];
       state.selectedId = null;
-      state.activeSwap = null;
+      state.shuffleMoves = [];
+      const margin = 42;
+      const areaW = canvas.width - margin * 2;
+      const areaH = canvas.height - margin * 2;
+      const cols = d.gridCols;
+      const rows = Math.ceil(d.boxes / cols);
+      const size = clamp(Math.min(areaW / cols, areaH / rows) * 0.68, 34, 74);
+      const gapX = areaW / cols;
+      const gapY = areaH / rows;
+      const startX = margin + gapX / 2 - size / 2;
+      const startY = margin + gapY / 2 - size / 2;
 
-      const count = Math.min(30, 2 + state.score);
-      const cols = Math.ceil(Math.sqrt(count));
-      const rows = Math.ceil(count / cols);
-      const gap = 24;
-      const boxW = Math.max(45, Math.min(92, (canvas.width - 160) / cols - gap));
-      const gridW = cols * boxW + (cols - 1) * gap;
-      const gridH = rows * boxW + (rows - 1) * gap;
-      const startX = (canvas.width - gridW) / 2;
-      const startY = 160 + ((canvas.height - 200) - gridH) / 2;
-
-      for (let i = 0; i < count; i += 1) {
+      for (let i=0;i<d.boxes;i++) {
+        const c = i % cols;
+        const r = Math.floor(i / cols);
         state.boxes.push({
           id: i,
-          x: startX + (i % cols) * (boxW + gap),
-          y: startY + Math.floor(i / cols) * (boxW + gap),
-          w: boxW,
-          h: boxW,
-          lift: 0
+          x: startX + c * gapX,
+          y: startY + r * gapY,
+          w: size,
+          h: size,
+          lift: 0,
+          rot: rand(-0.04,0.04)
         });
       }
-
-      const difficulty = getDifficulty(state.score, count);
-      state.correctId = Math.floor(Math.random() * count);
-      state.swapsRemaining = difficulty.swaps;
-      state.showBallTime = difficulty.showMs;
-      state.breatherMs = difficulty.breatherMs;
-      state.swapDuration = difficulty.duration;
-      state.correctPressure = difficulty.correctPressure;
-
+      state.targetId = Math.floor(Math.random() * state.boxes.length);
       setPhase("show");
       updateHud();
     }
 
-    function startNextSwap() {
-      if (state.swapsRemaining <= 0) { state.activeSwap = null; setPhase("wait"); return; }
-
-      let a;
-      let b;
-      if (Math.random() < state.correctPressure) {
-        a = state.boxes.findIndex(box => box.id === state.correctId);
-        b = Math.floor(Math.random() * state.boxes.length);
-        while (b === a) b = Math.floor(Math.random() * state.boxes.length);
-      } else {
-        a = Math.floor(Math.random() * state.boxes.length);
-        b = Math.floor(Math.random() * state.boxes.length);
-        while (b === a) b = Math.floor(Math.random() * state.boxes.length);
+    function shufflePositions() {
+      const d = difficulty(state.score);
+      const indexes = state.boxes.map((_, i) => i);
+      for (let i=0;i<d.shuffleSteps;i++) {
+        const a = Math.floor(Math.random() * indexes.length);
+        const b = Math.floor(Math.random() * indexes.length);
+        if (a !== b) state.shuffleMoves.push([a,b]);
       }
-
-      state.activeSwap = {
-        aId: state.boxes[a].id,
-        bId: state.boxes[b].id,
-        aStartX: state.boxes[a].x,
-        bStartX: state.boxes[b].x,
-        aStartY: state.boxes[a].y,
-        bStartY: state.boxes[b].y,
-        aTargetX: state.boxes[b].x,
-        bTargetX: state.boxes[a].x,
-        aTargetY: state.boxes[b].y,
-        bTargetY: state.boxes[a].y,
-        start: performance.now(),
-        duration: state.swapDuration
-      };
-      state.swapsRemaining -= 1;
     }
 
     function update(ts) {
       if (!state.running) return;
+      const d = difficulty(state.score);
+      const elapsed = performance.now() - state.phaseStartedAt;
 
-      if (state.phase === "show" && ts - state.phaseStartedAt > state.showBallTime) {
+      if (state.phase === "show" && elapsed > d.showMs) {
+        shufflePositions();
         setPhase("shuffle");
-        startNextSwap();
-      } else if (state.phase === "shuffle") {
-        if (!state.activeSwap) { startNextSwap(); return; }
-        const s = state.activeSwap;
-        const p = Math.min(1, (ts - s.start) / s.duration);
-        const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-        const bA = state.boxes.find(bx => bx.id === s.aId);
-        const bB = state.boxes.find(bx => bx.id === s.bId);
-        if (bA && bB) {
-          bA.x = s.aStartX + (s.aTargetX - s.aStartX) * e;
-          bB.x = s.bStartX + (s.bTargetX - s.bStartX) * e;
-          bA.y = s.aStartY + (s.aTargetY - s.aStartY) * e;
-          bB.y = s.bStartY + (s.bTargetY - s.bStartY) * e;
-          if (p >= 1) {
-            bA.x = s.aTargetX; bA.y = s.aTargetY;
-            bB.x = s.bTargetX; bB.y = s.bTargetY;
-            state.activeSwap = null;
-          }
-        }
-      } else if (state.phase === "wait" && ts - state.phaseStartedAt > state.breatherMs) {
-        setPhase("pick");
-      } else if (state.phase === "reveal") {
-        const sel = state.boxes.find(b => b.id === state.selectedId);
-        const cor = state.boxes.find(b => b.id === state.correctId);
-        if (sel) sel.lift = Math.min(sel.h * .8, sel.lift + 5);
-        if (cor && cor.id !== state.selectedId) cor.lift = Math.min(cor.h * .8, cor.lift + 5);
-        if (ts - state.phaseStartedAt > 1100) {
-          if (state.selectedId === state.correctId) {
-            state.score += 1;
-            buildRound();
-          } else {
-            finish(false);
-          }
-        }
       }
 
-      if (state.phase !== "reveal") state.boxes.forEach(b => { b.lift = Math.max(0, b.lift - 6); });
+      if (state.phase === "shuffle") {
+        const progress = clamp(elapsed / d.shuffleMs, 0, 1);
+        const count = Math.floor(progress * state.shuffleMoves.length);
+        if (!state.appliedShuffleCount) state.appliedShuffleCount = 0;
+        while (state.appliedShuffleCount < count) {
+          const [a,b] = state.shuffleMoves[state.appliedShuffleCount];
+          const ax = state.boxes[a].x, ay = state.boxes[a].y;
+          state.boxes[a].x = state.boxes[b].x; state.boxes[a].y = state.boxes[b].y;
+          state.boxes[b].x = ax; state.boxes[b].y = ay;
+          state.appliedShuffleCount++;
+        }
+        if (progress >= 1) { state.appliedShuffleCount = 0; setPhase("pick"); }
+      }
+
+      if (state.phase === "reveal" && elapsed > 680) {
+        if (state.selectedId === state.targetId) {
+          state.score++;
+          localStorage.setItem(BEST_KEY, Math.max(Number(localStorage.getItem(BEST_KEY)||0), state.score));
+          buildRound();
+        } else {
+          state.running = false;
+          state.totalTime = (performance.now() - state.startTime) / 1000;
+          showResult();
+        }
+      }
+    }
+
+    function drawBox(b, isTargetVisible, isPicked) {
+      ctx.save();
+      ctx.translate(b.x + b.w/2, b.y + b.h/2 - b.lift);
+      ctx.rotate(b.rot);
+      ctx.fillStyle = "#fff";
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 4;
+      ctx.fillRect(-b.w/2, -b.h/2, b.w, b.h);
+      ctx.strokeRect(-b.w/2, -b.h/2, b.w, b.h);
+
+      if (isTargetVisible) {
+        ctx.fillStyle = CLIENT_CONFIG.brandColor;
+        ctx.fillRect(-b.w/2 + 8, -b.h/2 + 8, b.w - 16, b.h - 16);
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 13px Arial";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(CLIENT_CONFIG.boxOverlayText, 0, 0);
+      }
+      if (isPicked) {
+        ctx.strokeStyle = b.id === state.targetId ? "#0f9d58" : "#c92a2a";
+        ctx.lineWidth = 8;
+        ctx.strokeRect(-b.w/2 - 4, -b.h/2 - 4, b.w + 8, b.h + 8);
+      }
+      ctx.restore();
+    }
+
+    function drawLogo() {
+      if (logoStatus === "READY") {
+        const maxW = 150, maxH = 88;
+        const ratio = Math.min(maxW / imgLogo.width, maxH / imgLogo.height);
+        const w = imgLogo.width * ratio;
+        const h = imgLogo.height * ratio;
+        ctx.drawImage(imgLogo, canvas.width - w - 20, 18, w, h);
+      } else {
+        ctx.fillStyle = CLIENT_CONFIG.brandColor;
+        ctx.font = "900 18px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText("EDDIE", canvas.width - 20, 38);
+      }
     }
 
     function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#f5f5f7";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      drawLogo();
 
-      state.boxes.forEach(box => {
-        const y = box.y - box.lift;
-        ctx.save();
-        ctx.fillStyle = "#fff";
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 3;
-        ctx.fillRect(box.x, y, box.w, box.h);
-        ctx.strokeRect(box.x, y, box.w, box.h);
+      ctx.fillStyle = "#343536";
+      ctx.font = "900 16px Arial";
+      ctx.textAlign = "left";
+      let instruction = "START SYSTEM";
+      if (state.phase === "show") instruction = "MERKEN";
+      if (state.phase === "shuffle") instruction = "MISCHT";
+      if (state.phase === "pick") instruction = "WÄHLE DIE BOX";
+      if (state.phase === "reveal") instruction = state.selectedId === state.targetId ? "RICHTIG" : "FALSCH";
+      ctx.fillText(instruction, 24, 34);
 
-        if (logoStatus === "OK" && imgLogo.naturalWidth > 0) {
-          ctx.drawImage(imgLogo, box.x + box.w * .04, y + box.h * .04, box.w * .92, box.h * .92);
-        } else if (logoStatus === "ERROR") {
-          ctx.save();
-          ctx.fillStyle = CLIENT_CONFIG.brandColor;
-          ctx.font = `900 ${Math.floor(box.w * .28)}px Arial`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("EDDIE", box.x + box.w / 2, y + box.h / 2);
-          ctx.restore();
-        }
-
-        if (state.phase === "show" && box.id === state.correctId) {
-          ctx.save();
-          const pulse = Math.sin(performance.now() / 150) * .2 + .8;
-          ctx.globalAlpha = pulse;
-          ctx.strokeStyle = CLIENT_CONFIG.brandColor;
-          ctx.lineWidth = 6;
-          ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
-          ctx.fillStyle = "rgba(255,255,255,.8)";
-          ctx.fillRect(box.x, y, box.w, box.h);
-          ctx.font = `900 ${Math.floor(box.w * .22)}px Arial`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.strokeStyle = "#000";
-          ctx.lineWidth = 4;
-          ctx.strokeText(CLIENT_CONFIG.boxOverlayText, box.x + box.w / 2, y + box.h / 2);
-          ctx.fillStyle = "#fff";
-          ctx.fillText(CLIENT_CONFIG.boxOverlayText, box.x + box.w / 2, y + box.h / 2);
-          ctx.restore();
-        }
-
-        if (state.phase === "reveal" && box.id === state.correctId) {
-          ctx.fillStyle = "rgba(255,255,255,.72)";
-          ctx.fillRect(box.x, y, box.w, box.h);
-          ctx.fillStyle = CLIENT_CONFIG.brandColor;
-          ctx.font = `${box.w * .5}px Arial`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText("✓", box.x + box.w / 2, y + box.h / 2);
-        }
-
-        if (state.phase === "reveal" && box.id === state.selectedId) {
-          ctx.strokeStyle = state.selectedId === state.correctId ? "#0f9d58" : "#d92d20";
-          ctx.lineWidth = 6;
-          ctx.strokeRect(box.x - 4, y - 4, box.w + 8, box.h + 8);
-        }
-        ctx.restore();
-      });
+      const showTarget = state.phase === "show" || state.phase === "reveal";
+      for (const b of state.boxes) drawBox(b, showTarget && b.id === state.targetId, state.phase === "reveal" && b.id === state.selectedId);
     }
 
-    function displayBoxesFromScore(score) { return Math.min(30, score + 2); }
+    function getAIQuote(score) {
+      const qs = CLIENT_CONFIG.quotes;
+      if (score >= CLIENT_CONFIG.easterEggScore) return qs[5] || qs[qs.length-1];
+      if (score >= 20) return qs[4] || qs[0];
+      if (score >= 14) return qs[3] || qs[0];
+      if (score >= 8) return qs[2] || qs[0];
+      if (score >= 4) return qs[1] || qs[0];
+      return qs[0];
+    }
 
-    function finish(victory) {
-      if (!state.running) return;
-      state.running = false;
-      state.totalTime = (performance.now() - state.startTime) / 1000;
-
+    function showResult() {
       const finalBoxes = displayBoxesFromScore(state.score);
-      const oldBest = Number(localStorage.getItem(BEST_KEY) || 0);
-      if (state.score > oldBest) localStorage.setItem(BEST_KEY, String(state.score));
-      updateHud();
-
-      document.getElementById("gameOverOverlay").classList.remove("hidden");
-      document.getElementById("uiGameOverFail").textContent = victory ? "WALL BROKEN" : "SYSTEM FAILED";
-      document.getElementById("uiGameOverFail").style.color = victory ? "var(--success)" : "var(--danger)";
-      document.getElementById("finalScore").textContent = finalBoxes + " BOXES";
-      document.getElementById("finalTime").textContent = `TIME: ${state.totalTime.toFixed(2)}s`;
+      document.getElementById("resultOverlay").classList.remove("hidden");
+      document.getElementById("resultScore").textContent = `Score: ${finalBoxes} Boxes · ${state.totalTime.toFixed(1)}s`;
       document.getElementById("aiText").textContent = getAIQuote(state.score);
 
       const resultHint = document.getElementById("resultHint");
