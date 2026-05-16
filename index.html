@@ -1,739 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>EDDIE | UNAUFHALTSAM FOCUS SYSTEM</title>
-  <meta name="description" content="Das Eddie Unaufhaltsam Focus System. Real life. No staging. Level 30 ist die Wall." />
-  <meta property="og:title" content="EDDIE UNAUFHALTSAM" />
-  <meta property="og:description" content="99% scheitern an Level 30. Ein Fehler beendet das System." />
-  <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#7C3AED" />
-
-  <script src="config.js"></script>
-
-  <style>
-    :root {
-      --brand-color: #7C3AED;
-      --bg: #f5f5f7;
-      --card-bg: #ffffff;
-      --text-main: #343536;
-      --success: #0f9d58;
-      --danger: #c92a2a;
-      --muted: rgba(52,53,54,.62);
-    }
-
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color:transparent; }
-    body { background:var(--bg); color:var(--text-main); min-height:100vh; padding:20px 14px 40px; overflow-x:hidden; }
-    .wrap { width:100%; max-width:980px; margin:0 auto; display:flex; flex-direction:column; gap:18px; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-    .title h1 { font-size:clamp(24px, 5vw, 42px); line-height:1; font-weight:900; letter-spacing:-.8px; text-transform:uppercase; }
-    .title p { margin-top:6px; font-size:12px; font-weight:900; letter-spacing:.6px; color:var(--muted); text-transform:uppercase; }
-
-    .btn { appearance:none; border:none; background:#343536; color:#fff; padding:16px 22px; border-radius:14px; font-weight:900; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; transition:transform .12s ease, opacity .12s ease; text-transform:uppercase; }
-    .btn:active { transform:scale(.98); }
-    .btn:disabled { opacity:.55; cursor:not-allowed; }
-    .btn-brand { background:var(--brand-color); color:#fff; }
-    .btn-ghost { background:#fff; color:#000; border:2px solid #000; }
-
-    .hud { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
-    .stat { border:2px solid #000; border-radius:18px; padding:12px; background:#fff; text-align:center; }
-    .stat .label { font-size:10px; opacity:.6; text-transform:uppercase; font-weight:800; margin-bottom:4px; }
-    .stat .value { font-size:clamp(17px, 4vw, 28px); font-weight:900; line-height:1; color:var(--brand-color); }
-
-    .game-shell { position:relative; width:100%; background:#fff; border:2px solid #000; border-radius:24px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08); }
-    canvas { display:block; width:100%; height:auto; background:radial-gradient(circle, #fff 0%, #eee 100%); touch-action:none; }
-
-    .overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(52,53,54,.95); text-align:center; z-index:100; backdrop-filter:blur(5px); color:#fff; }
-    .overlay.hidden { display:none; }
-    .card { width:min(100%, 500px); background:#fff; border:2px solid #000; border-top:5px solid var(--brand-color); border-radius:5px; padding:30px 20px; color:#000; }
-    .card h2 { font-weight:900; letter-spacing:1.6px; text-transform:uppercase; margin-bottom:10px; }
-    .card p { color:#333; }
-    .micro-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:18px 0 4px; }
-    .micro { border:1px solid #000; padding:10px 6px; font-size:10px; font-weight:900; text-transform:uppercase; }
-    .micro strong { display:block; color:var(--brand-color); font-size:18px; margin-bottom:2px; }
-
-    .leaderboard-container { background:#fff; border:2px solid #000; border-radius:22px; padding:20px; margin-top:10px; color:#000; }
-    .leaderboard-title { font-weight:900; text-transform:uppercase; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px; display:flex; justify-content:space-between; gap:10px; }
-    .leaderboard-entry { display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #eee; font-weight:700; list-style:none; font-size:15px; }
-    .leaderboard-entry .rank-name { display:flex; gap:10px; align-items:center; min-width:0; }
-    .leaderboard-entry .rank-number { font-weight:900; color:var(--brand-color); min-width:30px; }
-    .leaderboard-entry .player-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .leaderboard-entry .score-line { white-space:nowrap; }
-    .muted-line { color:var(--muted); font-size:12px; font-weight:800; text-transform:uppercase; }
-
-    #nameInput, #platformSelect, #socialInput { width:100%; padding:15px; margin-bottom:12px; border:1px solid #bbb; font-size:15px; text-align:center; font-weight:900; outline:none; }
-    #nameInput { text-transform:uppercase; }
-    #platformSelect { text-transform:uppercase; background:#fff; color:#000; }
-    #socialInput { text-transform:none; }
-    .social-grid { display:grid; grid-template-columns:1fr 1.35fr; gap:10px; }
-    .social-hint { font-size:10px; color:#555; font-weight:900; text-transform:uppercase; margin:-5px 0 10px; }
-    #errorMsg, #saveMsg { color:var(--danger); font-size:11px; font-weight:900; margin-bottom:10px; display:none; text-transform:uppercase; }
-    #saveMsg { color:var(--success); }
-    .result-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
-    .legal-links { margin-top:18px; display:flex; justify-content:center; gap:18px; }
-    .legal-links a { font-size:11px; color:#777; text-decoration:none; font-weight:900; text-transform:uppercase; }
-
-    @media (max-width:720px) {
-      body { padding:10px; }
-      .topbar { flex-direction:column; align-items:stretch; }
-      .hud { grid-template-columns:repeat(3,1fr); gap:7px; }
-      .stat { padding:9px 5px; }
-      .card { padding:20px 12px; }
-      .micro-grid { grid-template-columns:1fr; }
-      .social-grid, .result-actions { grid-template-columns:1fr; }
-      .leaderboard-entry { font-size:13px; flex-direction:column; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>EDDIE | UNAUFHALTSAM</title>
+<meta name="description" content="Eddie’s World. Real life. No staging. UNAUFHALTSAM Focus Game.">
+<meta name="theme-color" content="#7C3AED">
+<style>
+:root{--bg:#050505;--panel:#111115;--text:#f7f2ea;--muted:#aaa;--accent:#7C3AED;--good:#16a34a;--bad:#dc2626}*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}body{min-height:100vh;background:var(--bg);color:var(--text);padding:18px 12px 36px}.wrap{width:min(980px,100%);margin:auto;display:grid;gap:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand h1{font-size:clamp(32px,8vw,70px);line-height:.86;letter-spacing:-.07em;text-transform:uppercase}.brand p{margin-top:8px;color:var(--muted);font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.14em}.btn{appearance:none;border:2px solid #fff;background:#fff;color:#050505;border-radius:16px;padding:14px 18px;min-height:52px;font-weight:950;text-transform:uppercase;cursor:pointer}.btn.dark{background:#16161d;color:#fff;border-color:#333}.btn.purple{background:var(--accent);border-color:var(--accent);color:#fff}.btn:active{transform:scale(.98)}.hud{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#111;border:1px solid #333;border-radius:18px;padding:14px;text-align:center}.label{color:#aaa;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.value{font-size:36px;line-height:1;font-weight:950;color:var(--accent);margin-top:4px}.board{background:#111;border:1px solid #333;border-radius:24px;min-height:520px;padding:18px;overflow:hidden}.center{text-align:center}.msg{color:#aaa;font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:.08em;margin-top:10px}.grid{display:grid;gap:12px;justify-content:center;align-content:center;min-height:360px;margin-top:18px}.box{width:74px;height:74px;border-radius:14px;border:4px solid #050505;background:#fff;cursor:pointer}.box.focus{outline:7px solid var(--accent)}.box.good{outline:7px solid var(--good)}.box.bad{outline:7px solid var(--bad)}.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#888;font-size:12px;font-weight:900;text-transform:uppercase}.notice{background:#16161d;border:1px solid #333;border-left:5px solid var(--accent);border-radius:18px;padding:14px;color:#ccc;font-weight:800}.hide{display:none!important}@media(max-width:720px){body{padding:10px}.top{align-items:stretch}.box{width:58px;height:58px}.grid{gap:9px}.board{min-height:470px}.btn{width:100%}}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <header class="topbar">
-      <div class="title">
-        <h1 id="uiBrandTitle">EDDIE UNAUFHALTSAM</h1>
-        <p id="uiBrandSubTop">99% FAIL AT LEVEL 30</p>
-      </div>
-      <button class="btn" id="resetBtn" type="button">Reset</button>
-    </header>
+<main class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>EDDIE<br><span style="color:var(--accent)">UNAUFHALTSAM</span></h1>
+      <p>Eddie’s World · Real life. No staging.</p>
+    </div>
+    <button id="resetBtn" class="btn dark" type="button">Reset</button>
+  </header>
 
-    <section class="hud" aria-label="Game Status">
-      <div class="stat"><div class="label">Boxes</div><div class="value" id="boxValue">2</div></div>
-      <div class="stat"><div class="label">Best</div><div class="value" id="bestValue">0</div></div>
-      <div class="stat"><div class="label">Wall</div><div class="value" id="wallValue">28</div></div>
-    </section>
+  <section class="notice">Fokus-Game aus Eddie’s World. Merken. Mischen. Treffen. Ein Fehler beendet den Lauf.</section>
 
-    <section class="game-shell">
-      <canvas id="gameCanvas" width="960" height="540" aria-label="Unaufhaltsam Focus Game"></canvas>
+  <section class="hud">
+    <div class="stat"><div class="label">Boxes</div><div id="boxesValue" class="value">2</div></div>
+    <div class="stat"><div class="label">Best</div><div id="bestValue" class="value">0</div></div>
+  </section>
 
-      <div class="overlay" id="startOverlay">
-        <div class="card">
-          <h2 id="uiBrandSub">99% SCHEITERN AN LEVEL 30</h2>
-          <p id="uiStartDesc">Real life. No staging. Der Hund ist roh. Der Fokus bist du. Ein Fehler beendet das System.</p>
-          <div class="micro-grid" aria-hidden="true">
-            <div class="micro"><strong>1</strong>Merken</div>
-            <div class="micro"><strong>2</strong>Mischen</div>
-            <div class="micro"><strong>3</strong>Treffen</div>
-          </div>
-          <button class="btn btn-brand" id="startBtn" type="button" style="width:100%; margin-top:18px;">START SYSTEM</button>
-          <div class="legal-links">
-            <a href="impressum.html">Impressum</a>
-            <a href="datenschutz.html">Datenschutz</a>
-          </div>
-        </div>
-      </div>
+  <section class="board">
+    <div class="center">
+      <button id="startBtn" class="btn purple" type="button">Start</button>
+      <div id="msg" class="msg">Merke dir die markierte Box.</div>
+    </div>
+    <div id="grid" class="grid" aria-label="Unaufhaltsam Game Grid"></div>
+  </section>
 
-      <div class="overlay hidden" id="resultOverlay">
-        <div class="card">
-          <h2 id="resultTitle">SYSTEM STOPPED</h2>
-          <p id="resultScore">Score: 0</p>
-          <p id="resultHint" style="margin-top:8px; font-weight:900;"></p>
-          <p id="aiText" style="margin-top:14px; font-style:italic;"></p>
+  <section class="notice">
+    <div style="font-weight:950;color:#fff;margin-bottom:6px">Ranking</div>
+    <div id="rankStatus">Lokaler Bestwert ist aktiv. Online-Ranking wird später leise angebunden.</div>
+  </section>
 
-          <div id="leaderboardEntrySection" style="display:none; margin-top:18px;">
-            <p id="savePrompt" style="font-weight:900; margin-bottom:10px;">Lock your rank with your social @:</p>
-            <input type="text" id="nameInput" placeholder="NAME" maxlength="15" autocomplete="off" inputmode="text" />
-            <div class="social-grid">
-              <select id="platformSelect" aria-label="Plattform">
-                <option value="AUTO">AUTO</option>
-                <option value="TIKTOK">TIKTOK</option>
-                <option value="INSTAGRAM">INSTAGRAM</option>
-                <option value="YOUTUBE">YOUTUBE</option>
-                <option value="X">X</option>
-                <option value="LINKEDIN">LINKEDIN</option>
-                <option value="TWITCH">TWITCH</option>
-                <option value="OTHER">OTHER</option>
-              </select>
-              <input type="text" id="socialInput" placeholder="@deinhandle" maxlength="32" autocomplete="off" inputmode="text" />
-            </div>
-            <div class="social-hint">Plattform egal. Ein @ reicht. Beispiel: @eddie_unaufhaltsam</div>
-            <button class="btn btn-brand" id="saveScoreBtn" type="button" style="width:100%; margin-bottom:10px;">SAVE RANK</button>
-          </div>
-
-          <div class="result-actions">
-            <button class="btn btn-ghost" id="shareBtn" type="button">CHALLENGE TEILEN</button>
-            <button class="btn" id="restartBtn" type="button">REBOOT</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="leaderboard-container">
-      <div id="uiMyth" style="font-weight:900; margin-bottom:8px; color:var(--danger);">LEVEL 30 WALL: NOCH NICHTS FÜR TOURISTEN</div>
-      <div class="leaderboard-title"><span>Global Elite Ranking</span><span>Top 10</span></div>
-      <div id="leaderboardList" class="muted-line">Lade Ranking...</div>
-    </section>
-  </main>
-
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-  <script>
-    // ======================================================
-    // 1. CONFIGURATION
-    // ======================================================
-    const DEFAULT_CONFIG = {
-      id: "leaderboard_eddie-v1",
-      clientVersion: "eddie-v2.2-story-rank",
-      pageTitle: "EDDIE | UNAUFHALTSAM FOCUS SYSTEM",
-      brandTitle: "EDDIE UNAUFHALTSAM",
-      brandSub: "99% FAIL AT LEVEL 30",
-      startDesc: "Real life. No staging. The dog stays raw. The focus is yours. One mistake ends the system.",
-      startButton: "START SYSTEM",
-      boxOverlayText: "FOCUS",
-      mythText: "LEVEL 30 WALL: NOT FOR TOURISTS",
-      brandColor: "#7C3AED",
-      logoFileName: "eddie_head",
-      logoFallbacks: ["eddie_head.png", "unaufhaltsam_brand.png", "logo.png"],
-      minScoreToSave: 4,
-      easterEggScore: 29,
-      maxLeaderboardEntries: 10,
-      quotes: [
-        '"Eddie did not blink. You did."',
-        '"Nice start. Level 30 is not comfort."',
-        '"Now the mental part begins. Do not rush."',
-        '"Strong. Maker instinct is visible."',
-        '"Elite zone. You control the system."',
-        '"UNAUFHALTSAM. You broke the Level 30 wall. Respect."'
-      ],
-      shareText: "I played the Eddie UNAUFHALTSAM Challenge. Level 30 is the wall. Screenshot your run. Tag @eddie_unaufhaltsam.",
-      storyShoutoutText: "Screenshot your run. Tag @eddie_unaufhaltsam. Eddie sees your focus.",
-      savePrompt: "Lock your rank with your social @:",
-      tooWeakText: "Not rank-ready. Deliver first.",
-      savedText: "RANK LOCKED. Screenshot your run. Tag @eddie_unaufhaltsam.",
-      noImprovementText: "No improvement. Only your best run counts.",
-      networkErrorText: "Network error. Try again.",
-      socialRequiredText: "Social @ needs 2 to 30 characters.",
-      socialInvalidText: "Letters, numbers, dots and underscores only. @ optional.",
-      slotLockedText: "Social slot locked. This handle can only be improved."
-    };
-    const CLIENT_CONFIG = Object.assign({}, DEFAULT_CONFIG, window.UNAUFHALTSAM_CONFIG || {});
-    document.title = CLIENT_CONFIG.pageTitle;
-    document.documentElement.style.setProperty("--brand-color", CLIENT_CONFIG.brandColor);
-    document.getElementById("uiBrandTitle").textContent = CLIENT_CONFIG.brandTitle;
-    document.getElementById("uiBrandSubTop").textContent = CLIENT_CONFIG.brandSub;
-    document.getElementById("uiBrandSub").textContent = CLIENT_CONFIG.brandSub;
-    document.getElementById("uiStartDesc").textContent = CLIENT_CONFIG.startDesc;
-    document.getElementById("startBtn").textContent = CLIENT_CONFIG.startButton;
-    document.getElementById("uiMyth").textContent = CLIENT_CONFIG.mythText;
-    document.getElementById("savePrompt").textContent = CLIENT_CONFIG.savePrompt;
-
-    // ======================================================
-    // 2. FIREBASE ENGINE
-    // ======================================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A",
-      authDomain: "mg-challenge.firebaseapp.com",
-      projectId: "mg-challenge",
-      storageBucket: "mg-challenge.firebasestorage.app",
-      messagingSenderId: "472289048663",
-      appId: "1:472289048663:web:cc68ded6007e1e822c4b12"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const dbRef = db.collection(CLIENT_CONFIG.id);
-
-    // ======================================================
-    // 3. GAME ENGINE
-    // ======================================================
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const BEST_KEY = "focusBest_" + CLIENT_CONFIG.id;
-
-    const imgLogo = new Image();
-    let fallbackIndex = 0;
-    let logoStatus = "LOADING";
-    const fallbacks = Array.isArray(CLIENT_CONFIG.logoFallbacks) && CLIENT_CONFIG.logoFallbacks.length
-      ? CLIENT_CONFIG.logoFallbacks
-      : [`${CLIENT_CONFIG.logoFileName}.png`, `./${CLIENT_CONFIG.logoFileName}.png`, "logo.png"];
-
-    function loadNextFallback() {
-      if (fallbackIndex < fallbacks.length) {
-        imgLogo.src = fallbacks[fallbackIndex++];
-      } else {
-        logoStatus = "FAILED";
-      }
+  <footer class="foot"><span>Eddie’s World</span><span>Real life. No staging.</span></footer>
+</main>
+<script>
+(function(){
+  const grid=document.getElementById('grid');
+  const msg=document.getElementById('msg');
+  const startBtn=document.getElementById('startBtn');
+  const resetBtn=document.getElementById('resetBtn');
+  const boxesValue=document.getElementById('boxesValue');
+  const bestValue=document.getElementById('bestValue');
+  const BEST_KEY='eddie_unaufhaltsam_best_boxes_v1';
+  let score=0,best=Number(localStorage.getItem(BEST_KEY)||0),correct=0,locked=true,roundToken=0;
+  function boxes(){return score+2}
+  function hud(){boxesValue.textContent=boxes();bestValue.textContent=best||0}
+  function setMessage(text){msg.textContent=text}
+  function start(){score=0;startBtn.classList.add('hide');buildRound()}
+  function buildRound(){
+    const token=++roundToken;locked=true;grid.innerHTML='';
+    const n=boxes(),cols=Math.ceil(Math.sqrt(n));
+    grid.style.gridTemplateColumns='repeat('+cols+', minmax(0,74px))';
+    correct=Math.floor(Math.random()*n);
+    for(let i=0;i<n;i++){
+      const b=document.createElement('button');
+      b.type='button';b.className='box'+(i===correct?' focus':'');b.setAttribute('aria-label','Box '+(i+1));
+      b.addEventListener('click',()=>pick(i,b));grid.appendChild(b);
     }
-    imgLogo.onload = () => { logoStatus = "READY"; };
-    imgLogo.onerror = loadNextFallback;
-    loadNextFallback();
-
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
-    const rand = (a,b) => a + Math.random() * (b-a);
-    const nowId = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
-
-    const session = { id: nowId(), saved: false };
-    const state = {
-      running:false,
-      score:0,
-      phase:"idle",
-      phaseStartedAt:0,
-      boxes:[],
-      targetId:null,
-      selectedId:null,
-      startTime:0,
-      totalTime:0,
-      shuffleMoves:[]
-    };
-
-    function displayBoxesFromScore(score) { return score + 2; }
-
-    function difficulty(score) {
-      const boxes = clamp(score + 2, 2, 30);
-      const gridCols = Math.ceil(Math.sqrt(boxes));
-      const showMs = clamp(1050 - score * 18, 420, 1050);
-      const shuffleSteps = clamp(6 + score * 2, 8, 72);
-      const shuffleMs = clamp(720 + score * 28, 760, 2100);
-      return { boxes, gridCols, showMs, shuffleSteps, shuffleMs };
-    }
-
-    function buildRound() {
-      const d = difficulty(state.score);
-      state.boxes = [];
-      state.selectedId = null;
-      state.shuffleMoves = [];
-      const margin = 42;
-      const areaW = canvas.width - margin * 2;
-      const areaH = canvas.height - margin * 2;
-      const cols = d.gridCols;
-      const rows = Math.ceil(d.boxes / cols);
-      const size = clamp(Math.min(areaW / cols, areaH / rows) * 0.68, 34, 74);
-      const gapX = areaW / cols;
-      const gapY = areaH / rows;
-      const startX = margin + gapX / 2 - size / 2;
-      const startY = margin + gapY / 2 - size / 2;
-
-      for (let i=0;i<d.boxes;i++) {
-        const c = i % cols;
-        const r = Math.floor(i / cols);
-        state.boxes.push({
-          id: i,
-          x: startX + c * gapX,
-          y: startY + r * gapY,
-          w: size,
-          h: size,
-          lift: 0,
-          rot: rand(-0.04,0.04)
-        });
-      }
-      state.targetId = Math.floor(Math.random() * state.boxes.length);
-      setPhase("show");
-      updateHud();
-    }
-
-    function shufflePositions() {
-      const d = difficulty(state.score);
-      const indexes = state.boxes.map((_, i) => i);
-      for (let i=0;i<d.shuffleSteps;i++) {
-        const a = Math.floor(Math.random() * indexes.length);
-        const b = Math.floor(Math.random() * indexes.length);
-        if (a !== b) state.shuffleMoves.push([a,b]);
-      }
-    }
-
-    function update(ts) {
-      if (!state.running) return;
-      const d = difficulty(state.score);
-      const elapsed = performance.now() - state.phaseStartedAt;
-
-      if (state.phase === "show" && elapsed > d.showMs) {
-        shufflePositions();
-        setPhase("shuffle");
-      }
-
-      if (state.phase === "shuffle") {
-        const progress = clamp(elapsed / d.shuffleMs, 0, 1);
-        const count = Math.floor(progress * state.shuffleMoves.length);
-        if (!state.appliedShuffleCount) state.appliedShuffleCount = 0;
-        while (state.appliedShuffleCount < count) {
-          const [a,b] = state.shuffleMoves[state.appliedShuffleCount];
-          const ax = state.boxes[a].x, ay = state.boxes[a].y;
-          state.boxes[a].x = state.boxes[b].x; state.boxes[a].y = state.boxes[b].y;
-          state.boxes[b].x = ax; state.boxes[b].y = ay;
-          state.appliedShuffleCount++;
-        }
-        if (progress >= 1) { state.appliedShuffleCount = 0; setPhase("pick"); }
-      }
-
-      if (state.phase === "reveal" && elapsed > 680) {
-        if (state.selectedId === state.targetId) {
-          state.score++;
-          localStorage.setItem(BEST_KEY, Math.max(Number(localStorage.getItem(BEST_KEY)||0), state.score));
-          buildRound();
-        } else {
-          state.running = false;
-          state.totalTime = (performance.now() - state.startTime) / 1000;
-          showResult();
-        }
-      }
-    }
-
-    function drawBox(b, isTargetVisible, isPicked) {
-      ctx.save();
-      ctx.translate(b.x + b.w/2, b.y + b.h/2 - b.lift);
-      ctx.rotate(b.rot);
-      ctx.fillStyle = "#fff";
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 4;
-      ctx.fillRect(-b.w/2, -b.h/2, b.w, b.h);
-      ctx.strokeRect(-b.w/2, -b.h/2, b.w, b.h);
-
-      if (isTargetVisible) {
-        ctx.fillStyle = CLIENT_CONFIG.brandColor;
-        ctx.fillRect(-b.w/2 + 8, -b.h/2 + 8, b.w - 16, b.h - 16);
-        ctx.fillStyle = "#fff";
-        ctx.font = "900 13px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(CLIENT_CONFIG.boxOverlayText, 0, 0);
-      }
-      if (isPicked) {
-        ctx.strokeStyle = b.id === state.targetId ? "#0f9d58" : "#c92a2a";
-        ctx.lineWidth = 8;
-        ctx.strokeRect(-b.w/2 - 4, -b.h/2 - 4, b.w + 8, b.h + 8);
-      }
-      ctx.restore();
-    }
-
-    function drawLogo() {
-      if (logoStatus === "READY") {
-        const maxW = 150, maxH = 88;
-        const ratio = Math.min(maxW / imgLogo.width, maxH / imgLogo.height);
-        const w = imgLogo.width * ratio;
-        const h = imgLogo.height * ratio;
-        ctx.drawImage(imgLogo, canvas.width - w - 20, 18, w, h);
-      } else {
-        ctx.fillStyle = CLIENT_CONFIG.brandColor;
-        ctx.font = "900 18px Arial";
-        ctx.textAlign = "right";
-        ctx.fillText("EDDIE", canvas.width - 20, 38);
-      }
-    }
-
-    function draw() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = "#f5f5f7";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      drawLogo();
-
-      ctx.fillStyle = "#343536";
-      ctx.font = "900 16px Arial";
-      ctx.textAlign = "left";
-      let instruction = "START SYSTEM";
-      if (state.phase === "show") instruction = "MERKEN";
-      if (state.phase === "shuffle") instruction = "MISCHT";
-      if (state.phase === "pick") instruction = "WÄHLE DIE BOX";
-      if (state.phase === "reveal") instruction = state.selectedId === state.targetId ? "RICHTIG" : "FALSCH";
-      ctx.fillText(instruction, 24, 34);
-
-      const showTarget = state.phase === "show" || state.phase === "reveal";
-      for (const b of state.boxes) drawBox(b, showTarget && b.id === state.targetId, state.phase === "reveal" && b.id === state.selectedId);
-    }
-
-    function getAIQuote(score) {
-      const qs = CLIENT_CONFIG.quotes;
-      if (score >= CLIENT_CONFIG.easterEggScore) return qs[5] || qs[qs.length-1];
-      if (score >= 20) return qs[4] || qs[0];
-      if (score >= 14) return qs[3] || qs[0];
-      if (score >= 8) return qs[2] || qs[0];
-      if (score >= 4) return qs[1] || qs[0];
-      return qs[0];
-    }
-
-    function showResult() {
-      const finalBoxes = displayBoxesFromScore(state.score);
-      document.getElementById("resultOverlay").classList.remove("hidden");
-      document.getElementById("resultScore").textContent = `Score: ${finalBoxes} Boxes · ${state.totalTime.toFixed(1)}s`;
-      document.getElementById("aiText").textContent = getAIQuote(state.score);
-
-      const resultHint = document.getElementById("resultHint");
-      if (finalBoxes >= 30) resultHint.textContent = "30er-Wand erreicht. Jetzt Ranking sichern.";
-      else resultHint.textContent = `${30 - finalBoxes} Boxes bis zur Wall.`;
-
-      const entrySection = document.getElementById("leaderboardEntrySection");
-      const errorEl = document.getElementById("errorMsg");
-      errorEl.style.display = "none";
-      if (state.score >= CLIENT_CONFIG.minScoreToSave) {
-        entrySection.style.display = "block";
-      } else {
-        entrySection.style.display = "block";
-        document.getElementById("nameInput").style.display = "none";
-        document.getElementById("platformSelect").style.display = "none";
-        document.getElementById("socialInput").style.display = "none";
-        const socialHint = document.querySelector(".social-hint");
-        if (socialHint) socialHint.style.display = "none";
-        document.getElementById("saveScoreBtn").style.display = "none";
-        errorEl.textContent = CLIENT_CONFIG.tooWeakText;
-        errorEl.style.display = "block";
-      }
-    }
-
-    function setPhase(p) { state.phase = p; state.phaseStartedAt = performance.now(); }
-
-    function updateHud() {
-      const best = Number(localStorage.getItem(BEST_KEY) || 0);
-      const currentBoxes = displayBoxesFromScore(state.score);
-      const bestBoxes = best > 0 ? displayBoxesFromScore(best) : 0;
-      document.getElementById("boxValue").textContent = currentBoxes;
-      document.getElementById("bestValue").textContent = bestBoxes;
-      document.getElementById("wallValue").textContent = currentBoxes >= 30 ? "LIVE" : String(30 - currentBoxes);
-    }
-
-    function handleInteraction(x, y) {
-      if (state.phase !== "pick" || state.selectedId !== null) return;
-      for (const b of state.boxes) {
-        if (x >= b.x && x <= b.x + b.w && y >= b.y - b.lift && y <= b.y - b.lift + b.h) {
-          state.selectedId = b.id;
-          setPhase("reveal");
-          break;
-        }
-      }
-    }
-
-    canvas.addEventListener("pointerdown", e => {
-      e.preventDefault();
-      const r = canvas.getBoundingClientRect();
-      handleInteraction((e.clientX - r.left) * (canvas.width / r.width), (e.clientY - r.top) * (canvas.height / r.height));
-    }, { passive: false });
-
-    document.getElementById("startBtn").onclick = () => {
-      state.running = true;
-      state.score = 0;
-      state.startTime = performance.now();
-      document.getElementById("startOverlay").classList.add("hidden");
-      buildRound();
-    };
-
-    document.getElementById("restartBtn").onclick = () => location.reload();
-    document.getElementById("resetBtn").onclick = () => location.reload();
-
-    // ======================================================
-    // 4. LEADERBOARD WRITE
-    // ======================================================
-    const PLATFORM_ALIASES = {
-      TIKTOK: ["tiktok.com/@", "vm.tiktok.com/"],
-      INSTAGRAM: ["instagram.com/"],
-      YOUTUBE: ["youtube.com/@", "youtube.com/c/", "youtube.com/user/", "youtu.be/"],
-      X: ["twitter.com/", "x.com/"],
-      LINKEDIN: ["linkedin.com/in/", "linkedin.com/company/"],
-      TWITCH: ["twitch.tv/"]
-    };
-
-    function cleanSocialHandle(raw) {
-      return String(raw || "")
-        .trim()
-        .replace(/^https?:\/\//i, "")
-        .replace(/^www\./i, "")
-        .replace(/\?.*$/, "")
-        .replace(/#.*$/, "")
-        .replace(/^@+/, "")
-        .split("/")
-        .filter(Boolean)
-        .pop()
-        .replace(/[^A-Za-z0-9._]/g, "")
-        .slice(0, 30);
-    }
-
-    function detectPlatform(raw, selected) {
-      if (selected && selected !== "AUTO") return selected;
-      const value = String(raw || "").toLowerCase();
-      for (const [platform, needles] of Object.entries(PLATFORM_ALIASES)) {
-        if (needles.some(needle => value.includes(needle))) return platform;
-      }
-      return "OTHER";
-    }
-
-    function makeDocId(platform, handle) {
-      return `${platform}_${handle}`.toUpperCase().replace(/[^A-Z0-9_]/g, "_").slice(0, 60);
-    }
-
-    document.getElementById("socialInput").addEventListener("input", event => {
-      const current = event.target.value;
-      if (current && !current.startsWith("@") && !current.startsWith("http")) event.target.value = "@" + current;
-    });
-
-    document.getElementById("saveScoreBtn").onclick = async () => {
-      const errorEl = document.getElementById("errorMsg");
-      const saveMsg = document.getElementById("saveMsg");
-      const rawName = document.getElementById("nameInput").value.trim().toUpperCase();
-      const name = rawName.replace(/[^A-Z0-9_]/g, "").slice(0, 15);
-      const rawSocial = document.getElementById("socialInput").value.trim();
-      const platform = detectPlatform(rawSocial, document.getElementById("platformSelect").value);
-      const socialHandle = cleanSocialHandle(rawSocial);
-      const socialDisplay = "@" + socialHandle;
-      const docId = makeDocId(platform, socialHandle);
-      const displayScore = displayBoxesFromScore(state.score);
-
-      errorEl.style.display = "none";
-      saveMsg.style.display = "none";
-
-      if (name.length < 2) {
-        errorEl.textContent = "Name braucht mindestens 2 Zeichen.";
-        errorEl.style.display = "block";
-        return;
-      }
-
-      if (socialHandle.length < 2 || socialHandle.length > 30) {
-        errorEl.textContent = CLIENT_CONFIG.socialRequiredText;
-        errorEl.style.display = "block";
-        return;
-      }
-
-      if (!/^[A-Za-z0-9._]{2,30}$/.test(socialHandle)) {
-        errorEl.textContent = CLIENT_CONFIG.socialInvalidText;
-        errorEl.style.display = "block";
-        return;
-      }
-
-      if (state.score < CLIENT_CONFIG.minScoreToSave) {
-        errorEl.textContent = CLIENT_CONFIG.tooWeakText;
-        errorEl.style.display = "block";
-        return;
-      }
-
-      const saveBtn = document.getElementById("saveScoreBtn");
-      saveBtn.disabled = true;
-
-      try {
-        const userDocRef = dbRef.doc(docId);
-        const docSnap = await userDocRef.get();
-
-        if (docSnap.exists) {
-          const existingData = docSnap.data();
-          const existingScore = Number(existingData.score || 0);
-          const existingTime = Number(existingData.time || 999999);
-          if (displayScore < existingScore || (displayScore === existingScore && state.totalTime >= existingTime)) {
-            errorEl.textContent = CLIENT_CONFIG.noImprovementText;
-            errorEl.style.display = "block";
-            saveBtn.disabled = false;
-            return;
-          }
-        }
-
-        await userDocRef.set({
-          name,
-          platform,
-          socialHandle,
-          socialDisplay,
-          docId,
-          score: displayScore,
-          time: Number(state.totalTime.toFixed(3)),
-          rounds: state.score,
-          sessionId: session.id,
-          clientVersion: CLIENT_CONFIG.clientVersion,
-          userAgent: navigator.userAgent.slice(0, 160),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        session.saved = true;
-        saveMsg.textContent = CLIENT_CONFIG.savedText;
-        saveMsg.style.display = "block";
-        saveBtn.textContent = "SAVED";
-      } catch (e) {
-        console.error(e);
-        errorEl.textContent = CLIENT_CONFIG.networkErrorText;
-        errorEl.style.display = "block";
-        saveBtn.disabled = false;
-      }
-    };
-
-    document.getElementById("shareBtn").onclick = async () => {
-      const finalBoxes = displayBoxesFromScore(state.score);
-      const text = `${CLIENT_CONFIG.shareText}\nScore: ${finalBoxes}/30 Boxes.\n${window.location.href}`;
-      const btn = document.getElementById("shareBtn");
-      try {
-        if (navigator.share) {
-          await navigator.share({ title: CLIENT_CONFIG.brandTitle, text, url: window.location.href });
-        } else if (navigator.clipboard) {
-          await navigator.clipboard.writeText(text);
-          btn.textContent = "KOPIERT";
-          setTimeout(() => { btn.textContent = "CHALLENGE TEILEN"; }, 1600);
-        }
-      } catch (e) {
-        console.warn("Share cancelled or failed", e);
-      }
-    };
-
-    // ======================================================
-    // 5. LEADERBOARD READ
-    // ======================================================
-    function normalizeEntry(data) {
-      const name = String(data.name || "UNKNOWN").replace(/[^A-Z0-9_]/g, "").slice(0, 15) || "UNKNOWN";
-      const platform = String(data.platform || "").replace(/[^A-Z]/g, "").slice(0, 12);
-      const socialHandle = String(data.socialHandle || "").replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
-      const socialDisplay = socialHandle ? "@" + socialHandle : "";
-      const score = clamp(Number(data.score || 0), 0, 30);
-      const time = typeof data.time === "number" ? data.time : 999999;
-      return { name, platform, socialDisplay, score, time };
-    }
-
-    function renderLeaderboard(entries) {
-      const list = document.getElementById("leaderboardList");
-      list.innerHTML = "";
-      if (!entries.length) {
-        list.textContent = "Noch kein Rank gesetzt.";
-        list.className = "muted-line";
-        return;
-      }
-      list.className = "";
-      const fragment = document.createDocumentFragment();
-      entries.forEach((data, index) => {
-        const li = document.createElement("li");
-        li.className = "leaderboard-entry";
-
-        const left = document.createElement("div");
-        left.className = "rank-name";
-
-        const rank = document.createElement("span");
-        rank.className = "rank-number";
-        rank.textContent = `#${index + 1}`;
-
-        const name = document.createElement("span");
-        name.className = "player-name";
-        name.textContent = data.socialDisplay ? `${data.name} · ${data.socialDisplay}${data.platform ? " / " + data.platform : ""}` : data.name;
-
-        const score = document.createElement("span");
-        score.className = "score-line";
-        const timeText = Number.isFinite(data.time) && data.time < 999999 ? `${data.time.toFixed(1)}s` : "N/A";
-        score.textContent = `${data.score} BOXES (${timeText})`;
-
-        left.append(rank, name);
-        li.append(left, score);
-        fragment.appendChild(li);
-      });
-      list.appendChild(fragment);
-    }
-
-    auth.onAuthStateChanged(user => {
-      if (!user) return;
-      dbRef.onSnapshot(snap => {
-        const allEntries = [];
-        snap.forEach(d => allEntries.push(normalizeEntry(d.data())));
-        allEntries.sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return a.time - b.time;
-        });
-        renderLeaderboard(allEntries.slice(0, CLIENT_CONFIG.maxLeaderboardEntries));
-      }, error => {
-        console.error("Leaderboard Error:", error);
-        const list = document.getElementById("leaderboardList");
-        list.textContent = "Ranking aktuell nicht erreichbar.";
-        list.className = "muted-line";
-      });
-    });
-
-    auth.signInAnonymously().catch(error => {
-      console.error("Auth Error:", error);
-      const list = document.getElementById("leaderboardList");
-      list.textContent = "Firebase Auth blockiert. Ranking nicht erreichbar.";
-      list.className = "muted-line";
-    });
-
-    function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
-    updateHud();
-    requestAnimationFrame(loop);
-  </script>
+    hud();setMessage('Merken...');
+    window.setTimeout(()=>{if(token!==roundToken)return;Array.from(grid.children).forEach(x=>x.classList.remove('focus'));shuffle(token,Math.min(70,8+score*2));},Math.max(520,980-score*14));
+  }
+  function shuffle(token,times){let t=0;const delay=Math.max(55,120-score*2);const timer=window.setInterval(()=>{if(token!==roundToken){clearInterval(timer);return}const arr=Array.from(grid.children);const a=Math.floor(Math.random()*arr.length),b=Math.floor(Math.random()*arr.length);if(a!==b)grid.insertBefore(arr[a],arr[b]);t++;if(t>=times){clearInterval(timer);locked=false;setMessage('Wähle die richtige Box.')}},delay)}
+  function pick(i,el){if(locked)return;locked=true;if(i===correct){el.classList.add('good');score++;setMessage('Richtig. Weiter.');window.setTimeout(buildRound,620)}else{el.classList.add('bad');const finalBoxes=boxes();if(finalBoxes>best){best=finalBoxes;localStorage.setItem(BEST_KEY,String(best))}hud();setMessage('Vorbei. Ergebnis: '+finalBoxes+' Boxen.');startBtn.textContent='Nochmal';startBtn.classList.remove('hide')}}
+  startBtn.addEventListener('click',start);
+  resetBtn.addEventListener('click',()=>{roundToken++;score=0;locked=true;grid.innerHTML='';startBtn.textContent='Start';startBtn.classList.remove('hide');setMessage('Merke dir die markierte Box.');hud()});
+  hud();
+})();
+</script>
 </body>
 </html>
