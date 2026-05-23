@@ -17,8 +17,13 @@ service cloud.firestore {
       return handle.matches('^[A-Za-z0-9._]{2,30}$');
     }
 
+    function validPlayerDocId(docId) {
+      return isSignedIn() && docId == ('PLAYER_' + request.auth.uid);
+    }
+
     function validLeaderboardEntry(docId) {
-      return request.resource.data.keys().hasOnly([
+      return validPlayerDocId(docId)
+        && request.resource.data.keys().hasOnly([
           'name',
           'platform',
           'socialHandle',
