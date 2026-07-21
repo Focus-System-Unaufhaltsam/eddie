@@ -1,81 +1,80 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>EDDIE | UNAUFHALTSAM</title>
-<meta name="description" content="Eddie’s World. Real life. No staging. UNAUFHALTSAM focus game.">
-<meta name="theme-color" content="#800080">
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<style>
-:root{--eddie-purple:#800080;--eddie-black:#000000;--eddie-white:#FFFFFF;--bg:var(--eddie-black);--panel:var(--eddie-black);--panel2:var(--eddie-black);--line:rgba(255,255,255,.22);--text:var(--eddie-white);--muted:rgba(255,255,255,.72);--accent:var(--eddie-purple);--good:var(--eddie-white);--bad:var(--eddie-purple)}*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}body{min-height:100vh;background:radial-gradient(circle at top right,rgba(128,0,128,.20),transparent 32%),var(--bg);color:var(--text);padding:16px 12px 36px}.wrap{width:min(980px,100%);margin:auto;display:grid;gap:14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand h1{font-size:clamp(34px,8vw,78px);line-height:.84;letter-spacing:-.075em;text-transform:uppercase}.brand p{margin-top:8px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}.btn{appearance:none;border:2px solid var(--eddie-white);background:var(--eddie-white);color:var(--eddie-black);border-radius:16px;padding:14px 18px;min-height:52px;font-weight:950;text-transform:uppercase;cursor:pointer}.btn.dark{background:var(--eddie-black);color:var(--eddie-white);border-color:var(--line)}.btn.purple{background:var(--accent);border-color:var(--accent);color:var(--eddie-white)}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.5;cursor:not-allowed}.hud{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}.stat{text-align:center}.label{color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.11em}.value{font-size:38px;line-height:1;font-weight:950;color:var(--accent);margin-top:4px}.board{background:var(--eddie-black);border:1px solid var(--line);border-radius:24px;min-height:540px;padding:18px;overflow:hidden}.center{text-align:center}.msg{color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.08em;margin-top:10px;min-height:20px}.grid{display:grid;gap:14px;justify-content:center;align-content:center;min-height:390px;margin-top:20px}.box{position:relative;width:82px;height:82px;border-radius:16px;border:4px solid var(--eddie-black);background:var(--eddie-white);cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.35);overflow:hidden;transition:transform .4s cubic-bezier(.2,.8,.2,1),outline .16s ease,opacity .16s ease}.box img{width:100%;height:100%;object-fit:contain;display:block;padding:5px}.box .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font-size:13px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase}.box.focus{outline:8px solid var(--accent);transform:translateY(-8px) scale(1.04)}.box.focus::after{content:'FOCUS';position:absolute;inset:0;display:grid;place-items:center;background:rgba(128,0,128,.70);color:var(--eddie-white);font-size:15px;font-weight:950;letter-spacing:.06em}.box.good{outline:8px solid var(--good);transform:translateY(-8px) scale(1.04)}.box.bad{outline:8px solid var(--bad);transform:translateY(-8px) scale(1.04)}.box.swapping{z-index:5}.notice{background:var(--panel2);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:18px;padding:14px;color:var(--muted);font-weight:850}.entry{display:none;gap:10px}.entry.show{display:grid}.entry input{width:100%;min-height:52px;border:2px solid var(--eddie-white);background:var(--eddie-black);color:var(--eddie-white);border-radius:16px;padding:0 14px;text-align:center;text-transform:uppercase;font-weight:950;font-size:18px;outline:none}.entry input:focus{border-color:var(--accent)}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:10px 0;color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px}.row:first-child{border-top:0}.row b{color:var(--eddie-white)}.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase}.hide{display:none!important}@media(max-width:720px){body{padding:10px}.top{align-items:stretch}.box{width:62px;height:62px}.grid{gap:10px;min-height:330px}.board{min-height:480px}.btn{width:100%}.hud{grid-template-columns:1fr 1fr}}
-.sales{display:none;gap:10px}.sales.show{display:grid}.sales-copy{color:var(--muted);font-size:13px;font-weight:900;text-transform:uppercase;text-align:center}.sales-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sales-actions a{text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center}@media(max-width:720px){.sales-actions{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<main class="wrap">
-<header class="top"><div class="brand"><h1>EDDIE<br><span style="color:var(--accent)">UNAUFHALTSAM</span></h1><p>Eddie’s World · Real life. No staging.</p></div><button id="resetBtn" class="btn dark" type="button">Reset</button></header>
-<section class="notice">Focus game from Eddie’s World. Remember. Swap. Choose. One mistake ends the run.</section>
-<section class="hud"><div class="stat"><div class="label">Boxes</div><div id="boxesValue" class="value">2</div></div><div class="stat"><div class="label">Best</div><div id="bestValue" class="value">0</div></div></section>
-<section class="board"><div class="center"><button id="startBtn" class="btn purple" type="button">Start</button><div id="msg" class="msg">Remember the marked Eddie box.</div></div><div id="grid" class="grid" aria-label="UNAUFHALTSAM Game Grid"></div></section>
-<section id="entryPanel" class="panel entry"><div class="label">Save your run</div><input id="nameInput" maxlength="15" placeholder="YOUR NAME"><button id="saveScoreBtn" class="btn purple" type="button">Save rank</button><div id="saveMsg" class="msg"></div></section>
-<section id="salesPanel" class="panel sales" aria-label="Eddie's World Produkte"><div class="label">Keep going</div><div class="sales-copy">Der Lauf endet. UNAUFHALTSAM geht weiter.</div><div class="sales-actions"><a class="btn purple" href="https://amzn.to/3RpkbLq" target="_blank" rel="noopener noreferrer">Bücher ansehen</a><a class="btn dark" href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam" target="_blank" rel="noopener noreferrer">UNAUFHALTSAM tragen</a></div></section>
-<section class="panel"><div class="label" style="margin-bottom:8px">Wall Ranking</div><div id="leaderboardList"><div class="row"><span>No names yet.</span><b>Ready</b></div></div></section>
-<footer class="foot"><span>Eddie’s World</span><span>Real life. No staging.</span></footer>
-</main>
-<script>
-window.addEventListener('DOMContentLoaded',()=>{
-const grid=document.getElementById('grid');
-const msg=document.getElementById('msg');
-const startBtn=document.getElementById('startBtn');
-const resetBtn=document.getElementById('resetBtn');
-const boxesValue=document.getElementById('boxesValue');
-const bestValue=document.getElementById('bestValue');
-const entryPanel=document.getElementById('entryPanel');
-const nameInput=document.getElementById('nameInput');
-const saveScoreBtn=document.getElementById('saveScoreBtn');
-const saveMsg=document.getElementById('saveMsg');
-const salesPanel=document.getElementById('salesPanel');
-const leaderboardList=document.getElementById('leaderboardList');
-const BEST_KEY='eddie_unaufhaltsam_best_boxes_v4';
-const LOCAL_LB_KEY='eddie_unaufhaltsam_wall_v1';
-const LOGO_FILES=['eddie_head.png','unaufhaltsam_brand.png','logo.png'];
-const firebaseConfig={apiKey:'AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A',authDomain:'mg-challenge.firebaseapp.com',projectId:'mg-challenge',storageBucket:'mg-challenge.firebasestorage.app',messagingSenderId:'472289048663',appId:'1:472289048663:web:4d2cdb6f868ac9c32c4b12',measurementId:'G-4KYDE7P5W8'};
-let db=null,auth=null,dbRef=null,firebaseReady=false,lastResult=0,cachedLB=[];
-let logoSrc='',score=0,best=Number(localStorage.getItem(BEST_KEY)||0),correctId=null,locked=true,roundToken=0,order=[];
-function wait(ms){return new Promise(resolve=>window.setTimeout(resolve,ms));}
-function frame(){return new Promise(resolve=>requestAnimationFrame(()=>resolve()));}
-function loadLogo(files,index=0){if(index>=files.length){logoSrc='';renderBoxes(false);return;}const img=new Image();img.onload=()=>{logoSrc=files[index];renderBoxes(false);};img.onerror=()=>loadLogo(files,index+1);img.src=files[index]+'?v=4';}
-function boxes(){return score+2;}
-function hud(){boxesValue.textContent=boxes();bestValue.textContent=best||0;}
-function setMessage(text){msg.textContent=text;}
-function colsFor(n){return Math.ceil(Math.sqrt(n));}
-function boxNode(id){const b=document.createElement('button');b.type='button';b.className='box';b.dataset.id=String(id);b.setAttribute('aria-label','Eddie Box '+(id+1));if(logoSrc){const img=document.createElement('img');img.src=logoSrc;img.alt='Eddie';img.onerror=()=>{img.remove();if(!b.querySelector('.fallback')){const f=document.createElement('div');f.className='fallback';f.textContent='EDDIE';b.appendChild(f);}};b.appendChild(img);}else{const f=document.createElement('div');f.className='fallback';f.textContent='EDDIE';b.appendChild(f);}b.addEventListener('click',()=>pick(id,b));return b;}
-function renderBoxes(showFocus){if(!order.length)return;const n=order.length;const cols=colsFor(n);grid.style.gridTemplateColumns='repeat('+cols+', minmax(0,82px))';grid.innerHTML='';order.forEach(id=>{const b=boxNode(id);if(showFocus&&id===correctId)b.classList.add('focus');grid.appendChild(b);});}
-function positions(){const map=new Map();Array.from(grid.children).forEach(node=>map.set(Number(node.dataset.id),node.getBoundingClientRect()));return map;}
-async function visibleSwap(a,b,duration){const first=positions();const tmp=order[a];order[a]=order[b];order[b]=tmp;renderBoxes(false);const nodes=Array.from(grid.children);nodes.forEach(node=>{const id=Number(node.dataset.id);const before=first.get(id);if(!before)return;const after=node.getBoundingClientRect();const dx=before.left-after.left;const dy=before.top-after.top;node.style.transition='none';node.style.transform='translate('+dx+'px,'+dy+'px)';if(id===order[a]||id===order[b])node.classList.add('swapping');});grid.offsetHeight;await frame();nodes.forEach(node=>{node.style.transition='transform '+duration+'ms cubic-bezier(.2,.8,.2,1), outline .16s ease, opacity .16s ease';node.style.transform='translate(0,0)';});await wait(duration);nodes.forEach(node=>{node.style.transition='';node.style.transform='';node.classList.remove('swapping');});}
-function start(){score=0;lastResult=0;entryPanel.classList.remove('show');salesPanel.classList.remove('show');saveMsg.textContent='';startBtn.classList.add('hide');buildRound();}
-function buildRound(){const token=++roundToken;locked=true;const n=boxes();order=Array.from({length:n},(_,i)=>i);correctId=Math.floor(Math.random()*n);hud();renderBoxes(true);setMessage('Remember the marked Eddie box.');const memoryTime=Math.max(650,1200-score*18);window.setTimeout(()=>{if(token!==roundToken)return;renderBoxes(false);shuffle(token);},memoryTime);}
-async function shuffle(token){setMessage('SWAPPING...');const times=Math.min(56,8+score*3);const duration=Math.max(150,450-score*10);for(let t=0;t<times;t++){if(token!==roundToken)return;const a=Math.floor(Math.random()*order.length);let b=Math.floor(Math.random()*order.length);while(b===a)b=Math.floor(Math.random()*order.length);await visibleSwap(a,b,duration);await wait(Math.max(30,100-score*3));}if(token!==roundToken)return;locked=false;setMessage('Pick the Eddie box that was in focus.');}
-function endRun(finalBoxes){lastResult=finalBoxes;entryPanel.classList.add('show');salesPanel.classList.add('show');nameInput.focus({preventScroll:true});startBtn.textContent='Again';startBtn.classList.remove('hide');}
-function pick(id,el){if(locked)return;locked=true;Array.from(grid.children).forEach(node=>{const nodeId=Number(node.dataset.id);if(nodeId===correctId)node.classList.add('good');});if(id===correctId){el.classList.add('good');score++;setMessage('Hit. Continue.');window.setTimeout(buildRound,760);}else{el.classList.add('bad');const finalBoxes=boxes();if(finalBoxes>best){best=finalBoxes;localStorage.setItem(BEST_KEY,String(best));}hud();setMessage('Run ended. Result: '+finalBoxes+' boxes.');endRun(finalBoxes);}}
-function safeName(value){return value.trim().toUpperCase().replace(/[^A-Z0-9_]/g,'').slice(0,15);}
-function safeHandle(value){return value.trim().replace(/^@/,'').replace(/[^A-Za-z0-9._]/g,'').slice(0,30);}
-function makeDocId(){if(!auth||!auth.currentUser)return '';return 'PLAYER_'+auth.currentUser.uid;}
-function sessionId(){try{if(window.crypto&&crypto.randomUUID)return crypto.randomUUID().replace(/-/g,'').slice(0,32);}catch(e){}return (String(Date.now())+String(Math.random()).replace(/\D/g,'')).slice(0,32);}
-function localLeaderboard(){try{return JSON.parse(localStorage.getItem(LOCAL_LB_KEY)||'[]')}catch(e){return[]}}
-function writeLocal(entry){const list=localLeaderboard().filter(e=>e.name!==entry.name);list.push(entry);list.sort((a,b)=>b.boxes-a.boxes||a.time-b.time);localStorage.setItem(LOCAL_LB_KEY,JSON.stringify(list.slice(0,10)));renderLeaderboard(list);}
-function renderLeaderboard(list=cachedLB){const rows=(list||[]).slice(0,10);if(!rows.length){leaderboardList.innerHTML='<div class="row"><span>No names yet.</span><b>Ready</b></div>';return;}leaderboardList.innerHTML=rows.map((e,i)=>{const value=e.score||e.boxes||0;return '<div class="row"><span>#'+(i+1)+' <b>'+String(e.name||'PLAYER').replace(/[<>&"']/g,'')+'</b></span><b>'+value+' boxes</b></div>';}).join('');}
-async function saveScore(){const handle=safeHandle(nameInput.value);const name=safeName(handle);if(!lastResult)return;if(!handle||handle.length<2||!name||name.length<2){saveMsg.textContent='SOCIAL @ NEEDS 2+ CHARS.';return;}if(lastResult<4){saveMsg.textContent='NOT RANK-READY. DELIVER FIRST.';return;}saveScoreBtn.disabled=true;saveMsg.textContent='SAVING...';const scoreValue=Math.max(4,Math.min(30,lastResult));const roundsValue=Math.max(1,Math.min(29,lastResult-2));const entry={name,boxes:lastResult,time:Date.now()};try{if(firebaseReady&&dbRef&&auth&&auth.currentUser){const docId=makeDocId();const data={name:name,platform:'OTHER',socialHandle:handle,socialDisplay:'@'+handle,docId:docId,socialKey:docId,score:scoreValue,time:66.669,rounds:roundsValue,sessionId:sessionId(),clientVersion:'eddie-unaufhaltsam-v2.4-player-lock',userAgent:navigator.userAgent.slice(0,160),timestamp:firebase.firestore.FieldValue.serverTimestamp()};await dbRef.doc(docId).set(data,{merge:false});saveMsg.textContent='RANK SAVED.';}else{writeLocal(entry);saveMsg.textContent='RANK SAVED LOCALLY.';}entryPanel.classList.remove('show');}catch(e){console.warn('FIREBASE SAVE FAILED:',e);writeLocal(entry);saveMsg.textContent='RANK SAVED LOCALLY.';}finally{saveScoreBtn.disabled=false;}}
-function initFirebase(){try{if(!window.firebase)throw new Error('sdk missing');if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();auth=firebase.auth();dbRef=db.collection('leaderboard_eddie-v1');auth.signInAnonymously().then(()=>{firebaseReady=true;dbRef.onSnapshot(snapshot=>{cachedLB=[];snapshot.forEach(doc=>cachedLB.push(doc.data()));cachedLB.sort((a,b)=>(b.score||b.boxes||0)-(a.score||a.boxes||0)||(a.time||9999999999999)-(b.time||9999999999999));renderLeaderboard(cachedLB);},()=>renderLeaderboard(localLeaderboard()));}).catch(()=>renderLeaderboard(localLeaderboard()));}catch(e){renderLeaderboard(localLeaderboard());}}
-startBtn.addEventListener('click',start);
-resetBtn.addEventListener('click',()=>{roundToken++;score=0;lastResult=0;locked=true;order=[];correctId=null;grid.innerHTML='';entryPanel.classList.remove('show');salesPanel.classList.remove('show');startBtn.textContent='Start';startBtn.classList.remove('hide');setMessage('Remember the marked Eddie box.');hud();});
-saveScoreBtn.addEventListener('click',saveScore);
-nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')saveScore();});
-hud();loadLogo(LOGO_FILES);renderLeaderboard(localLeaderboard());initFirebase();
-});
-</script>
-</body>
-</html>
+from pathlib import Path
+
+src = Path("/mnt/data/Eingefügter Text(11).txt")
+text = src.read_text(encoding="utf-8")
+
+# 1) Add Analytics SDK
+text = text.replace(
+    '<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>',
+    '<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>\n'
+    '<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>'
+)
+
+# 2) Add IDs to outbound links for tracking
+text = text.replace(
+    '<a class="btn purple" href="https://amzn.to/3RpkbLq"',
+    '<a id="bookBtn" class="btn purple" href="https://amzn.to/3RpkbLq"'
+)
+text = text.replace(
+    '<a class="btn dark" href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam"',
+    '<a id="merchBtn" class="btn dark" href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam"'
+)
+
+# 3) Add button references
+text = text.replace(
+    "const leaderboardList=document.getElementById('leaderboardList');",
+    "const leaderboardList=document.getElementById('leaderboardList');\n"
+    "const bookBtn=document.getElementById('bookBtn');\n"
+    "const merchBtn=document.getElementById('merchBtn');"
+)
+
+# 4) Add analytics variable
+text = text.replace(
+    "let db=null,auth=null,dbRef=null,firebaseReady=false,lastResult=0,cachedLB=[];",
+    "let db=null,auth=null,analytics=null,dbRef=null,firebaseReady=false,lastResult=0,cachedLB=[];"
+)
+
+# 5) Add helper
+text = text.replace(
+    "function wait(ms){return new Promise(resolve=>window.setTimeout(resolve,ms));}",
+    "function track(eventName,params={}){try{if(analytics)analytics.logEvent(eventName,params);}catch(e){console.warn('ANALYTICS EVENT FAILED:',eventName,e);}}\n"
+    "function wait(ms){return new Promise(resolve=>window.setTimeout(resolve,ms));}"
+)
+
+# 6) Track game start
+text = text.replace(
+    "function start(){score=0;lastResult=0;",
+    "function start(){track('game_start');score=0;lastResult=0;"
+)
+
+# 7) Track game end
+text = text.replace(
+    "function endRun(finalBoxes){lastResult=finalBoxes;",
+    "function endRun(finalBoxes){track('game_end',{boxes:finalBoxes});lastResult=finalBoxes;"
+)
+
+# 8) Track score saved
+text = text.replace(
+    "await dbRef.doc(docId).set(data,{merge:false});saveMsg.textContent='RANK SAVED.';",
+    "await dbRef.doc(docId).set(data,{merge:false});track('score_saved',{boxes:lastResult});saveMsg.textContent='RANK SAVED.';"
+)
+
+# 9) Initialize Analytics
+text = text.replace(
+    "if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);db=firebase.firestore();",
+    "if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);analytics=firebase.analytics();db=firebase.firestore();"
+)
+
+# 10) Add outbound click listeners
+text = text.replace(
+    "nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')saveScore();});",
+    "nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')saveScore();});\n"
+    "bookBtn.addEventListener('click',()=>track('book_click',{destination:'amazon'}));\n"
+    "merchBtn.addEventListener('click',()=>track('merch_click',{destination:'creator_spring'}));"
+)
+
+out = Path("/mnt/data/index_analytics_complete.html")
+out.write_text(text, encoding="utf-8")
+
+print(f"Created: {out}")
+print(f"Lines: {len(text.splitlines())}")
