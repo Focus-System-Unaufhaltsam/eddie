@@ -13,8 +13,60 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
 
 <style>
-:root{--eddie-purple:#800080;--eddie-black:#000000;--eddie-white:#FFFFFF;--bg:var(--eddie-black);--panel:var(--eddie-black);--panel2:var(--eddie-black);--line:rgba(255,255,255,.22);--text:var(--eddie-white);--muted:rgba(255,255,255,.72);--accent:var(--eddie-purple);--good:var(--eddie-white);--bad:var(--eddie-purple)}*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}body{min-height:100vh;background:radial-gradient(circle at top right,rgba(128,0,128,.20),transparent 32%),var(--bg);color:var(--text);padding:16px 12px 36px}.wrap{width:min(980px,100%);margin:auto;display:grid;gap:14px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand h1{font-size:clamp(34px,8vw,78px);line-height:.84;letter-spacing:-.075em;text-transform:uppercase}.brand p{margin-top:8px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}.btn{appearance:none;border:2px solid var(--eddie-white);background:var(--eddie-white);color:var(--eddie-black);border-radius:16px;padding:14px 18px;min-height:52px;font-weight:950;text-transform:uppercase;cursor:pointer}.btn.dark{background:var(--eddie-black);color:var(--eddie-white);border-color:var(--line)}.btn.purple{background:var(--accent);border-color:var(--accent);color:var(--eddie-white)}.btn:active{transform:scale(.98)}.btn[disabled]{opacity:.5;cursor:not-allowed}.hud{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}.stat{text-align:center}.label{color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.11em}.value{font-size:38px;line-height:1;font-weight:950;color:var(--accent);margin-top:4px}.board{background:var(--eddie-black);border:1px solid var(--line);border-radius:24px;min-height:540px;padding:18px;overflow:hidden}.center{text-align:center}.msg{color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.08em;margin-top:10px;min-height:20px}.grid{display:grid;gap:14px;justify-content:center;align-content:center;min-height:390px;margin-top:20px}.box{position:relative;width:82px;height:82px;border-radius:16px;border:4px solid var(--eddie-black);background:var(--eddie-white);cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.35);overflow:hidden;transition:transform .4s cubic-bezier(.2,.8,.2,1),outline .16s ease,opacity .16s ease}.box img{width:100%;height:100%;object-fit:contain;display:block;padding:5px}.box .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font-size:13px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase}.box.focus{outline:8px solid var(--accent);transform:translateY(-8px) scale(1.04)}.box.focus::after{content:'FOCUS';position:absolute;inset:0;display:grid;place-items:center;background:rgba(128,0,128,.70);color:var(--eddie-white);font-size:15px;font-weight:950;letter-spacing:.06em}.box.good{outline:8px solid var(--good);transform:translateY(-8px) scale(1.04)}.box.bad{outline:8px solid var(--bad);transform:translateY(-8px) scale(1.04)}.box.swapping{z-index:5}.notice{background:var(--panel2);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:18px;padding:14px;color:var(--muted);font-weight:850}.entry{display:none;gap:10px}.entry.show{display:grid}.entry input{width:100%;min-height:52px;border:2px solid var(--eddie-white);background:var(--eddie-black);color:var(--eddie-white);border-radius:16px;padding:0 14px;text-align:center;text-transform:uppercase;font-weight:950;font-size:18px;outline:none}.entry input:focus{border-color:var(--accent)}.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:10px 0;color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px}.row:first-child{border-top:0}.row b{color:var(--eddie-white)}.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase}.hide{display:none!important}@media(max-width:720px){body{padding:10px}.top{align-items:stretch}.box{width:62px;height:62px}.grid{gap:10px;min-height:330px}.board{min-height:480px}.btn{width:100%}.hud{grid-template-columns:1fr 1fr}}
-.sales{display:none;gap:10px}.sales.show{display:grid}.sales-copy{color:var(--muted);font-size:13px;font-weight:900;text-transform:uppercase;text-align:center}.sales-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sales-actions a{text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center}@media(max-width:720px){.sales-actions{grid-template-columns:1fr}}
+:root{--eddie-purple:#800080;--eddie-black:#000000;--eddie-white:#FFFFFF;--bg:var(--eddie-black);--panel:var(--eddie-black);--panel2:var(--eddie-black);--line:rgba(255,255,255,.22);--text:var(--eddie-white);--muted:rgba(255,255,255,.72);--accent:var(--eddie-purple);--good:var(--eddie-white);--bad:var(--eddie-purple)}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:radial-gradient(circle at top right,rgba(128,0,128,.20),transparent 32%),var(--bg);color:var(--text);padding:16px 12px 36px}
+.wrap{width:min(980px,100%);margin:auto;display:grid;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand h1{font-size:clamp(34px,8vw,78px);line-height:.84;letter-spacing:-.075em;text-transform:uppercase}
+.brand p{margin-top:8px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}
+.btn{appearance:none;border:2px solid var(--eddie-white);background:var(--eddie-white);color:var(--eddie-black);border-radius:16px;padding:14px 18px;min-height:52px;font-weight:950;text-transform:uppercase;cursor:pointer}
+.btn.dark{background:var(--eddie-black);color:var(--eddie-white);border-color:var(--line)}
+.btn.purple{background:var(--accent);border-color:var(--accent);color:var(--eddie-white)}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.hud{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px}
+.stat{text-align:center}
+.label{color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.11em}
+.value{font-size:38px;line-height:1;font-weight:950;color:var(--accent);margin-top:4px}
+.board{background:var(--eddie-black);border:1px solid var(--line);border-radius:24px;min-height:540px;padding:18px;overflow:hidden}
+.center{text-align:center}
+.msg{color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px;letter-spacing:.08em;margin-top:10px;min-height:20px}
+.grid{display:grid;gap:14px;justify-content:center;align-content:center;min-height:390px;margin-top:20px}
+.box{position:relative;width:82px;height:82px;border-radius:16px;border:4px solid var(--eddie-black);background:var(--eddie-white);cursor:pointer;box-shadow:0 10px 20px rgba(0,0,0,.35);overflow:hidden;transition:transform .4s cubic-bezier(.2,.8,.2,1),outline .16s ease,opacity .16s ease}
+.box img{width:100%;height:100%;object-fit:contain;display:block;padding:5px}
+.box .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--accent);font-size:13px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase}
+.box.focus{outline:8px solid var(--accent);transform:translateY(-8px) scale(1.04)}
+.box.focus::after{content:'FOCUS';position:absolute;inset:0;display:grid;place-items:center;background:rgba(128,0,128,.70);color:var(--eddie-white);font-size:15px;font-weight:950;letter-spacing:.06em}
+.box.good{outline:8px solid var(--good);transform:translateY(-8px) scale(1.04)}
+.box.bad{outline:8px solid var(--bad);transform:translateY(-8px) scale(1.04)}
+.box.swapping{z-index:5}
+.notice{background:var(--panel2);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:18px;padding:14px;color:var(--muted);font-weight:850}
+.entry{display:none;gap:10px}
+.entry.show{display:grid}
+.entry input{width:100%;min-height:52px;border:2px solid var(--eddie-white);background:var(--eddie-black);color:var(--eddie-white);border-radius:16px;padding:0 14px;text-align:center;text-transform:uppercase;font-weight:950;font-size:18px;outline:none}
+.entry input:focus{border-color:var(--accent)}
+.row{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:10px 0;color:var(--muted);font-weight:900;text-transform:uppercase;font-size:13px}
+.row:first-child{border-top:0}
+.row b{color:var(--eddie-white)}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase}
+.hide{display:none!important}
+.sales{display:none;gap:10px}
+.sales.show{display:grid}
+.sales-copy{color:var(--muted);font-size:13px;font-weight:900;text-transform:uppercase;text-align:center}
+.sales-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sales-actions a{text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center}
+@media(max-width:720px){
+body{padding:10px}
+.top{align-items:stretch}
+.box{width:62px;height:62px}
+.grid{gap:10px;min-height:330px}
+.board{min-height:480px}
+.btn{width:100%}
+.hud{grid-template-columns:1fr 1fr}
+.sales-actions{grid-template-columns:1fr}
+}
 </style>
 </head>
 
@@ -34,8 +86,14 @@ Focus game from Eddie’s World. Remember. Swap. Choose. One mistake ends the ru
 </section>
 
 <section class="hud">
-<div class="stat"><div class="label">Boxes</div><div id="boxesValue" class="value">2</div></div>
-<div class="stat"><div class="label">Best</div><div id="bestValue" class="value">0</div></div>
+<div class="stat">
+<div class="label">Boxes</div>
+<div id="boxesValue" class="value">2</div>
+</div>
+<div class="stat">
+<div class="label">Best</div>
+<div id="bestValue" class="value">0</div>
+</div>
 </section>
 
 <section class="board">
@@ -123,10 +181,81 @@ let correctId=null;
 let locked=true;
 let roundToken=0;
 let order=[];
+let runStartedAt=0;
+
+function cleanValue(value,max=100){
+return String(value||'').trim().slice(0,max);
+}
+
+function getHost(url){
+try{
+return new URL(url).hostname.replace(/^www\./,'');
+}catch(e){
+return '';
+}
+}
+
+function detectTrafficSource(){
+const params=new URLSearchParams(window.location.search);
+
+const utmSource=cleanValue(params.get('utm_source'),50);
+const utmMedium=cleanValue(params.get('utm_medium'),50);
+const utmCampaign=cleanValue(params.get('utm_campaign'),100);
+const utmContent=cleanValue(params.get('utm_content'),100);
+
+const referrerHost=getHost(document.referrer);
+
+let source=utmSource;
+let medium=utmMedium;
+
+if(!source){
+if(referrerHost.includes('tiktok')){
+source='tiktok';
+medium='social';
+}else if(referrerHost.includes('instagram')){
+source='instagram';
+medium='social';
+}else if(referrerHost.includes('facebook')){
+source='facebook';
+medium='social';
+}else if(referrerHost.includes('youtube')||referrerHost.includes('youtu.be')){
+source='youtube';
+medium='video';
+}else if(referrerHost.includes('reddit')){
+source='reddit';
+medium='social';
+}else if(referrerHost.includes('google')){
+source='google';
+medium='organic';
+}else if(referrerHost){
+source=referrerHost;
+medium='referral';
+}else{
+source='direct';
+medium='none';
+}
+}
+
+return{
+traffic_source:source||'direct',
+traffic_medium:medium||'none',
+traffic_campaign:utmCampaign||'none',
+traffic_content:utmContent||'none',
+referrer_host:referrerHost||'direct',
+page_path:window.location.pathname
+};
+}
+
+const traffic=detectTrafficSource();
 
 function track(eventName,params={}){
 try{
-if(analytics)analytics.logEvent(eventName,params);
+if(!analytics)return;
+
+analytics.logEvent(eventName,{
+...traffic,
+...params
+});
 }catch(e){
 console.warn('ANALYTICS EVENT FAILED:',eventName,e);
 }
@@ -177,6 +306,7 @@ return Math.ceil(Math.sqrt(n));
 
 function boxNode(id){
 const b=document.createElement('button');
+
 b.type='button';
 b.className='box';
 b.dataset.id=String(id);
@@ -184,6 +314,7 @@ b.setAttribute('aria-label','Eddie Box '+(id+1));
 
 if(logoSrc){
 const img=document.createElement('img');
+
 img.src=logoSrc;
 img.alt='Eddie';
 
@@ -201,12 +332,14 @@ b.appendChild(f);
 b.appendChild(img);
 }else{
 const f=document.createElement('div');
+
 f.className='fallback';
 f.textContent='EDDIE';
 b.appendChild(f);
 }
 
 b.addEventListener('click',()=>pick(id,b));
+
 return b;
 }
 
@@ -270,6 +403,7 @@ node.classList.add('swapping');
 });
 
 grid.offsetHeight;
+
 await frame();
 
 nodes.forEach(node=>{
@@ -287,13 +421,17 @@ node.classList.remove('swapping');
 }
 
 function start(){
-track('game_start');
-
 score=0;
 lastResult=0;
+runStartedAt=Date.now();
+
+track('game_start',{
+starting_boxes:2
+});
 
 entryPanel.classList.remove('show');
 salesPanel.classList.remove('show');
+
 saveMsg.textContent='';
 startBtn.classList.add('hide');
 
@@ -351,7 +489,16 @@ setMessage('Pick the Eddie box that was in focus.');
 }
 
 function endRun(finalBoxes){
-track('game_end',{boxes:finalBoxes});
+const runDurationSeconds=runStartedAt
+?Math.max(1,Math.round((Date.now()-runStartedAt)/1000))
+:0;
+
+track('game_end',{
+boxes:finalBoxes,
+rounds:Math.max(0,finalBoxes-2),
+run_duration_seconds:runDurationSeconds,
+personal_best:best
+});
 
 lastResult=finalBoxes;
 
@@ -379,7 +526,14 @@ node.classList.add('good');
 
 if(id===correctId){
 el.classList.add('good');
+
 score++;
+
+track('round_completed',{
+boxes:boxes(),
+round_number:score
+});
+
 setMessage('Hit. Continue.');
 
 window.setTimeout(buildRound,760);
@@ -391,6 +545,10 @@ const finalBoxes=boxes();
 if(finalBoxes>best){
 best=finalBoxes;
 localStorage.setItem(BEST_KEY,String(best));
+
+track('personal_best',{
+boxes:best
+});
 }
 
 hud();
@@ -409,6 +567,7 @@ return value.trim().replace(/^@/,'').replace(/[^A-Za-z0-9._]/g,'').slice(0,30);
 
 function makeDocId(){
 if(!auth||!auth.currentUser)return '';
+
 return 'PLAYER_'+auth.currentUser.uid;
 }
 
@@ -436,7 +595,11 @@ const list=localLeaderboard().filter(e=>e.name!==entry.name);
 list.push(entry);
 list.sort((a,b)=>b.boxes-a.boxes||a.time-b.time);
 
-localStorage.setItem(LOCAL_LB_KEY,JSON.stringify(list.slice(0,10)));
+localStorage.setItem(
+LOCAL_LB_KEY,
+JSON.stringify(list.slice(0,10))
+);
+
 renderLeaderboard(list);
 }
 
@@ -450,8 +613,9 @@ return;
 
 leaderboardList.innerHTML=rows.map((e,i)=>{
 const value=e.score||e.boxes||0;
+const safePlayer=String(e.name||'PLAYER').replace(/[<>&"']/g,'');
 
-return '<div class="row"><span>#'+(i+1)+' <b>'+String(e.name||'PLAYER').replace(/[<>&"']/g,'')+'</b></span><b>'+value+' boxes</b></div>';
+return '<div class="row"><span>#'+(i+1)+' <b>'+safePlayer+'</b></span><b>'+value+' boxes</b></div>';
 }).join('');
 }
 
@@ -493,18 +657,27 @@ score:scoreValue,
 time:66.669,
 rounds:roundsValue,
 sessionId:sessionId(),
-clientVersion:'eddie-unaufhaltsam-v2.4-player-lock',
+clientVersion:'eddie-unaufhaltsam-v2.5-analytics',
 userAgent:navigator.userAgent.slice(0,160),
 timestamp:firebase.firestore.FieldValue.serverTimestamp()
 };
 
 await dbRef.doc(docId).set(data,{merge:false});
 
-track('score_saved',{boxes:lastResult});
+track('score_saved',{
+boxes:lastResult,
+rounds:roundsValue
+});
 
 saveMsg.textContent='RANK SAVED.';
 }else{
 writeLocal(entry);
+
+track('score_saved_local',{
+boxes:lastResult,
+rounds:roundsValue
+});
+
 saveMsg.textContent='RANK SAVED LOCALLY.';
 }
 
@@ -513,6 +686,11 @@ entryPanel.classList.remove('show');
 console.warn('FIREBASE SAVE FAILED:',e);
 
 writeLocal(entry);
+
+track('score_save_failed',{
+boxes:lastResult
+});
+
 saveMsg.textContent='RANK SAVED LOCALLY.';
 }finally{
 saveScoreBtn.disabled=false;
@@ -530,12 +708,23 @@ firebase.initializeApp(firebaseConfig);
 }
 
 analytics=firebase.analytics();
+
+analytics.setAnalyticsCollectionEnabled(true);
+
+track('game_page_loaded',{
+screen_name:'unaufhaltsam_game'
+});
+
 db=firebase.firestore();
 auth=firebase.auth();
 dbRef=db.collection('leaderboard_eddie-v1');
 
 auth.signInAnonymously().then(()=>{
 firebaseReady=true;
+
+track('firebase_ready',{
+auth_type:'anonymous'
+});
 
 dbRef.onSnapshot(snapshot=>{
 cachedLB=[];
@@ -553,11 +742,16 @@ renderLeaderboard(cachedLB);
 },()=>{
 renderLeaderboard(localLeaderboard());
 });
-}).catch(()=>{
+}).catch(error=>{
+console.warn('ANONYMOUS AUTH FAILED:',error);
+
+track('firebase_auth_failed');
+
 renderLeaderboard(localLeaderboard());
 });
 }catch(e){
 console.warn('FIREBASE INIT FAILED:',e);
+
 renderLeaderboard(localLeaderboard());
 }
 }
@@ -565,14 +759,20 @@ renderLeaderboard(localLeaderboard());
 startBtn.addEventListener('click',start);
 
 resetBtn.addEventListener('click',()=>{
+track('game_reset',{
+boxes:boxes()
+});
+
 roundToken++;
 score=0;
 lastResult=0;
 locked=true;
 order=[];
 correctId=null;
+runStartedAt=0;
 
 grid.innerHTML='';
+
 entryPanel.classList.remove('show');
 salesPanel.classList.remove('show');
 
@@ -580,6 +780,7 @@ startBtn.textContent='Start';
 startBtn.classList.remove('hide');
 
 setMessage('Remember the marked Eddie box.');
+
 hud();
 });
 
@@ -592,11 +793,19 @@ saveScore();
 });
 
 bookBtn.addEventListener('click',()=>{
-track('book_click',{destination:'amazon'});
+track('book_click',{
+destination:'amazon',
+link_url:bookBtn.href,
+boxes:lastResult
+});
 });
 
 merchBtn.addEventListener('click',()=>{
-track('merch_click',{destination:'creator_spring'});
+track('merch_click',{
+destination:'creator_spring',
+link_url:merchBtn.href,
+boxes:lastResult
+});
 });
 
 hud();
