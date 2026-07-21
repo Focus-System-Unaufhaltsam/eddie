@@ -7,18 +7,6 @@
 <meta name="description" content="Eddie’s World. Real life. No staging. UNAUFHALTSAM focus game.">
 <meta name="theme-color" content="#800080">
 
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent','default',{
-  analytics_storage:'denied',
-  ad_storage:'denied',
-  ad_user_data:'denied',
-  ad_personalization:'denied',
-  wait_for_update:500
-});
-</script>
-
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -33,6 +21,7 @@ gtag('consent','default',{
   --muted:rgba(255,255,255,.72);
   --accent:var(--eddie-purple);
 }
+
 *{
   box-sizing:border-box;
   margin:0;
@@ -40,18 +29,23 @@ gtag('consent','default',{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   -webkit-tap-highlight-color:transparent;
 }
+
 body{
   min-height:100vh;
-  background:radial-gradient(circle at top right,rgba(128,0,128,.20),transparent 32%),#000;
+  background:
+    radial-gradient(circle at top right,rgba(128,0,128,.20),transparent 32%),
+    #000;
   color:#fff;
   padding:16px 12px 36px;
 }
+
 .wrap{
   width:min(980px,100%);
   margin:auto;
   display:grid;
   gap:14px;
 }
+
 .top{
   display:flex;
   justify-content:space-between;
@@ -59,12 +53,14 @@ body{
   gap:12px;
   flex-wrap:wrap;
 }
+
 .brand h1{
   font-size:clamp(34px,8vw,78px);
   line-height:.84;
   letter-spacing:-.075em;
   text-transform:uppercase;
 }
+
 .brand p{
   margin-top:8px;
   color:var(--muted);
@@ -73,6 +69,7 @@ body{
   text-transform:uppercase;
   letter-spacing:.16em;
 }
+
 .btn{
   appearance:none;
   border:2px solid #fff;
@@ -85,30 +82,46 @@ body{
   text-transform:uppercase;
   cursor:pointer;
 }
+
 .btn.dark{
   background:#000;
   color:#fff;
   border-color:var(--line);
 }
+
 .btn.purple{
   background:var(--accent);
   border-color:var(--accent);
   color:#fff;
 }
-.btn:active{transform:scale(.98)}
-.btn[disabled]{opacity:.5;cursor:not-allowed}
+
+.btn:active{
+  transform:scale(.98);
+}
+
+.btn[disabled]{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
 .hud{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
-.stat,.panel{
+
+.stat,
+.panel{
   background:#000;
   border:1px solid var(--line);
   border-radius:18px;
   padding:14px;
 }
-.stat{text-align:center}
+
+.stat{
+  text-align:center;
+}
+
 .label{
   color:var(--muted);
   font-size:11px;
@@ -116,6 +129,7 @@ body{
   text-transform:uppercase;
   letter-spacing:.11em;
 }
+
 .value{
   font-size:38px;
   line-height:1;
@@ -123,6 +137,7 @@ body{
   color:var(--accent);
   margin-top:4px;
 }
+
 .board{
   background:#000;
   border:1px solid var(--line);
@@ -131,7 +146,11 @@ body{
   padding:18px;
   overflow:hidden;
 }
-.center{text-align:center}
+
+.center{
+  text-align:center;
+}
+
 .msg{
   color:var(--muted);
   font-weight:900;
@@ -141,6 +160,7 @@ body{
   margin-top:10px;
   min-height:20px;
 }
+
 .grid{
   display:grid;
   gap:14px;
@@ -149,6 +169,7 @@ body{
   min-height:390px;
   margin-top:20px;
 }
+
 .box{
   position:relative;
   width:82px;
@@ -159,8 +180,12 @@ body{
   cursor:pointer;
   box-shadow:0 10px 20px rgba(0,0,0,.35);
   overflow:hidden;
-  transition:transform .4s cubic-bezier(.2,.8,.2,1),outline .16s ease,opacity .16s ease;
+  transition:
+    transform .4s cubic-bezier(.2,.8,.2,1),
+    outline .16s ease,
+    opacity .16s ease;
 }
+
 .box img{
   width:100%;
   height:100%;
@@ -168,6 +193,7 @@ body{
   display:block;
   padding:5px;
 }
+
 .box .fallback{
   position:absolute;
   inset:0;
@@ -178,10 +204,12 @@ body{
   font-weight:950;
   text-transform:uppercase;
 }
+
 .box.focus{
   outline:8px solid var(--accent);
   transform:translateY(-8px) scale(1.04);
 }
+
 .box.focus::after{
   content:'FOCUS';
   position:absolute;
@@ -194,15 +222,21 @@ body{
   font-weight:950;
   letter-spacing:.06em;
 }
+
 .box.good{
   outline:8px solid #fff;
   transform:translateY(-8px) scale(1.04);
 }
+
 .box.bad{
   outline:8px solid var(--accent);
   transform:translateY(-8px) scale(1.04);
 }
-.box.swapping{z-index:5}
+
+.box.swapping{
+  z-index:5;
+}
+
 .notice{
   background:#000;
   border:1px solid var(--line);
@@ -212,11 +246,16 @@ body{
   color:var(--muted);
   font-weight:850;
 }
+
 .entry{
   display:none;
   gap:10px;
 }
-.entry.show{display:grid}
+
+.entry.show{
+  display:grid;
+}
+
 .entry input{
   width:100%;
   min-height:52px;
@@ -231,12 +270,20 @@ body{
   font-size:18px;
   outline:none;
 }
-.entry input:focus{border-color:var(--accent)}
+
+.entry input:focus{
+  border-color:var(--accent);
+}
+
 .sales{
   display:none;
   gap:10px;
 }
-.sales.show{display:grid}
+
+.sales.show{
+  display:grid;
+}
+
 .sales-copy{
   color:var(--muted);
   font-size:13px;
@@ -244,11 +291,13 @@ body{
   text-transform:uppercase;
   text-align:center;
 }
+
 .sales-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
+
 .sales-actions a{
   text-decoration:none;
   text-align:center;
@@ -256,6 +305,7 @@ body{
   align-items:center;
   justify-content:center;
 }
+
 .row{
   display:flex;
   justify-content:space-between;
@@ -267,8 +317,15 @@ body{
   text-transform:uppercase;
   font-size:13px;
 }
-.row:first-child{border-top:0}
-.row b{color:#fff}
+
+.row:first-child{
+  border-top:0;
+}
+
+.row b{
+  color:#fff;
+}
+
 .foot{
   display:flex;
   justify-content:space-between;
@@ -280,6 +337,7 @@ body{
   font-weight:900;
   text-transform:uppercase;
 }
+
 .foot button{
   border:0;
   background:none;
@@ -289,7 +347,10 @@ body{
   cursor:pointer;
   text-decoration:underline;
 }
-.hide{display:none!important}
+
+.hide{
+  display:none!important;
+}
 
 .consent{
   position:fixed;
@@ -305,16 +366,19 @@ body{
   padding:16px;
   box-shadow:0 20px 60px rgba(0,0,0,.7);
 }
+
 .consent h2{
   font-size:17px;
   text-transform:uppercase;
   margin-bottom:8px;
 }
+
 .consent p{
   color:var(--muted);
   font-size:13px;
   line-height:1.5;
 }
+
 .consent-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -323,13 +387,36 @@ body{
 }
 
 @media(max-width:720px){
-  body{padding:10px}
-  .top{align-items:stretch}
-  .box{width:62px;height:62px}
-  .grid{gap:10px;min-height:330px}
-  .board{min-height:480px}
-  .btn{width:100%}
-  .sales-actions,.consent-actions{grid-template-columns:1fr}
+  body{
+    padding:10px;
+  }
+
+  .top{
+    align-items:stretch;
+  }
+
+  .box{
+    width:62px;
+    height:62px;
+  }
+
+  .grid{
+    gap:10px;
+    min-height:330px;
+  }
+
+  .board{
+    min-height:480px;
+  }
+
+  .btn{
+    width:100%;
+  }
+
+  .sales-actions,
+  .consent-actions{
+    grid-template-columns:1fr;
+  }
 }
 </style>
 </head>
@@ -339,10 +426,16 @@ body{
 
 <header class="top">
   <div class="brand">
-    <h1>EDDIE<br><span style="color:var(--accent)">UNAUFHALTSAM</span></h1>
+    <h1>
+      EDDIE<br>
+      <span style="color:var(--accent)">UNAUFHALTSAM</span>
+    </h1>
     <p>Eddie’s World · Real life. No staging.</p>
   </div>
-  <button id="resetBtn" class="btn dark" type="button" data-track="game_reset_button">Reset</button>
+
+  <button id="resetBtn" class="btn dark" type="button">
+    Reset
+  </button>
 </header>
 
 <section class="notice">
@@ -354,6 +447,7 @@ body{
     <div class="label">Boxes</div>
     <div id="boxesValue" class="value">2</div>
   </div>
+
   <div class="stat">
     <div class="label">Best</div>
     <div id="bestValue" class="value">0</div>
@@ -362,22 +456,50 @@ body{
 
 <section class="board">
   <div class="center">
-    <button id="startBtn" class="btn purple" type="button" data-track="game_start_button">Start</button>
-    <div id="msg" class="msg">Remember the marked Eddie box.</div>
+    <button id="startBtn" class="btn purple" type="button">
+      Start
+    </button>
+
+    <div id="msg" class="msg">
+      Remember the marked Eddie box.
+    </div>
   </div>
-  <div id="grid" class="grid" aria-label="UNAUFHALTSAM Game Grid"></div>
+
+  <div
+    id="grid"
+    class="grid"
+    aria-label="UNAUFHALTSAM Game Grid"
+  ></div>
 </section>
 
 <section id="entryPanel" class="panel entry">
   <div class="label">Save your run</div>
-  <input id="nameInput" maxlength="15" placeholder="YOUR NAME" autocomplete="off">
-  <button id="saveScoreBtn" class="btn purple" type="button" data-track="score_save_button">Save rank</button>
+
+  <input
+    id="nameInput"
+    maxlength="15"
+    placeholder="YOUR NAME"
+    autocomplete="off"
+  >
+
+  <button id="saveScoreBtn" class="btn purple" type="button">
+    Save rank
+  </button>
+
   <div id="saveMsg" class="msg"></div>
 </section>
 
-<section id="salesPanel" class="panel sales" aria-label="Eddie's World Produkte">
+<section
+  id="salesPanel"
+  class="panel sales"
+  aria-label="Eddie's World Produkte"
+>
   <div class="label">Keep going</div>
-  <div class="sales-copy">Der Lauf endet. UNAUFHALTSAM geht weiter.</div>
+
+  <div class="sales-copy">
+    Der Lauf endet. UNAUFHALTSAM geht weiter.
+  </div>
+
   <div class="sales-actions">
     <a
       id="bookBtn"
@@ -385,9 +507,9 @@ body{
       href="https://amzn.to/3RpkbLq"
       target="_blank"
       rel="noopener noreferrer"
-      data-track="book_click"
-      data-destination="amazon"
-    >Bücher ansehen</a>
+    >
+      Bücher ansehen
+    </a>
 
     <a
       id="merchBtn"
@@ -395,49 +517,78 @@ body{
       href="https://jutn.creator-spring.com/listing/eddies-world-unaufhaltsam"
       target="_blank"
       rel="noopener noreferrer"
-      data-track="merch_click"
-      data-destination="creator_spring"
-    >UNAUFHALTSAM tragen</a>
+    >
+      UNAUFHALTSAM tragen
+    </a>
   </div>
 </section>
 
 <section class="panel">
-  <div class="label" style="margin-bottom:8px">Wall Ranking</div>
+  <div class="label" style="margin-bottom:8px">
+    Wall Ranking
+  </div>
+
   <div id="leaderboardList">
-    <div class="row"><span>No names yet.</span><b>Ready</b></div>
+    <div class="row">
+      <span>No names yet.</span>
+      <b>Ready</b>
+    </div>
   </div>
 </section>
 
 <footer class="foot">
   <span>Eddie’s World</span>
   <span>Real life. No staging.</span>
-  <button id="privacySettingsBtn" type="button">Analytics-Einstellung</button>
+
+  <button id="privacySettingsBtn" type="button">
+    Analytics-Einstellung
+  </button>
 </footer>
 
 </main>
 
-<section id="consentPanel" class="consent hide" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+<section
+  id="consentPanel"
+  class="consent hide"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="consentTitle"
+>
   <h2 id="consentTitle">Analytics-Einstellung</h2>
+
   <p>
     Notwendige Funktionen wie Spiel und Rangliste laufen ohne Analytics.
-    Mit deiner Zustimmung werden anonyme Nutzungs-, Quellen- und Klickdaten ausgewertet.
-    Namen und eingegebene Social-Handles werden nicht an Analytics gesendet.
+    Mit deiner Zustimmung werden anonyme Nutzungs-, Quellen- und Klickdaten
+    ausgewertet. Namen und eingegebene Social-Handles werden nicht an
+    Analytics gesendet.
   </p>
+
   <div class="consent-actions">
-    <button id="denyAnalyticsBtn" class="btn dark" type="button">Nur notwendige</button>
-    <button id="allowAnalyticsBtn" class="btn purple" type="button">Analytics erlauben</button>
+    <button id="denyAnalyticsBtn" class="btn dark" type="button">
+      Nur notwendige
+    </button>
+
+    <button id="allowAnalyticsBtn" class="btn purple" type="button">
+      Analytics erlauben
+    </button>
   </div>
 </section>
 
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
 
-const APP_VERSION='eddie-unaufhaltsam-v3.0';
+const APP_VERSION='eddie-unaufhaltsam-v3.1-consent-fix';
+
 const BEST_KEY='eddie_unaufhaltsam_best_boxes_v4';
 const LOCAL_LB_KEY='eddie_unaufhaltsam_wall_v1';
-const CONSENT_KEY='eddie_analytics_consent_v1';
+const CONSENT_KEY='eddie_analytics_consent_v2';
 const FIRST_TOUCH_KEY='eddie_first_touch_v1';
-const LOGO_FILES=['eddie_head.png','unaufhaltsam_brand.png','logo.png'];
+
+const LOGO_FILES=[
+  'eddie_head.png',
+  'unaufhaltsam_brand.png',
+  'logo.png'
+];
 
 const firebaseConfig={
   apiKey:'AIzaSyC0olKESyTP0rXUlnjGstLlGN50I1m_O2A',
@@ -453,14 +604,21 @@ const grid=document.getElementById('grid');
 const msg=document.getElementById('msg');
 const startBtn=document.getElementById('startBtn');
 const resetBtn=document.getElementById('resetBtn');
+
 const boxesValue=document.getElementById('boxesValue');
 const bestValue=document.getElementById('bestValue');
+
 const entryPanel=document.getElementById('entryPanel');
 const nameInput=document.getElementById('nameInput');
 const saveScoreBtn=document.getElementById('saveScoreBtn');
 const saveMsg=document.getElementById('saveMsg');
+
 const salesPanel=document.getElementById('salesPanel');
 const leaderboardList=document.getElementById('leaderboardList');
+
+const bookBtn=document.getElementById('bookBtn');
+const merchBtn=document.getElementById('merchBtn');
+
 const consentPanel=document.getElementById('consentPanel');
 const allowAnalyticsBtn=document.getElementById('allowAnalyticsBtn');
 const denyAnalyticsBtn=document.getElementById('denyAnalyticsBtn');
@@ -468,25 +626,31 @@ const privacySettingsBtn=document.getElementById('privacySettingsBtn');
 
 let db=null;
 let auth=null;
-let analytics=null;
 let dbRef=null;
-let firebaseReady=false;
+
+let analytics=null;
 let analyticsAllowed=false;
+
+let firebaseReady=false;
 let cachedLB=[];
 
 let logoSrc='';
 let score=0;
 let best=Number(localStorage.getItem(BEST_KEY)||0);
+
 let correctId=null;
 let locked=true;
 let roundToken=0;
 let order=[];
+
 let lastResult=0;
 let runStartedAt=0;
+
 let pageStartedAt=Date.now();
 let lastVisibleAt=Date.now();
 let visibleSeconds=0;
-let scrollMarks=new Set();
+
+const scrollMarks=new Set();
 
 function clean(value,max=100){
   return String(value??'').trim().slice(0,max);
@@ -500,16 +664,35 @@ function getHost(value){
   }
 }
 
-function randomId(){
+function getPath(value){
   try{
-    return crypto.randomUUID().replace(/-/g,'').slice(0,32);
+    return new URL(value).pathname;
   }catch{
-    return String(Date.now())+String(Math.random()).replace(/\D/g,'').slice(0,16);
+    return '';
   }
 }
 
-const browserSessionId=sessionStorage.getItem('eddie_session_id')||randomId();
-sessionStorage.setItem('eddie_session_id',browserSessionId);
+function randomId(){
+  try{
+    return crypto.randomUUID()
+      .replace(/-/g,'')
+      .slice(0,32);
+  }catch{
+    return (
+      String(Date.now())+
+      String(Math.random()).replace(/\D/g,'')
+    ).slice(0,32);
+  }
+}
+
+const browserSessionId=
+  sessionStorage.getItem('eddie_session_id')||
+  randomId();
+
+sessionStorage.setItem(
+  'eddie_session_id',
+  browserSessionId
+);
 
 function detectTouch(){
   const query=new URLSearchParams(location.search);
@@ -528,7 +711,10 @@ function detectTouch(){
     }else if(referrerHost.includes('facebook')){
       source='facebook';
       medium='social';
-    }else if(referrerHost.includes('youtube')||referrerHost.includes('youtu.be')){
+    }else if(
+      referrerHost.includes('youtube')||
+      referrerHost.includes('youtu.be')
+    ){
       source='youtube';
       medium='video';
     }else if(referrerHost.includes('reddit')){
@@ -559,19 +745,36 @@ function detectTouch(){
 const currentTouch=detectTouch();
 
 let firstTouch=null;
+
 try{
-  firstTouch=JSON.parse(localStorage.getItem(FIRST_TOUCH_KEY)||'null');
-}catch{}
+  firstTouch=JSON.parse(
+    localStorage.getItem(FIRST_TOUCH_KEY)||'null'
+  );
+}catch{
+  firstTouch=null;
+}
 
 if(!firstTouch){
-  firstTouch={...currentTouch,created_at:Date.now()};
-  localStorage.setItem(FIRST_TOUCH_KEY,JSON.stringify(firstTouch));
+  firstTouch={
+    ...currentTouch,
+    created_at:Date.now()
+  };
+
+  localStorage.setItem(
+    FIRST_TOUCH_KEY,
+    JSON.stringify(firstTouch)
+  );
 }
 
 function deviceType(){
-  const width=Math.min(screen.width,window.innerWidth);
+  const width=Math.min(
+    screen.width,
+    window.innerWidth
+  );
+
   if(width<768)return 'mobile';
   if(width<1100)return 'tablet';
+
   return 'desktop';
 }
 
@@ -579,28 +782,37 @@ function baseParams(){
   return{
     app_version:APP_VERSION,
     browser_session_id:browserSessionId,
+
     current_source:currentTouch.source,
     current_medium:currentTouch.medium,
     current_campaign:currentTouch.campaign,
     current_content:currentTouch.content,
     current_term:currentTouch.term,
     current_referrer_host:currentTouch.referrer_host,
+
     first_source:firstTouch.source||'direct',
     first_medium:firstTouch.medium||'none',
     first_campaign:firstTouch.campaign||'none',
+
     page_path:location.pathname,
     page_title:document.title,
+
     device_type:deviceType(),
+
     viewport_width:window.innerWidth,
     viewport_height:window.innerHeight,
+
     screen_width:screen.width,
     screen_height:screen.height,
+
     language:navigator.language||'unknown'
   };
 }
 
 function track(eventName,params={}){
-  if(!analyticsAllowed||!analytics)return;
+  if(!analyticsAllowed||!analytics){
+    return;
+  }
 
   try{
     analytics.logEvent(eventName,{
@@ -608,41 +820,84 @@ function track(eventName,params={}){
       ...params
     });
   }catch(error){
-    console.warn('ANALYTICS EVENT FAILED:',eventName,error);
+    console.warn(
+      'ANALYTICS EVENT FAILED:',
+      eventName,
+      error
+    );
   }
-}
-
-function applyConsent(value){
-  const allowed=value==='granted';
-
-  localStorage.setItem(CONSENT_KEY,value);
-
-  gtag('consent','update',{
-    analytics_storage:allowed?'granted':'denied',
-    ad_storage:'denied',
-    ad_user_data:'denied',
-    ad_personalization:'denied'
-  });
-
-  consentPanel.classList.add('hide');
-
-  location.reload();
 }
 
 function openConsent(){
   consentPanel.classList.remove('hide');
 }
 
-allowAnalyticsBtn.addEventListener('click',()=>applyConsent('granted'));
-denyAnalyticsBtn.addEventListener('click',()=>applyConsent('denied'));
-privacySettingsBtn.addEventListener('click',openConsent);
+function saveConsent(value){
+  localStorage.setItem(
+    CONSENT_KEY,
+    value
+  );
+
+  location.reload();
+}
+
+allowAnalyticsBtn.addEventListener('click',()=>{
+  saveConsent('granted');
+});
+
+denyAnalyticsBtn.addEventListener('click',()=>{
+  saveConsent('denied');
+});
+
+privacySettingsBtn.addEventListener('click',()=>{
+  openConsent();
+});
+
+function initializeAnalyticsFromConsent(){
+  const consent=
+    localStorage.getItem(CONSENT_KEY);
+
+  analyticsAllowed=
+    consent==='granted';
+
+  if(analyticsAllowed){
+    try{
+      analytics=firebase.analytics();
+
+      analytics.setAnalyticsCollectionEnabled(true);
+
+      track('game_page_loaded',{
+        screen_name:'unaufhaltsam_game'
+      });
+    }catch(error){
+      console.warn(
+        'ANALYTICS INIT FAILED:',
+        error
+      );
+
+      analytics=null;
+      analyticsAllowed=false;
+    }
+  }else{
+    analytics=null;
+    analyticsAllowed=false;
+
+    if(!consent){
+      openConsent();
+    }
+  }
+}
 
 function wait(ms){
-  return new Promise(resolve=>setTimeout(resolve,ms));
+  return new Promise(resolve=>{
+    setTimeout(resolve,ms);
+  });
 }
 
 function frame(){
-  return new Promise(resolve=>requestAnimationFrame(resolve));
+  return new Promise(resolve=>{
+    requestAnimationFrame(resolve);
+  });
 }
 
 function boxes(){
@@ -659,7 +914,9 @@ function setMessage(text){
 }
 
 function colsFor(value){
-  return Math.ceil(Math.sqrt(value));
+  return Math.ceil(
+    Math.sqrt(value)
+  );
 }
 
 function loadLogo(files,index=0){
@@ -676,57 +933,88 @@ function loadLogo(files,index=0){
     renderBoxes(false);
   };
 
-  image.onerror=()=>loadLogo(files,index+1);
-  image.src=files[index]+'?v=4';
+  image.onerror=()=>{
+    loadLogo(files,index+1);
+  };
+
+  image.src=
+    files[index]+'?v=4';
 }
 
 function boxNode(id){
-  const button=document.createElement('button');
+  const button=
+    document.createElement('button');
+
   button.type='button';
   button.className='box';
   button.dataset.id=String(id);
-  button.setAttribute('aria-label','Eddie Box '+(id+1));
+
+  button.setAttribute(
+    'aria-label',
+    'Eddie Box '+(id+1)
+  );
 
   if(logoSrc){
-    const image=document.createElement('img');
+    const image=
+      document.createElement('img');
+
     image.src=logoSrc;
     image.alt='Eddie';
 
     image.onerror=()=>{
       image.remove();
 
-      if(!button.querySelector('.fallback')){
-        const fallback=document.createElement('div');
+      if(
+        !button.querySelector('.fallback')
+      ){
+        const fallback=
+          document.createElement('div');
+
         fallback.className='fallback';
         fallback.textContent='EDDIE';
+
         button.appendChild(fallback);
       }
     };
 
     button.appendChild(image);
   }else{
-    const fallback=document.createElement('div');
+    const fallback=
+      document.createElement('div');
+
     fallback.className='fallback';
     fallback.textContent='EDDIE';
+
     button.appendChild(fallback);
   }
 
-  button.addEventListener('click',()=>pick(id,button));
+  button.addEventListener(
+    'click',
+    ()=>pick(id,button)
+  );
+
   return button;
 }
 
 function renderBoxes(showFocus){
-  if(!order.length)return;
+  if(!order.length){
+    return;
+  }
 
   grid.style.gridTemplateColumns=
-    'repeat('+colsFor(order.length)+', minmax(0,82px))';
+    'repeat('+
+    colsFor(order.length)+
+    ', minmax(0,82px))';
 
   grid.innerHTML='';
 
   order.forEach(id=>{
     const button=boxNode(id);
 
-    if(showFocus&&id===correctId){
+    if(
+      showFocus&&
+      id===correctId
+    ){
       button.classList.add('focus');
     }
 
@@ -737,9 +1025,13 @@ function renderBoxes(showFocus){
 function positions(){
   const map=new Map();
 
-  Array.from(grid.children).forEach(node=>{
-    map.set(Number(node.dataset.id),node.getBoundingClientRect());
-  });
+  Array.from(grid.children)
+    .forEach(node=>{
+      map.set(
+        Number(node.dataset.id),
+        node.getBoundingClientRect()
+      );
+    });
 
   return map;
 }
@@ -753,33 +1045,60 @@ async function visibleSwap(a,b,duration){
 
   renderBoxes(false);
 
-  const nodes=Array.from(grid.children);
+  const nodes=
+    Array.from(grid.children);
 
   nodes.forEach(node=>{
-    const id=Number(node.dataset.id);
-    const before=first.get(id);
+    const id=
+      Number(node.dataset.id);
 
-    if(!before)return;
+    const before=
+      first.get(id);
 
-    const after=node.getBoundingClientRect();
-    const dx=before.left-after.left;
-    const dy=before.top-after.top;
+    if(!before){
+      return;
+    }
+
+    const after=
+      node.getBoundingClientRect();
+
+    const dx=
+      before.left-after.left;
+
+    const dy=
+      before.top-after.top;
 
     node.style.transition='none';
-    node.style.transform='translate('+dx+'px,'+dy+'px)';
 
-    if(id===order[a]||id===order[b]){
+    node.style.transform=
+      'translate('+
+      dx+
+      'px,'+
+      dy+
+      'px)';
+
+    if(
+      id===order[a]||
+      id===order[b]
+    ){
       node.classList.add('swapping');
     }
   });
 
   grid.offsetHeight;
+
   await frame();
 
   nodes.forEach(node=>{
     node.style.transition=
-      'transform '+duration+'ms cubic-bezier(.2,.8,.2,1), outline .16s ease, opacity .16s ease';
-    node.style.transform='translate(0,0)';
+      'transform '+
+      duration+
+      'ms cubic-bezier(.2,.8,.2,1), '+
+      'outline .16s ease, '+
+      'opacity .16s ease';
+
+    node.style.transform=
+      'translate(0,0)';
   });
 
   await wait(duration);
@@ -787,23 +1106,33 @@ async function visibleSwap(a,b,duration){
   nodes.forEach(node=>{
     node.style.transition='';
     node.style.transform='';
-    node.classList.remove('swapping');
+
+    node.classList.remove(
+      'swapping'
+    );
   });
 }
 
 function start(){
+  const isReplay=
+    startBtn.textContent
+      .trim()
+      .toLowerCase()==='again';
+
   score=0;
   lastResult=0;
   runStartedAt=Date.now();
 
   track('game_start',{
     starting_boxes:2,
-    replay:startBtn.textContent.toLowerCase()==='again'
+    replay:isReplay
   });
 
   entryPanel.classList.remove('show');
   salesPanel.classList.remove('show');
+
   saveMsg.textContent='';
+
   startBtn.classList.add('hide');
 
   buildRound();
@@ -815,17 +1144,34 @@ function buildRound(){
   locked=true;
 
   const count=boxes();
-  order=Array.from({length:count},(_,index)=>index);
-  correctId=Math.floor(Math.random()*count);
+
+  order=Array.from(
+    {length:count},
+    (_,index)=>index
+  );
+
+  correctId=
+    Math.floor(
+      Math.random()*count
+    );
 
   hud();
   renderBoxes(true);
-  setMessage('Remember the marked Eddie box.');
 
-  const memoryTime=Math.max(650,1200-score*18);
+  setMessage(
+    'Remember the marked Eddie box.'
+  );
+
+  const memoryTime=
+    Math.max(
+      650,
+      1200-score*18
+    );
 
   setTimeout(()=>{
-    if(token!==roundToken)return;
+    if(token!==roundToken){
+      return;
+    }
 
     renderBoxes(false);
     shuffle(token);
@@ -835,37 +1181,86 @@ function buildRound(){
 async function shuffle(token){
   setMessage('SWAPPING...');
 
-  const times=Math.min(56,8+score*3);
-  const duration=Math.max(150,450-score*10);
+  const times=
+    Math.min(
+      56,
+      8+score*3
+    );
 
-  for(let index=0;index<times;index++){
-    if(token!==roundToken)return;
+  const duration=
+    Math.max(
+      150,
+      450-score*10
+    );
 
-    const a=Math.floor(Math.random()*order.length);
-    let b=Math.floor(Math.random()*order.length);
-
-    while(b===a){
-      b=Math.floor(Math.random()*order.length);
+  for(
+    let index=0;
+    index<times;
+    index++
+  ){
+    if(token!==roundToken){
+      return;
     }
 
-    await visibleSwap(a,b,duration);
-    await wait(Math.max(30,100-score*3));
+    const a=
+      Math.floor(
+        Math.random()*order.length
+      );
+
+    let b=
+      Math.floor(
+        Math.random()*order.length
+      );
+
+    while(b===a){
+      b=
+        Math.floor(
+          Math.random()*order.length
+        );
+    }
+
+    await visibleSwap(
+      a,
+      b,
+      duration
+    );
+
+    await wait(
+      Math.max(
+        30,
+        100-score*3
+      )
+    );
   }
 
-  if(token!==roundToken)return;
+  if(token!==roundToken){
+    return;
+  }
 
   locked=false;
-  setMessage('Pick the Eddie box that was in focus.');
+
+  setMessage(
+    'Pick the Eddie box that was in focus.'
+  );
 }
 
 function endRun(finalBoxes){
-  const duration=runStartedAt
-    ?Math.max(1,Math.round((Date.now()-runStartedAt)/1000))
-    :0;
+  const duration=
+    runStartedAt
+      ?Math.max(
+        1,
+        Math.round(
+          (Date.now()-runStartedAt)/1000
+        )
+      )
+      :0;
 
   track('game_end',{
     boxes:finalBoxes,
-    rounds:Math.max(0,finalBoxes-2),
+    rounds:Math.max(
+      0,
+      finalBoxes-2
+    ),
     run_duration_seconds:duration,
     personal_best:best
   });
@@ -875,25 +1270,34 @@ function endRun(finalBoxes){
   entryPanel.classList.add('show');
   salesPanel.classList.add('show');
 
-  nameInput.focus({preventScroll:true});
+  nameInput.focus({
+    preventScroll:true
+  });
 
   startBtn.textContent='Again';
   startBtn.classList.remove('hide');
 }
 
 function pick(id,element){
-  if(locked)return;
+  if(locked){
+    return;
+  }
 
   locked=true;
 
-  Array.from(grid.children).forEach(node=>{
-    if(Number(node.dataset.id)===correctId){
-      node.classList.add('good');
-    }
-  });
+  Array.from(grid.children)
+    .forEach(node=>{
+      if(
+        Number(node.dataset.id)===
+        correctId
+      ){
+        node.classList.add('good');
+      }
+    });
 
   if(id===correctId){
     element.classList.add('good');
+
     score++;
 
     track('round_completed',{
@@ -902,7 +1306,12 @@ function pick(id,element){
     });
 
     setMessage('Hit. Continue.');
-    setTimeout(buildRound,760);
+
+    setTimeout(
+      buildRound,
+      760
+    );
+
     return;
   }
 
@@ -912,7 +1321,11 @@ function pick(id,element){
 
   if(finalBoxes>best){
     best=finalBoxes;
-    localStorage.setItem(BEST_KEY,String(best));
+
+    localStorage.setItem(
+      BEST_KEY,
+      String(best)
+    );
 
     track('personal_best',{
       boxes:best
@@ -920,7 +1333,13 @@ function pick(id,element){
   }
 
   hud();
-  setMessage('Run ended. Result: '+finalBoxes+' boxes.');
+
+  setMessage(
+    'Run ended. Result: '+
+    finalBoxes+
+    ' boxes.'
+  );
+
   endRun(finalBoxes);
 }
 
@@ -936,84 +1355,176 @@ function safeHandle(value){
   return value
     .trim()
     .replace(/^@/,'')
-    .replace(/[^A-Za-z0-9._]/g,'')
+    .replace(
+      /[^A-Za-z0-9._]/g,
+      ''
+    )
     .slice(0,30);
 }
 
 function makeDocId(){
-  if(!auth||!auth.currentUser)return '';
-  return 'PLAYER_'+auth.currentUser.uid;
-}
+  if(
+    !auth||
+    !auth.currentUser
+  ){
+    return '';
+  }
 
-function firebaseSessionId(){
-  return randomId();
+  return (
+    'PLAYER_'+
+    auth.currentUser.uid
+  );
 }
 
 function localLeaderboard(){
   try{
-    return JSON.parse(localStorage.getItem(LOCAL_LB_KEY)||'[]');
+    return JSON.parse(
+      localStorage.getItem(
+        LOCAL_LB_KEY
+      )||'[]'
+    );
   }catch{
     return [];
   }
 }
 
 function writeLocal(entry){
-  const list=localLeaderboard().filter(item=>item.name!==entry.name);
+  const list=
+    localLeaderboard()
+      .filter(item=>{
+        return item.name!==entry.name;
+      });
 
   list.push(entry);
-  list.sort((a,b)=>b.boxes-a.boxes||a.time-b.time);
+
+  list.sort((a,b)=>{
+    return (
+      b.boxes-a.boxes||
+      a.time-b.time
+    );
+  });
 
   localStorage.setItem(
     LOCAL_LB_KEY,
-    JSON.stringify(list.slice(0,10))
+    JSON.stringify(
+      list.slice(0,10)
+    )
   );
 
   renderLeaderboard(list);
 }
 
-function renderLeaderboard(list=cachedLB){
-  const rows=(list||[]).slice(0,10);
+function renderLeaderboard(
+  list=cachedLB
+){
+  const rows=
+    (list||[]).slice(0,10);
 
   if(!rows.length){
     leaderboardList.innerHTML=
-      '<div class="row"><span>No names yet.</span><b>Ready</b></div>';
+      '<div class="row">'+
+      '<span>No names yet.</span>'+
+      '<b>Ready</b>'+
+      '</div>';
+
     return;
   }
 
-  leaderboardList.innerHTML=rows.map((entry,index)=>{
-    const value=entry.score||entry.boxes||0;
-    const player=String(entry.name||'PLAYER').replace(/[<>&"']/g,'');
+  leaderboardList.innerHTML=
+    rows.map((entry,index)=>{
+      const value=
+        entry.score||
+        entry.boxes||
+        0;
 
-    return '<div class="row"><span>#'+(index+1)+
-      ' <b>'+player+'</b></span><b>'+value+' boxes</b></div>';
-  }).join('');
+      const player=
+        String(
+          entry.name||
+          'PLAYER'
+        ).replace(
+          /[<>&"']/g,
+          ''
+        );
+
+      return (
+        '<div class="row">'+
+        '<span>#'+
+        (index+1)+
+        ' <b>'+
+        player+
+        '</b></span>'+
+        '<b>'+
+        value+
+        ' boxes</b>'+
+        '</div>'
+      );
+    }).join('');
 }
 
 async function saveScore(){
-  const handle=safeHandle(nameInput.value);
-  const name=safeName(handle);
+  const handle=
+    safeHandle(nameInput.value);
 
-  if(!lastResult)return;
+  const name=
+    safeName(handle);
 
-  if(!handle||handle.length<2||!name||name.length<2){
-    saveMsg.textContent='SOCIAL @ NEEDS 2+ CHARS.';
+  if(!lastResult){
+    return;
+  }
+
+  if(
+    !handle||
+    handle.length<2||
+    !name||
+    name.length<2
+  ){
+    saveMsg.textContent=
+      'SOCIAL @ NEEDS 2+ CHARS.';
+
     return;
   }
 
   if(lastResult<4){
-    saveMsg.textContent='NOT RANK-READY. DELIVER FIRST.';
+    saveMsg.textContent=
+      'NOT RANK-READY. DELIVER FIRST.';
+
     return;
   }
 
   saveScoreBtn.disabled=true;
   saveMsg.textContent='SAVING...';
 
-  const scoreValue=Math.max(4,Math.min(30,lastResult));
-  const roundsValue=Math.max(1,Math.min(29,lastResult-2));
-  const localEntry={name,boxes:lastResult,time:Date.now()};
+  const scoreValue=
+    Math.max(
+      4,
+      Math.min(
+        30,
+        lastResult
+      )
+    );
+
+  const roundsValue=
+    Math.max(
+      1,
+      Math.min(
+        29,
+        lastResult-2
+      )
+    );
+
+  const localEntry={
+    name,
+    boxes:lastResult,
+    time:Date.now()
+  };
 
   try{
-    if(firebaseReady&&dbRef&&auth&&auth.currentUser){
+    if(
+      firebaseReady&&
+      dbRef&&
+      auth&&
+      auth.currentUser
+    ){
       const docId=makeDocId();
 
       const data={
@@ -1026,13 +1537,25 @@ async function saveScore(){
         score:scoreValue,
         time:66.669,
         rounds:roundsValue,
-        sessionId:firebaseSessionId(),
+        sessionId:randomId(),
         clientVersion:APP_VERSION,
-        userAgent:navigator.userAgent.slice(0,160),
-        timestamp:firebase.firestore.FieldValue.serverTimestamp()
+        userAgent:
+          navigator.userAgent.slice(
+            0,
+            160
+          ),
+        timestamp:
+          firebase.firestore
+            .FieldValue
+            .serverTimestamp()
       };
 
-      await dbRef.doc(docId).set(data,{merge:false});
+      await dbRef
+        .doc(docId)
+        .set(
+          data,
+          {merge:false}
+        );
 
       track('score_saved',{
         boxes:lastResult,
@@ -1040,7 +1563,8 @@ async function saveScore(){
         storage_type:'firebase'
       });
 
-      saveMsg.textContent='RANK SAVED.';
+      saveMsg.textContent=
+        'RANK SAVED.';
     }else{
       writeLocal(localEntry);
 
@@ -1050,12 +1574,18 @@ async function saveScore(){
         storage_type:'local'
       });
 
-      saveMsg.textContent='RANK SAVED LOCALLY.';
+      saveMsg.textContent=
+        'RANK SAVED LOCALLY.';
     }
 
-    entryPanel.classList.remove('show');
+    entryPanel.classList.remove(
+      'show'
+    );
   }catch(error){
-    console.warn('FIREBASE SAVE FAILED:',error);
+    console.warn(
+      'FIREBASE SAVE FAILED:',
+      error
+    );
 
     writeLocal(localEntry);
 
@@ -1063,7 +1593,8 @@ async function saveScore(){
       boxes:lastResult
     });
 
-    saveMsg.textContent='RANK SAVED LOCALLY.';
+    saveMsg.textContent=
+      'RANK SAVED LOCALLY.';
   }finally{
     saveScoreBtn.disabled=false;
   }
@@ -1072,216 +1603,344 @@ async function saveScore(){
 function initFirebase(){
   try{
     if(!window.firebase){
-      throw new Error('Firebase SDK missing');
+      throw new Error(
+        'Firebase SDK missing'
+      );
     }
 
     if(!firebase.apps.length){
-      firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp(
+        firebaseConfig
+      );
     }
 
-    analytics=firebase.analytics();
-
-    const storedConsent=localStorage.getItem(CONSENT_KEY);
-
-    analyticsAllowed=storedConsent==='granted';
-    analytics.setAnalyticsCollectionEnabled(analyticsAllowed);
-
-    gtag('consent','update',{
-      analytics_storage:analyticsAllowed?'granted':'denied',
-      ad_storage:'denied',
-      ad_user_data:'denied',
-      ad_personalization:'denied'
-    });
-
-    if(analyticsAllowed){
-      track('game_page_loaded',{
-        screen_name:'unaufhaltsam_game'
-      });
-    }else if(!storedConsent){
-      openConsent();
-    }
+    initializeAnalyticsFromConsent();
 
     db=firebase.firestore();
     auth=firebase.auth();
-    dbRef=db.collection('leaderboard_eddie-v1');
 
-    auth.signInAnonymously().then(()=>{
-      firebaseReady=true;
+    dbRef=db.collection(
+      'leaderboard_eddie-v1'
+    );
 
-      track('firebase_ready',{
-        auth_type:'anonymous'
-      });
+    auth
+      .signInAnonymously()
+      .then(()=>{
+        firebaseReady=true;
 
-      dbRef.onSnapshot(snapshot=>{
-        cachedLB=[];
-
-        snapshot.forEach(documentSnapshot=>{
-          cachedLB.push(documentSnapshot.data());
+        track('firebase_ready',{
+          auth_type:'anonymous'
         });
 
-        cachedLB.sort((a,b)=>
-          (b.score||b.boxes||0)-(a.score||a.boxes||0)||
-          (a.time||9999999999999)-(b.time||9999999999999)
+        dbRef.onSnapshot(
+          snapshot=>{
+            cachedLB=[];
+
+            snapshot.forEach(
+              documentSnapshot=>{
+                cachedLB.push(
+                  documentSnapshot.data()
+                );
+              }
+            );
+
+            cachedLB.sort((a,b)=>{
+              return (
+                (b.score||b.boxes||0)-
+                (a.score||a.boxes||0)||
+                (a.time||9999999999999)-
+                (b.time||9999999999999)
+              );
+            });
+
+            renderLeaderboard(
+              cachedLB
+            );
+          },
+          ()=>{
+            renderLeaderboard(
+              localLeaderboard()
+            );
+          }
+        );
+      })
+      .catch(error=>{
+        console.warn(
+          'ANONYMOUS AUTH FAILED:',
+          error
         );
 
-        renderLeaderboard(cachedLB);
-      },()=>{
-        renderLeaderboard(localLeaderboard());
+        track(
+          'firebase_auth_failed'
+        );
+
+        renderLeaderboard(
+          localLeaderboard()
+        );
       });
-    }).catch(error=>{
-      console.warn('ANONYMOUS AUTH FAILED:',error);
-      track('firebase_auth_failed');
-      renderLeaderboard(localLeaderboard());
-    });
   }catch(error){
-    console.warn('FIREBASE INIT FAILED:',error);
-    renderLeaderboard(localLeaderboard());
+    console.warn(
+      'FIREBASE INIT FAILED:',
+      error
+    );
+
+    renderLeaderboard(
+      localLeaderboard()
+    );
   }
 }
 
-startBtn.addEventListener('click',start);
+startBtn.addEventListener(
+  'click',
+  start
+);
 
-resetBtn.addEventListener('click',()=>{
-  track('game_reset',{
-    boxes:boxes(),
-    run_active:runStartedAt>0
-  });
+resetBtn.addEventListener(
+  'click',
+  ()=>{
+    track('game_reset',{
+      boxes:boxes(),
+      run_active:runStartedAt>0
+    });
 
-  roundToken++;
-  score=0;
-  lastResult=0;
-  locked=true;
-  order=[];
-  correctId=null;
-  runStartedAt=0;
+    roundToken++;
 
-  grid.innerHTML='';
-  entryPanel.classList.remove('show');
-  salesPanel.classList.remove('show');
+    score=0;
+    lastResult=0;
+    locked=true;
 
-  startBtn.textContent='Start';
-  startBtn.classList.remove('hide');
+    order=[];
+    correctId=null;
+    runStartedAt=0;
 
-  setMessage('Remember the marked Eddie box.');
-  hud();
-});
+    grid.innerHTML='';
 
-saveScoreBtn.addEventListener('click',saveScore);
-
-nameInput.addEventListener('keydown',event=>{
-  if(event.key==='Enter'){
-    saveScore();
-  }
-});
-
-document.addEventListener('click',event=>{
-  const target=event.target.closest('a,button');
-
-  if(!target)return;
-
-  const eventName=clean(target.dataset.track,40);
-
-  if(!eventName)return;
-
-  if(
-    eventName==='game_start_button'||
-    eventName==='game_reset_button'||
-    eventName==='score_save_button'
-  ){
-    return;
-  }
-
-  track(eventName,{
-    destination:clean(target.dataset.destination,50)||'none',
-    link_host:target.href?getHost(target.href):'none',
-    link_path:target.href?new URL(target.href).pathname:'none',
-    boxes:lastResult||boxes()
-  });
-});
-
-window.addEventListener('scroll',()=>{
-  const documentHeight=
-    document.documentElement.scrollHeight-window.innerHeight;
-
-  if(documentHeight<=0)return;
-
-  const percent=Math.round(
-    (window.scrollY/documentHeight)*100
-  );
-
-  [25,50,75,90,100].forEach(mark=>{
-    if(percent>=mark&&!scrollMarks.has(mark)){
-      scrollMarks.add(mark);
-
-      track('scroll_depth',{
-        percent_scrolled:mark
-      });
-    }
-  });
-},{passive:true});
-
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){
-    visibleSeconds+=Math.max(
-      0,
-      Math.round((Date.now()-lastVisibleAt)/1000)
+    entryPanel.classList.remove(
+      'show'
     );
 
-    track('page_hidden',{
-      visible_seconds:visibleSeconds,
-      game_active:runStartedAt>0
-    });
-  }else{
-    lastVisibleAt=Date.now();
+    salesPanel.classList.remove(
+      'show'
+    );
 
-    track('page_visible',{
-      visible_seconds:visibleSeconds
+    startBtn.textContent='Start';
+
+    startBtn.classList.remove(
+      'hide'
+    );
+
+    setMessage(
+      'Remember the marked Eddie box.'
+    );
+
+    hud();
+  }
+);
+
+saveScoreBtn.addEventListener(
+  'click',
+  saveScore
+);
+
+nameInput.addEventListener(
+  'keydown',
+  event=>{
+    if(event.key==='Enter'){
+      saveScore();
+    }
+  }
+);
+
+bookBtn.addEventListener(
+  'click',
+  ()=>{
+    track('book_click',{
+      destination:'amazon',
+      link_host:getHost(
+        bookBtn.href
+      ),
+      link_path:getPath(
+        bookBtn.href
+      ),
+      boxes:lastResult||boxes()
     });
   }
-});
+);
 
-window.addEventListener('error',event=>{
-  track('javascript_error',{
-    error_type:'window_error',
-    error_message:clean(event.message,100),
-    error_file:getHost(event.filename)||'local',
-    error_line:Number(event.lineno)||0
-  });
-});
+merchBtn.addEventListener(
+  'click',
+  ()=>{
+    track('merch_click',{
+      destination:'creator_spring',
+      link_host:getHost(
+        merchBtn.href
+      ),
+      link_path:getPath(
+        merchBtn.href
+      ),
+      boxes:lastResult||boxes()
+    });
+  }
+);
 
-window.addEventListener('unhandledrejection',event=>{
-  track('javascript_error',{
-    error_type:'unhandled_rejection',
-    error_message:clean(
-      event.reason?.message||event.reason||'unknown',
+window.addEventListener(
+  'scroll',
+  ()=>{
+    const documentHeight=
+      document.documentElement
+        .scrollHeight-
+      window.innerHeight;
+
+    if(documentHeight<=0){
+      return;
+    }
+
+    const percent=
+      Math.round(
+        (
+          window.scrollY/
+          documentHeight
+        )*100
+      );
+
+    [
+      25,
+      50,
+      75,
+      90,
       100
-    )
-  });
-});
+    ].forEach(mark=>{
+      if(
+        percent>=mark&&
+        !scrollMarks.has(mark)
+      ){
+        scrollMarks.add(mark);
 
-window.addEventListener('beforeunload',()=>{
-  visibleSeconds+=Math.max(
-    0,
-    Math.round((Date.now()-lastVisibleAt)/1000)
-  );
+        track('scroll_depth',{
+          percent_scrolled:mark
+        });
+      }
+    });
+  },
+  {passive:true}
+);
 
-  track('session_summary',{
-    visible_seconds:visibleSeconds,
-    total_page_seconds:Math.max(
-      1,
-      Math.round((Date.now()-pageStartedAt)/1000)
-    ),
-    maximum_scroll_percent:scrollMarks.size
-      ?Math.max(...scrollMarks)
-      :0,
-    personal_best:best,
-    last_result:lastResult
-  });
-});
+document.addEventListener(
+  'visibilitychange',
+  ()=>{
+    if(
+      document.visibilityState===
+      'hidden'
+    ){
+      visibleSeconds+=
+        Math.max(
+          0,
+          Math.round(
+            (
+              Date.now()-
+              lastVisibleAt
+            )/1000
+          )
+        );
+
+      track('page_hidden',{
+        visible_seconds:
+          visibleSeconds,
+        game_active:
+          runStartedAt>0
+      });
+    }else{
+      lastVisibleAt=Date.now();
+
+      track('page_visible',{
+        visible_seconds:
+          visibleSeconds
+      });
+    }
+  }
+);
+
+window.addEventListener(
+  'error',
+  event=>{
+    track('javascript_error',{
+      error_type:'window_error',
+      error_message:clean(
+        event.message,
+        100
+      ),
+      error_file:
+        getHost(event.filename)||
+        'local',
+      error_line:
+        Number(event.lineno)||0
+    });
+  }
+);
+
+window.addEventListener(
+  'unhandledrejection',
+  event=>{
+    track('javascript_error',{
+      error_type:
+        'unhandled_rejection',
+      error_message:clean(
+        event.reason?.message||
+        event.reason||
+        'unknown',
+        100
+      )
+    });
+  }
+);
+
+window.addEventListener(
+  'beforeunload',
+  ()=>{
+    visibleSeconds+=
+      Math.max(
+        0,
+        Math.round(
+          (
+            Date.now()-
+            lastVisibleAt
+          )/1000
+        )
+      );
+
+    track('session_summary',{
+      visible_seconds:
+        visibleSeconds,
+
+      total_page_seconds:
+        Math.max(
+          1,
+          Math.round(
+            (
+              Date.now()-
+              pageStartedAt
+            )/1000
+          )
+        ),
+
+      maximum_scroll_percent:
+        scrollMarks.size
+          ?Math.max(
+            ...scrollMarks
+          )
+          :0,
+
+      personal_best:best,
+      last_result:lastResult
+    });
+  }
+);
 
 hud();
 loadLogo(LOGO_FILES);
-renderLeaderboard(localLeaderboard());
+renderLeaderboard(
+  localLeaderboard()
+);
 initFirebase();
 
 });
