@@ -612,28 +612,21 @@ function track(eventName,params={}){
   }
 }
 
-function applyConsent(value,trackChange=true){
-  analyticsAllowed=value==='granted';
+function applyConsent(value){
+  const allowed=value==='granted';
 
   localStorage.setItem(CONSENT_KEY,value);
 
   gtag('consent','update',{
-    analytics_storage:analyticsAllowed?'granted':'denied',
+    analytics_storage:allowed?'granted':'denied',
     ad_storage:'denied',
     ad_user_data:'denied',
     ad_personalization:'denied'
   });
 
-  if(analytics){
-    analytics.setAnalyticsCollectionEnabled(analyticsAllowed);
-  }
-
   consentPanel.classList.add('hide');
 
-  if(analyticsAllowed&&trackChange){
-    track('analytics_consent_granted');
-    track('game_page_loaded',{screen_name:'unaufhaltsam_game'});
-  }
+  location.reload();
 }
 
 function openConsent(){
@@ -1090,13 +1083,21 @@ function initFirebase(){
 
     const storedConsent=localStorage.getItem(CONSENT_KEY);
 
-    if(storedConsent==='granted'){
-      applyConsent('granted',false);
-      track('game_page_loaded',{screen_name:'unaufhaltsam_game'});
-    }else if(storedConsent==='denied'){
-      applyConsent('denied',false);
-    }else{
-      analytics.setAnalyticsCollectionEnabled(false);
+    analyticsAllowed=storedConsent==='granted';
+    analytics.setAnalyticsCollectionEnabled(analyticsAllowed);
+
+    gtag('consent','update',{
+      analytics_storage:analyticsAllowed?'granted':'denied',
+      ad_storage:'denied',
+      ad_user_data:'denied',
+      ad_personalization:'denied'
+    });
+
+    if(analyticsAllowed){
+      track('game_page_loaded',{
+        screen_name:'unaufhaltsam_game'
+      });
+    }else if(!storedConsent){
       openConsent();
     }
 
