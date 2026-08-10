@@ -21,6 +21,7 @@
 
   <h2>2. Firebase / Leaderboard</h2>
   <p>Für das globale Ranking wird Google Firebase / Firestore genutzt. Wenn du einen Rang speicherst, werden der eingegebene Name, Score, Spielzeit, technische Sitzungsdaten und ein Zeitstempel gespeichert. Zusätzlich nutzt das Spiel Firebase Anonymous Authentication, damit Schreibzugriffe auf das Ranking eingeschränkt werden können.</p>
+  <p>Beim Klick auf den Amazon-Produktlink speichern wir in Firestore ausschließlich Produkt-ASIN, Herkunft des Klicks (HQ oder Game), Zieladresse, Test-Kennzeichnung und Zeitstempel. Es werden dabei weder Name noch E-Mail-Adresse oder eine dauerhafte Sitzungs-ID gespeichert. Der Klick ist Funnel-Evidence und kein Kaufnachweis.</p>
 
   <h2>3. LocalStorage</h2>
   <p>Das Spiel speichert deinen lokalen Bestwert im Browser-LocalStorage. Diese Information bleibt auf deinem Gerät, bis du Browserdaten löschst oder den Speicher manuell entfernst.</p>

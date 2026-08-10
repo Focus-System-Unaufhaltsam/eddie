@@ -504,11 +504,12 @@ body{
     <a
       id="bookBtn"
       class="btn purple"
-      href="https://amzn.to/3RpkbLq"
-      target="_blank"
-      rel="noopener noreferrer"
+      href="https://www.amazon.de/dp/B0H7KX8XF4"
+      data-amazon-product-cta
+      data-source="game"
+      data-status-target="amazonClickStatus"
     >
-      Bücher ansehen
+      LIFE OS Junior 04–06 ansehen
     </a>
 
     <a
@@ -521,6 +522,7 @@ body{
       UNAUFHALTSAM tragen
     </a>
   </div>
+  <div id="amazonClickStatus" role="status" aria-live="polite"></div>
 </section>
 
 <section class="panel">
@@ -1751,17 +1753,14 @@ nameInput.addEventListener(
   }
 );
 
-bookBtn.addEventListener(
-  'click',
-  ()=>{
-    track('book_click',{
-      destination:'amazon',
-      link_host:getHost(
-        bookBtn.href
-      ),
-      link_path:getPath(
-        bookBtn.href
-      ),
+window.addEventListener(
+  'amazon-product-click-recorded',
+  event=>{
+    track('amazon_product_click',{
+      asin:event.detail.asin,
+      source:event.detail.source,
+      destination:event.detail.destination,
+      test_event:event.detail.test_event,
       boxes:lastResult||boxes()
     });
   }
@@ -1945,5 +1944,6 @@ initFirebase();
 
 });
 </script>
+<script src="amazon-outbound.js"></script>
 </body>
 </html>
