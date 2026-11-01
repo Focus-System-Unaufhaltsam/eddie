@@ -419,6 +419,7 @@ body{
   }
 }
 </style>
+<link rel="stylesheet" href="result-flow.css">
 </head>
 
 <body>
@@ -464,6 +465,8 @@ body{
       Remember the marked Eddie box.
     </div>
   </div>
+
+  <section id="resultPanel" class="hide" aria-label="Dein Ergebnis"><div id="resultContent"></div></section>
 
   <div
     id="grid"
@@ -576,10 +579,11 @@ body{
   </div>
 </section>
 
+<script src="result-flow.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
 
-const APP_VERSION='eddie-unaufhaltsam-v3.1-consent-fix';
+const APP_VERSION='eddie-unaufhaltsam-v3.2-direct-results';
 
 const BEST_KEY='eddie_unaufhaltsam_best_boxes_v4';
 const LOCAL_LB_KEY='eddie_unaufhaltsam_wall_v1';
@@ -638,7 +642,7 @@ let cachedLB=[];
 
 let logoSrc='';
 let score=0;
-let best=Number(localStorage.getItem(BEST_KEY)||0);
+let best=UnaufhaltsamResults.bestScore(BEST_KEY);
 
 let correctId=null;
 let locked=true;
@@ -647,12 +651,34 @@ let order=[];
 
 let lastResult=0;
 let runStartedAt=0;
+let runActive=false;
+let savingRank=false;
 
 let pageStartedAt=Date.now();
 let lastVisibleAt=Date.now();
 let visibleSeconds=0;
 
 const scrollMarks=new Set();
+const resultPanel=document.getElementById('resultPanel');
+const results=UnaufhaltsamResults.create({
+  host:document.getElementById('resultContent'),
+  bestKey:BEST_KEY,
+  variant:'eddie-live',
+  levelForScore:value=>value,
+  canRank:result=>result.level>=4,
+  onRetry:()=>start(true),
+  onRank:()=>{
+    entryPanel.classList.add('show');
+    nameInput.focus({preventScroll:true});
+  }
+});
+// Reuse the existing consent-gated Firebase Analytics instance and source parameters.
+window.unaufhaltsamAnalytics={
+  logEvent:(name,params)=>{
+    if(['game_over','retry_clicked','share_clicked'].includes(name)) track(name,params);
+  }
+};
+
 
 function clean(value,max=100){
   return String(value??'').trim().slice(0,max);
@@ -819,7 +845,8 @@ function track(eventName,params={}){
   try{
     analytics.logEvent(eventName,{
       ...baseParams(),
-      ...params
+      ...params,
+      ...(new URLSearchParams(location.search).get('analytics_debug')==='1' ? {debug_mode:true} : {})
     });
   }catch(error){
     console.warn(
@@ -1115,11 +1142,13 @@ async function visibleSwap(a,b,duration){
   });
 }
 
-function start(){
-  const isReplay=
-    startBtn.textContent
-      .trim()
-      .toLowerCase()==='again';
+function start(isReplay=false){
+  if(runActive)return;
+  isReplay=isReplay===true;
+  runActive=true;
+  resultPanel.classList.add('hide');
+  grid.classList.remove('hide');
+  results.start();
 
   score=0;
   lastResult=0;
@@ -1141,6 +1170,7 @@ function start(){
 }
 
 function buildRound(){
+  if(!runActive)return;
   const token=++roundToken;
 
   locked=true;
@@ -1247,37 +1277,29 @@ async function shuffle(token){
 }
 
 function endRun(finalBoxes){
-  const duration=
-    runStartedAt
-      ?Math.max(
-        1,
-        Math.round(
-          (Date.now()-runStartedAt)/1000
-        )
-      )
-      :0;
-
+  if(!runActive)return;
+  runActive=false;
+  locked=true;
+  roundToken++;
+  const result=results.finish(finalBoxes,finalBoxes);
+  best=result.bestScore;
+  lastResult=finalBoxes;
+  if(result.isNewBest)track('personal_best',{boxes:best});
+  // Keep the old event for historical continuity. New dashboards use game_over.
   track('game_end',{
     boxes:finalBoxes,
-    rounds:Math.max(
-      0,
-      finalBoxes-2
-    ),
-    run_duration_seconds:duration,
+    rounds:Math.max(0,finalBoxes-2),
+    run_duration_seconds:Math.max(1,Math.round(result.durationMs/1000)),
     personal_best:best
   });
-
-  lastResult=finalBoxes;
-
-  entryPanel.classList.add('show');
+  runStartedAt=0;
+  hud();
+  entryPanel.classList.remove('show');
   salesPanel.classList.add('show');
-
-  nameInput.focus({
-    preventScroll:true
-  });
-
-  startBtn.textContent='Again';
-  startBtn.classList.remove('hide');
+  grid.classList.add('hide');
+  startBtn.classList.add('hide');
+  resultPanel.classList.remove('hide');
+  results.focus();
 }
 
 function pick(id,element){
@@ -1309,10 +1331,10 @@ function pick(id,element){
 
     setMessage('Hit. Continue.');
 
-    setTimeout(
-      buildRound,
-      760
-    );
+    const token=roundToken;
+    setTimeout(()=>{
+      if(runActive&&token===roundToken)buildRound();
+    },760);
 
     return;
   }
@@ -1321,18 +1343,6 @@ function pick(id,element){
 
   const finalBoxes=boxes();
 
-  if(finalBoxes>best){
-    best=finalBoxes;
-
-    localStorage.setItem(
-      BEST_KEY,
-      String(best)
-    );
-
-    track('personal_best',{
-      boxes:best
-    });
-  }
 
   hud();
 
@@ -1470,7 +1480,8 @@ async function saveScore(){
   const name=
     safeName(handle);
 
-  if(!lastResult){
+  const result=results.getResult();
+  if(!lastResult||!result||!result.isNewBest||savingRank){
     return;
   }
 
@@ -1493,6 +1504,7 @@ async function saveScore(){
     return;
   }
 
+  savingRank=true;
   saveScoreBtn.disabled=true;
   saveMsg.textContent='SAVING...';
 
@@ -1516,7 +1528,7 @@ async function saveScore(){
 
   const localEntry={
     name,
-    boxes:lastResult,
+    boxes:scoreValue,
     time:Date.now()
   };
 
@@ -1552,15 +1564,16 @@ async function saveScore(){
             .serverTimestamp()
       };
 
-      await dbRef
-        .doc(docId)
-        .set(
-          data,
-          {merge:false}
-        );
+      const playerRef=dbRef.doc(docId);
+      const previous=await playerRef.get();
+      if(previous.exists&&scoreValue<=previous.data().score){
+        if(results.getResult()===result)saveMsg.textContent='Dein globaler Rekord ist bereits mindestens so hoch.';
+        return;
+      }
+      await playerRef.set(data,{merge:false});
 
       track('score_saved',{
-        boxes:lastResult,
+        boxes:scoreValue,
         rounds:roundsValue,
         storage_type:'firebase'
       });
@@ -1571,7 +1584,7 @@ async function saveScore(){
       writeLocal(localEntry);
 
       track('score_saved',{
-        boxes:lastResult,
+        boxes:scoreValue,
         rounds:roundsValue,
         storage_type:'local'
       });
@@ -1580,9 +1593,7 @@ async function saveScore(){
         'RANK SAVED LOCALLY.';
     }
 
-    entryPanel.classList.remove(
-      'show'
-    );
+    if(results.getResult()===result)entryPanel.classList.remove('show');
   }catch(error){
     console.warn(
       'FIREBASE SAVE FAILED:',
@@ -1592,12 +1603,13 @@ async function saveScore(){
     writeLocal(localEntry);
 
     track('score_save_failed',{
-      boxes:lastResult
+      boxes:scoreValue
     });
 
     saveMsg.textContent=
       'RANK SAVED LOCALLY.';
   }finally{
+    savingRank=false;
     saveScoreBtn.disabled=false;
   }
 }
@@ -1694,7 +1706,7 @@ function initFirebase(){
 
 startBtn.addEventListener(
   'click',
-  start
+  ()=>start(false)
 );
 
 resetBtn.addEventListener(
@@ -1706,6 +1718,9 @@ resetBtn.addEventListener(
     });
 
     roundToken++;
+    runActive=false;
+    resultPanel.classList.add('hide');
+    grid.classList.remove('hide');
 
     score=0;
     lastResult=0;
