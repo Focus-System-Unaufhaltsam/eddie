@@ -123,6 +123,34 @@ Dokumentierte Änderungen der vorhandenen Versionen umfassen unter anderem:
 
 Details stehen in `README_UPGRADE.md`.
 
+## Ergebnisbildschirm und Analytics (v3.2)
+
+Dies ist die von `eddiesworld.de` verlinkte Spielquelle: `https://focus-system-unaufhaltsam.github.io/eddie/`. Die ähnlich benannte Quelle `KeschFlow/unaufhaltsam` ist nicht dieser öffentliche Einstieg.
+
+Der Ergebnisbildschirm verwendet `result-flow.js` und `result-flow.css`. Er zeigt Level (die bisherige Boxenzahl), Laufzeit und lokalen Rekord. „Noch ein Versuch“ startet ohne Seitenreload. Ranking bleibt bei einem neuen lokalen Rekord ab vier Boxen optional. Der Rekordschlüssel `eddie_unaufhaltsam_best_boxes_v4`, die boxenbasierte Wertung und das Firestore-Dokumentschema bleiben erhalten. Share nutzt die aktuelle Spielroute ohne Query oder Fragment; bei fehlender Share-/Clipboard-Unterstützung gibt es markierbaren Text. Ein abgebrochener Share-Dialog kopiert nichts.
+
+### Bestehende Firebase-Anbindung
+
+Es wird die bereits konfigurierte App in `mg-challenge` mit `measurementId: G-4KYDE7P5W8` weiterverwendet. SDK, Einwilligungsdialog, Quellenzuordnung und `track()` bleiben bestehen. Es gibt kein neues Firebase-Projekt, keine neue Mess-ID und keine Firestore-Sammlung für Ereignisse.
+
+| Neues Ereignis | Auslöser | Zusätzliche Parameter |
+| --- | --- | --- |
+| `game_over` | Ein beendeter Lauf | `level`, `duration_ms`, `new_best`, `variant`, `version` |
+| `retry_clicked` | Direkter Ergebnis-Neustart | `level`, `duration_ms`, `variant`, `version` |
+| `share_clicked` | Klick auf Teilen/Kopieren | `level`, `duration_ms`, `share_method`, `variant`, `version` |
+
+Die vorhandenen `baseParams()` liefern weiterhin Quelle, Sitzung und App-Version. Namen und Handles werden nicht in die neuen Event-Parameter aufgenommen. Die Ereignisse passieren denselben Einwilligungscheck wie vorhandene Events. Lokale Zähler sind kein Nachweis eines Eingangs bei Google. `share_clicked` misst den Klick, nicht eine abgeschlossene Weiterleitung an einen Empfänger. Das bisherige `game_end` bleibt zur historischen Vergleichbarkeit erhalten; für die neue Metrik wird nur `game_over` als Nenner verwendet.
+
+`retry_clicked / game_over` ist die direkte Neustartquote für die erfassten, einwilligenden Spielbesuche. Eine Änderung dieses Verhältnisses allein beweist keine kausale Verbesserung und sagt nichts über nicht erfasste Spieler. Vergleiche müssen denselben App-Stand/Zeitraum, Einstiegsweg und möglichst dieselbe Traffic-Mischung berücksichtigen.
+
+### Prüf- und Veröffentlichungsgrenze
+
+Für einen bewusst gestarteten Test kann `?analytics_debug=1` verwendet werden. Dann erhalten die über `track()` gesendeten Ereignisse `debug_mode: true` und können in Firebase/GA4 DebugView geprüft werden. Diese Test-URL nicht als öffentlichen Profil-Link verwenden. Siehe [Firebase DebugView](https://firebase.google.com/docs/analytics/debugview).
+
+Vor dem Merge müssen `game_over`, `retry_clicked` und `share_clicked` im vorhandenen Dashboard mit passender App-Version und Level sichtbar geprüft werden. Erst danach Merge/Pages-Deployment und eine erneute Prüfung der öffentlichen Seite. Browser-Adaptertests oder ein erfolgreicher Transport allein ersetzen diesen Dashboard-Nachweis nicht.
+
+Lokale Tests: `npm ci`, `npx playwright install chromium`, `npm test`. Vorhandenes Chromium lässt sich mit `BROWSER_EXECUTABLE_PATH` auswählen. Die Tests sperren externe Requests und simulieren Firebase; sie sind kein Live-Nachweis. Spiel, Leaderboard-Schreibregeln, externe Produktlinks und Analytics-Projekteinstellungen werden durch diese Tests nicht produktiv verändert.
+
 ## Marke
 
 EDDIE UNAUFHALTSAM verbindet Eddie’s World mit dem Fokus-System UNAUFHALTSAM.
